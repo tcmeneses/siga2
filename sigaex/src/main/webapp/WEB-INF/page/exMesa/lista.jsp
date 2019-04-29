@@ -129,7 +129,7 @@
 	</div>
 
 	<script type="text/javascript"
-		src="https://unpkg.com/vue@2.6.10/dist/vue.min.js"></script>
+		src="../../siga/javascript/vue-2-6-10.min.js"></script>
 
 
 	<script type="text/javascript" language="Javascript1.1">
