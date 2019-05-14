@@ -56,8 +56,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.beanutils.BeanUtils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
@@ -65,6 +63,7 @@ import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.interceptor.download.Download;
 import br.com.caelum.vraptor.interceptor.download.InputStreamDownload;
 import br.com.caelum.vraptor.interceptor.multipart.UploadedFile;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Data;
@@ -97,6 +96,8 @@ import br.gov.jfrj.siga.persistencia.ExMobilDaoFiltro;
 import br.gov.jfrj.siga.util.ListaHierarquica;
 import br.gov.jfrj.siga.util.ListaHierarquicaItem;
 import br.gov.jfrj.siga.vraptor.builder.BuscaDocumentoBuilder;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Resource
 public class ExDocumentoController extends ExController {
@@ -414,6 +415,7 @@ public class ExDocumentoController extends ExController {
 				exDocumentoDTO.getSigla());
 	}
 
+	@NoOpenTransaction
 	@Post("app/expediente/doc/recarregar")
 	public ExDocumentoDTO recarregar(final ExDocumentoDTO exDocumentoDTO,
 			final String[] vars, String jsonHierarquiaDeModelos)
@@ -430,6 +432,7 @@ public class ExDocumentoController extends ExController {
 		return exDocumentoDTO;
 	}
 
+	@NoOpenTransaction
 	@Post("app/expediente/doc/editar")
 	@Get("app/expediente/doc/editar")
 	public ExDocumentoDTO edita(ExDocumentoDTO exDocumentoDTO,
@@ -1032,6 +1035,7 @@ public class ExDocumentoController extends ExController {
 
 	}
 
+	@NoOpenTransaction
 	@Get("app/expediente/doc/exibirAntigo")
 	public void aExibirAntigo(final String sigla, final boolean popup,
 			final boolean exibirCompleto) throws Exception {
@@ -1077,6 +1081,7 @@ public class ExDocumentoController extends ExController {
 		result.include("popup", popup);
 	}
 
+	@NoOpenTransaction
 	@Get({ "/app/expediente/doc/exibir", "/expediente/doc/exibir.action" })
 	public void exibe(final boolean conviteEletronico, final String sigla,
 			final ExDocumentoDTO exDocumentoDTO, final Long idmob)
@@ -1139,12 +1144,14 @@ public class ExDocumentoController extends ExController {
 		result.include("param", exDocumentoDto.getParamsEntrevista());
 	}
 
+	@NoOpenTransaction
 	@Get("app/expediente/doc/exibirProcesso")
 	public void exibeProcesso(final String sigla, final boolean podeExibir)
 			throws Exception {
 		exibe(false, sigla, null, null);
 	}
 
+	@NoOpenTransaction
 	@Get("/app/expediente/doc/exibirResumoProcesso")
 	public void exibeResumoProcesso(final String sigla, final boolean podeExibir)
 			throws Exception {
@@ -1545,6 +1552,7 @@ public class ExDocumentoController extends ExController {
 		result.forwardTo(this).aCarregarPreenchimento(exDocumentoDTO, vars);
 	}
 
+	@NoOpenTransaction
 	@Post("app/expediente/doc/prever")
 	public void preve(final ExDocumentoDTO exDocumentoDTO, final String[] vars)
 			throws IllegalAccessException, InvocationTargetException,
@@ -1588,6 +1596,7 @@ public class ExDocumentoController extends ExController {
 		result.include("doc", exDocumentoDTO.getDoc());
 	}
 
+	@NoOpenTransaction
 	@Post("app/expediente/doc/preverPdf")
 	public Download aPreverPdf(final ExDocumentoDTO exDocumentoDTO,
 			final String[] vars) throws IOException, IllegalAccessException,
@@ -2369,6 +2378,7 @@ public class ExDocumentoController extends ExController {
 		result.redirectTo(MessageFormat.format(URL_EDITAR, sigla));
 	}
 
+	@NoOpenTransaction
 	@Get("/app/expediente/doc/pdf")
 	public void aAcessar(final String sigla) throws Exception {
 		assertAcesso("");

@@ -41,6 +41,7 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.interceptor.multipart.UploadedFile;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.itextpdf.Documento;
 import br.gov.jfrj.siga.base.AplicacaoException;
@@ -748,6 +749,7 @@ public class ExMovimentacaoController extends ExController {
 		}
 	}
 
+	@NoOpenTransaction
 	@Get("app/expediente/mov/exibir")
 	public void aExibir(final boolean popup, final Long id,
 			final boolean autenticando) {

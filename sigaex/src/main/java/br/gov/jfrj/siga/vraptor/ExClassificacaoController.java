@@ -38,6 +38,7 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Texto;
@@ -102,12 +103,14 @@ public class ExClassificacaoController
 		return flt;
 	}
 
+	@NoOpenTransaction
 	@Get("app/expediente/classificacao/listar")
 	public void lista() {
 		assertAcesso(ACESSO_SIGA_DOC_FE_PC);
 		result.include("classificacaoVigente", getClassificacaoVigente());
 	}
 
+	@NoOpenTransaction
 	@Get("app/classificacao/buscar")
 	public void busca(final String sigla, final String postback,
 			final Integer paramoffset, final String nome,
@@ -140,6 +143,7 @@ public class ExClassificacaoController
 		result.include("nome", getNome());
 	}
 
+	@NoOpenTransaction
 	@Get("app/classificacao/selecionar")
 	public void selecionar(String sigla) throws Exception {
 		String resultado = super.aSelecionar(sigla);
@@ -152,6 +156,7 @@ public class ExClassificacaoController
 		}
 	}
 
+	@NoOpenTransaction
 	@Get("app/expediente/classificacao/editar")
 	public ExClassificacao edita(ExClassificacao exClassificacao,
 			String codificacao, String acao) throws Exception {
@@ -186,6 +191,7 @@ public class ExClassificacaoController
 		return exClass;
 	}
 
+	@NoOpenTransaction
 	@Get("app/expediente/classificacao/gravar")
 	public void gravar(ExClassificacao exClassificacao,
 			String codificacaoAntiga, String acao) throws Exception {
@@ -268,6 +274,7 @@ public class ExClassificacaoController
 		}
 	}
 
+	@NoOpenTransaction
 	@Get("app/expediente/classificacao/excluir")
 	public void excluir(String codificacao) throws Exception {
 		assertAcesso(ACESSO_SIGA_DOC_FE_PC);
@@ -288,6 +295,7 @@ public class ExClassificacaoController
 		}
 	}
 
+	@NoOpenTransaction
 	@Post("app/expediente/classificacao/gravarVia")
 	public void gravarVia(String acao, String codificacao, Long idVia, String obsVia, Long idDestino, Long idTemporalidadeArqCorr,
 			Long idTemporalidadeArqInterm, Long idDestinacaoFinal) throws Exception {
@@ -389,6 +397,7 @@ public class ExClassificacaoController
 		}
 	}
 
+	@NoOpenTransaction
 	@Get("app/expediente/classificacao/excluirVia")
 	public void excluirVia(Long idVia, String codificacao, String acao)
 			throws Exception {

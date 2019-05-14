@@ -12,6 +12,7 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.ex.ExFormaDocumento;
@@ -30,6 +31,7 @@ public class ExFormaDocumentoController extends ExController {
 		super(request, response, context, result, ExDao.getInstance(), so, em);
 	}
 
+	@NoOpenTransaction
 	@Get("app/forma/listar")
 	public void listarFormas(final String ordenar) {
 		assertAcesso(ACESSO_SIGA_DOC_MOD);
@@ -45,6 +47,7 @@ public class ExFormaDocumentoController extends ExController {
 		result.include("itens", itens);
 	}
 
+    @NoOpenTransaction
 	@Get("app/forma/editar")
 	public void editarForma(final Long id) {
 		assertAcesso(ACESSO_SIGA_DOC_MOD);
@@ -95,7 +98,8 @@ public class ExFormaDocumentoController extends ExController {
 		result.include("listaTiposFormaDoc", dao().listarExTiposFormaDoc());
 	}
 
-	@Get("app/forma/verificar_sigla")
+    @NoOpenTransaction
+    @Get("app/forma/verificar_sigla")
 	public void aVerificarSigla(final Long id, final String sigla) {
 		ExFormaDocumento formaConsulta = new ExFormaDocumento();
 

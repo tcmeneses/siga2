@@ -18,9 +18,11 @@ package br.com.caelum.vraptor.util.jpa;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.servlet.http.HttpServletRequest;
 
 import org.hibernate.Session;
 
+import br.com.caelum.vraptor.InterceptionException;
 import br.com.caelum.vraptor.Intercepts;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.core.InterceptorStack;
@@ -42,10 +44,13 @@ public class JPATransactionInterceptor implements Interceptor {
 
 	private final EntityManager manager;
 	private final Validator validator;
+	private HttpServletRequest request;
 
-	public JPATransactionInterceptor(EntityManager manager, Validator validator) {
+	public JPATransactionInterceptor(EntityManager manager, Validator validator,HttpServletRequest request) {
 		this.manager = manager;
 		this.validator = validator;
+		this.request = request;
+		
 	}
 
 	public void intercept(InterceptorStack stack, ResourceMethod method, Object instance) {
@@ -54,7 +59,9 @@ public class JPATransactionInterceptor implements Interceptor {
 			transaction = manager.getTransaction();
 			transaction.begin();
 
+			System.out.println("JPATransaction Url que abre transacao: " + request.getRequestURI() + " Classe: " + method.getClass().getName());
 			stack.next(method, instance);
+			System.out.println("JPATransaction Url que fecha transacao: " + request.getRequestURI() + " Classe: " + method.getClass().getName());
 
 			transaction = manager.getTransaction();
 
@@ -86,7 +93,9 @@ public class JPATransactionInterceptor implements Interceptor {
 		}
 	}
 
+
+	@Override
 	public boolean accepts(ResourceMethod method) {
-		return true; // Will intercept all requests
+		return ! (method.containsAnnotation(NoOpenTransaction.class));
 	}
 }
