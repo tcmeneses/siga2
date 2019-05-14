@@ -35,6 +35,7 @@ public class HibernateUtility {
 	}
 
 	public static Session getSession() {
+		System.out.println("HibernateUtility - Abrindo Conexao");
 		return HibernateUtility.factory.openSession();
 	}
 }

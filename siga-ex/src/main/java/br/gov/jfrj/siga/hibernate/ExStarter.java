@@ -19,6 +19,8 @@ public class ExStarter {
 
 	@PostConstruct
 	public void init() {
+		System.out.println("ExStarter - Cria EntityManagerFactory");
+		
 		emf = Persistence.createEntityManagerFactory("default");
 	}
 }

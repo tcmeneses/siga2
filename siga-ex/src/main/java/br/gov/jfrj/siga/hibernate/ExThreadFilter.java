@@ -63,6 +63,9 @@ public class ExThreadFilter extends ThreadFilter {
 			throw new RuntimeException(
 					"Não foi possível atualizar o cache de configurações", e1);
 		}
+		
+		System.out.println("Exthreadfilter Url que abre transacao: " + ((HttpServletRequest) request).getRequestURL().toString());
+
 
 		em.getTransaction().begin();
 
@@ -78,6 +81,8 @@ public class ExThreadFilter extends ThreadFilter {
 			em.close();
 			ContextoPersistencia.setEntityManager(null);
 		}
+		
+		System.out.println("Exthreadfilter Url que fecha transacao: " + ((HttpServletRequest) request).getRequestURL().toString());
 	}
 
 	@Override
