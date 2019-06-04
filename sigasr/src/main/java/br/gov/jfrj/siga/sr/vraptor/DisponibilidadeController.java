@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
 import br.gov.jfrj.siga.model.ContextoPersistencia;
@@ -27,6 +29,7 @@ public class DisponibilidadeController extends SrController {
 		super(request, result, SrDao.getInstance(), so, em, srValidator);
 	}
 
+	@NaoTransacional
 	@Path("/listar")
 	public void listar() {
 		@SuppressWarnings("unchecked")
@@ -36,6 +39,7 @@ public class DisponibilidadeController extends SrController {
 		result.include("orgaos", orgaos);
 	}
 
+	@NaoTransacional
 	@Path("/listarPagina")
 	public void listarPagina(PaginaItemConfiguracao pagina) throws Exception {
 		@SuppressWarnings("unchecked")
@@ -44,6 +48,7 @@ public class DisponibilidadeController extends SrController {
 		result.use(Results.http()).body(pagina.atualizar(orgaos).toJson());
 	}
 
+	@Transacional
 	@Path("/gravar")
 	public void gravar(SrDisponibilidade disponibilidade, PaginaItemConfiguracao pagina, SrItemConfiguracao itemConfiguracao, CpOrgaoUsuario orgao) throws Exception {
 		disponibilidade.setItemConfiguracao(itemConfiguracao);

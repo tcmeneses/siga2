@@ -13,8 +13,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.validator.I18nMessage;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
@@ -55,7 +55,7 @@ public class RequisicaoController extends TpController {
         this.autorizacaoGI = autorizacaoGI;
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/listar")
     public void listar() {
 		EstadoRequisicao estReq = EstadoRequisicao.CANCELADA;
@@ -66,7 +66,7 @@ public class RequisicaoController extends TpController {
         result.include("estReq", estReq);
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @RoleAprovador
     @RoleAdmin
     @RoleAdminMissao
@@ -84,7 +84,7 @@ public class RequisicaoController extends TpController {
         result.include("estReq", estReq);
     }
 
-    @OpenTransaction
+    @Transacional
     @RoleAdmin
     @RoleAdminMissao
     @Path("/salvarNovoComplexo")
@@ -102,13 +102,13 @@ public class RequisicaoController extends TpController {
         result.redirectTo(this).listarPAprovar();
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/listarFiltrado/{estadoRequisicao}")
     public void listarFiltrado(String estadoRequisicao) {
         result.forwardTo(this).listarFiltrado(estadoRequisicao, null);
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/listarFiltrado/{estadoRequisicao}/{estadoRequisicaoP}")
     public void listarFiltrado(String estadoRequisicao, String estadoRequisicaoP) {
         EstadoRequisicao estadoReq = EstadoRequisicao.valueOf(estadoRequisicao);
@@ -122,7 +122,7 @@ public class RequisicaoController extends TpController {
         result.use(Results.page()).of(RequisicaoController.class).listar();
     }
     
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/listarAvancado")
     public void listarAvancado(Calendar dataInicio, Calendar dataFim, EstadoRequisicao estadoRequisicao) throws Exception {
 		EstadoRequisicao estReq = EstadoRequisicao.CANCELADA;
@@ -136,7 +136,7 @@ public class RequisicaoController extends TpController {
         result.use(Results.page()).of(RequisicaoController.class).listar();
     }
     
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/listarAvancadoPAprovar")
     public void listarAvancadoPAprovar(Calendar dataInicio, Calendar dataFim, EstadoRequisicao estadoRequisicao) throws Exception {
 		EstadoRequisicao estReq = EstadoRequisicao.CANCELADA;
@@ -153,7 +153,7 @@ public class RequisicaoController extends TpController {
         result.use(Results.page()).of(RequisicaoController.class).listarPAprovar();
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @RoleAdmin
     @RoleAdminMissao
     @RoleAdminMissaoComplexo
@@ -169,7 +169,7 @@ public class RequisicaoController extends TpController {
         result.use(Results.page()).of(RequisicaoController.class).listarPAprovar();
     }
 
-    @OpenTransaction
+    @Transacional
     @Path("/salvar")
     public void salvar(RequisicaoTransporte requisicaoTransporte, TipoDePassageiro[] tiposDePassageiros, boolean checkRetorno, boolean checkSemPassageiros) throws Exception {
         validar(requisicaoTransporte, checkSemPassageiros, tiposDePassageiros, checkRetorno);
@@ -334,7 +334,7 @@ public class RequisicaoController extends TpController {
  		result.include("opcoesDeTiposDePassageiro", tipos);
 	}
 
-    @OpenTransaction
+    @Transacional
 	@Path("/salvarAndamentos")
     public void salvarAndamentos(@Valid RequisicaoTransporte requisicaoTransporte, boolean checkRetorno, boolean checkSemPassageiros) throws Exception{
         redirecionarSeErroAoSalvar(requisicaoTransporte, checkRetorno, checkSemPassageiros);
@@ -385,7 +385,7 @@ public class RequisicaoController extends TpController {
      	result.include("mostrarDetalhes", mostrarOutra);
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/incluir")
     public void incluir() throws Exception {
         RequisicaoTransporte requisicaoTransporte = new RequisicaoTransporte();
@@ -402,7 +402,7 @@ public class RequisicaoController extends TpController {
         result.include(REQUISICAO_TRANSPORTE, requisicaoTransporte);
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/editar/{id}")
     public void editar(Long id) throws Exception {
         RequisicaoTransporte requisicaoTransporte = RequisicaoTransporte.AR.findById(id);
@@ -455,7 +455,7 @@ public class RequisicaoController extends TpController {
         }
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/ler/{id}")
     public void ler(Long id) throws Exception  {
         RequisicaoTransporte requisicaoTransporte = RequisicaoTransporte.AR.findById(id);
@@ -481,13 +481,13 @@ public class RequisicaoController extends TpController {
         result.include("checkSemPassageiros", checkSemPassageiros);
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/ler")
     public void ler() throws Exception {
         result.include("esconderBotoes", true);
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/buscarPelaSequence/{popUp}/{sequence*}")
     public void buscarPelaSequence(boolean popUp, String sequence) throws Exception  {
         RequisicaoTransporte requisicaoTransporte = recuperarPelaSigla(sequence, popUp);
@@ -519,7 +519,7 @@ public class RequisicaoController extends TpController {
         return requisicaoTransporte;
     }
 
-    @OpenTransaction
+    @Transacional
     @Path("/excluir/{id}")
     public void excluir(Long id) throws Exception {
         RequisicaoTransporte requisicaoTransporte = RequisicaoTransporte.AR.findById(id);
@@ -595,7 +595,7 @@ public class RequisicaoController extends TpController {
 	}
 
 	/* Metodo AJAX */
-    @NoOpenTransaction
+    @NaoTransacional
 	@Path("/getRequisicaoLinhasTotal")
     public void getRequisicaoLinhasTotal() {
 		result.use(Results.http()).body(Parametro.buscarConfigSistemaEmVigor("requisicao.linhas.total"));

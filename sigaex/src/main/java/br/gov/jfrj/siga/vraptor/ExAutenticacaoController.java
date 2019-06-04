@@ -25,8 +25,8 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.interceptor.download.Download;
 import br.com.caelum.vraptor.interceptor.download.InputStreamDownload;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.gov.jfrj.siga.Service;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.bluc.service.BlucService;
@@ -57,14 +57,14 @@ public class ExAutenticacaoController extends ExController {
 		result.include("request", getRequest());
 	}
 
-	@OpenTransaction
+	@Transacional
 	@Get
 	@Path("/autenticar.action")
 	public void redirecionar() throws Exception {
 		result.redirectTo(this).autenticar(null, null, null, null, null, null);
 	}
 
-	@OpenTransaction
+	@Transacional
 	@Get
 	@Post
 	@Path("/public/app/autenticar")
@@ -158,7 +158,7 @@ public class ExAutenticacaoController extends ExController {
 		result.forwardTo(this).arquivoAutenticado(buildJwtToken(n));
 	}
 
-	@NoOpenTransaction	
+	@NaoTransacional	
 	@Get("/public/app/arquivoAutenticado_stream")
 	public Download arquivoAutenticado_stream(final String jwt,
 			final boolean assinado, final Long idMov,
@@ -238,7 +238,7 @@ public class ExAutenticacaoController extends ExController {
 	}
 
 	// antigo metodo arquivo();
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("/public/app/arquivoAutenticado")
 	public void arquivoAutenticado(final String jwt) throws Exception {
 		if (jwt == null) {

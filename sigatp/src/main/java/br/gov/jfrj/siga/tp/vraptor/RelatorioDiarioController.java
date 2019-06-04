@@ -11,7 +11,7 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.core.Localization;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdmin;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdminFrota;
@@ -31,7 +31,7 @@ public class RelatorioDiarioController extends TpController {
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
 	@Path("/listar/{idVeiculo}")
 	public void listarPorVeiculo(Long idVeiculo) throws Exception {
 		Veiculo veiculo = Veiculo.AR.findById(idVeiculo);
@@ -42,7 +42,7 @@ public class RelatorioDiarioController extends TpController {
 		result.include("idVeiculo", idVeiculo);
 	}
 	
-    @NoOpenTransaction
+    @NaoTransacional
     @RoleAdmin
 	@RoleAdminFrota
 	@Path("/incluir/{idVeiculo}")
@@ -54,7 +54,7 @@ public class RelatorioDiarioController extends TpController {
 		result.forwardTo(this).editar(null);
 	}
 	
-    @NoOpenTransaction
+    @NaoTransacional
     @RoleAdmin
 	@RoleAdminFrota
 	@Path("/editar/{id}")

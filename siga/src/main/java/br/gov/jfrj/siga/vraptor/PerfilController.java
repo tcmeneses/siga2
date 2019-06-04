@@ -29,8 +29,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.cp.CpTipoGrupo;
@@ -53,7 +53,7 @@ public class PerfilController extends GrupoController {
 		return CpTipoGrupo.TIPO_GRUPO_PERFIL_DE_ACESSO;
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("/app/gi/perfil/listar")
 	public void lista() throws Exception {
 		assertAcesso("PERFIL:Gerenciar grupos de email");
@@ -66,7 +66,7 @@ public class PerfilController extends GrupoController {
 		result.include("lotaTitular", getLotaTitular());
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("/app/gi/perfil/editar")
 	public void edita(Long idCpGrupo) throws Exception {
 		
@@ -91,7 +91,7 @@ public class PerfilController extends GrupoController {
 		result.include("idConfiguracaoNova", getIdConfiguracaoNova());
 	}
 
-	@OpenTransaction
+	@Transacional
 	@SuppressWarnings("unchecked")
 	@Post("/app/gi/perfil/gravar")
 	public void gravar(Long idCpGrupo, String siglaGrupo, String dscGrupo,
@@ -119,7 +119,7 @@ public class PerfilController extends GrupoController {
 		result.redirectTo(MessageFormat.format("/app/gi/perfil/editar?idCpGrupo={0}", novoIdCpGrupo.toString()));
 	}
 
-	@OpenTransaction
+	@Transacional
 	@Post("/app/gi/perfil/excluir")
 	public void excluir(Long idCpGrupo) throws Exception {
 		assertAcesso("PERFIL:Gerenciar grupos de email");
@@ -127,7 +127,7 @@ public class PerfilController extends GrupoController {
 		result.redirectTo(this).lista();
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Post
 	@Get
 	@Path("/app/gi/perfil/buscar")
@@ -147,7 +147,7 @@ public class PerfilController extends GrupoController {
 		result.include("param",getRequest().getParameterMap());
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("/app/gi/perfil/selecionar")
 	public void selecionar(String sigla){
 		String resultado =  super.aSelecionar(sigla);

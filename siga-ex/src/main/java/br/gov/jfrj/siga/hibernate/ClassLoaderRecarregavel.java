@@ -30,7 +30,7 @@ public class ClassLoaderRecarregavel extends URLClassLoader {
 	@Override
 	public Class<?> loadClass(String name) throws ClassNotFoundException {
         // Verifica classe já está carregada. Se tiver, use-a
-        Class loadedClass = findLoadedClass(name);
+        Class<?> loadedClass = findLoadedClass(name);
         
         if (loadedClass == null) {
             try {

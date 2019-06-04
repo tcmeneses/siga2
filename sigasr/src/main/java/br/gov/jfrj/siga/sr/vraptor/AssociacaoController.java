@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.cp.CpComplexo;
@@ -41,6 +42,7 @@ public class AssociacaoController extends SrController {
 		result.on(Exception.class).forwardTo(this).exception();
 	}
 
+	@Transacional
 	@Path("/desativar")
 	@AssertAcesso(ADM_ADMINISTRAR)
 	public void desativarAssociacao(Long idAssociacao) throws Exception {
@@ -49,6 +51,7 @@ public class AssociacaoController extends SrController {
 		result.use(Results.http()).body(associacao.toJson());
 	}
 
+	@Transacional
 	@Path("/gravar")
 	@AssertAcesso(ADM_ADMINISTRAR)
 	public void gravarAssociacao(SrConfiguracao associacao,SrAtributo atributo, List<SrItemConfiguracao> itemConfiguracaoSet, List<SrAcao> acoesSet, CpComplexo complexo, CpOrgaoUsuario orgaoUsuario,
@@ -60,6 +63,7 @@ public class AssociacaoController extends SrController {
 		result.use(Results.http()).body(associacao.toVO().toJson());
 	}
 
+	@Transacional
 	@Path("/gravarComoPesquisa")
 	@AssertAcesso(ADM_ADMINISTRAR)
 	public void gravarAssociacaoPesquisa(SrConfiguracao associacao, SrPesquisa pesquisa, SrAtributo atributo, List<SrItemConfiguracao> itemConfiguracaoSet, List<SrAcao> acoesSet, CpComplexo complexo, CpOrgaoUsuario orgaoUsuario,

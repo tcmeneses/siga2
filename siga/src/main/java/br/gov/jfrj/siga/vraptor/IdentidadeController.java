@@ -10,8 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.cp.CpIdentidade;
 import br.gov.jfrj.siga.cp.bl.Cp;
@@ -29,7 +29,7 @@ public class IdentidadeController extends GiControllerSupport {
 		result.on(Exception.class).forwardTo(this).exception();
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("/app/gi/identidade/listar")
 	public void lista(DpPessoaSelecao pessoaSel) throws Exception {
 		assertAcesso("ID:Gerenciar identidades");
@@ -45,7 +45,7 @@ public class IdentidadeController extends GiControllerSupport {
 		return (pessoaSel == null) ? new DpPessoaSelecao() : pessoaSel;
 	}
 	
-	@OpenTransaction
+	@Transacional
 	@Get("/app/gi/identidade/editar_gravar")
 	public void aEditarGravar(DpPessoaSelecao pessoaSel, String dtExpiracao, Long id) throws Exception {
 		assertAcesso("ID:Gerenciar identidades");
@@ -67,7 +67,7 @@ public class IdentidadeController extends GiControllerSupport {
 		result.forwardTo(this).lista(pessoaSel);
 	}
 
-	@OpenTransaction
+	@Transacional
 	@Get("/app/gi/identidade/cancelar")
 	public void aCancelar(Long id, DpPessoaSelecao pessoaSel) throws Exception {
 		assertAcesso("ID:Gerenciar identidades");
@@ -80,7 +80,7 @@ public class IdentidadeController extends GiControllerSupport {
 		result.forwardTo(this).lista(pessoaSel);
 	}
 
-	@OpenTransaction
+	@Transacional
 	@Get("/app/gi/identidade/desbloquear")
 	public void aBloquear(Long id, DpPessoaSelecao pessoaSel) throws Exception {
 		assertAcesso("ID:Gerenciar identidades");
@@ -92,7 +92,7 @@ public class IdentidadeController extends GiControllerSupport {
 			throw new AplicacaoException("Não foi informada id");
 	}
 
-	@OpenTransaction
+	@Transacional
 	@Get("/app/gi/identidade/bloquear")
 	public void aDesbloquear(Long id, DpPessoaSelecao pessoaSel) throws Exception {
 		assertAcesso("ID:Gerenciar identidades");
@@ -104,7 +104,7 @@ public class IdentidadeController extends GiControllerSupport {
 			throw new AplicacaoException("Não foi informada id");
 	}
 
-	@OpenTransaction
+	@Transacional
 	@Get("/app/gi/identidade/bloquear_pessoa")
 	public void aBloquearPessoa(DpPessoaSelecao pessoaSel) throws Exception {
 		assertAcesso("ID:Gerenciar identidades");
@@ -117,7 +117,7 @@ public class IdentidadeController extends GiControllerSupport {
 			throw new AplicacaoException("Não foi informada a pessoa");
 	}
 
-	@OpenTransaction
+	@Transacional
 	@Get("/app/gi/identidade/desbloquear_pessoa")
 	public void aDesbloquearPessoa(DpPessoaSelecao pessoaSel) throws Exception {
 		assertAcesso("ID:Gerenciar identidades");

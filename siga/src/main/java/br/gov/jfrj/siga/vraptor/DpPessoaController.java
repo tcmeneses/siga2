@@ -45,8 +45,8 @@ import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.interceptor.download.Download;
 import br.com.caelum.vraptor.interceptor.download.InputStreamDownload;
 import br.com.caelum.vraptor.interceptor.multipart.UploadedFile;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.SigaCalendar;
@@ -83,7 +83,7 @@ public class DpPessoaController extends SigaSelecionavelControllerSupport<DpPess
 		setItemPagina(10);
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get
 	@Post
 	@Path({"/app/pessoa/buscar","/app/cosignatario/buscar", "/pessoa/buscar.action", "/cosignatario/buscar.action"})
@@ -118,7 +118,7 @@ public class DpPessoaController extends SigaSelecionavelControllerSupport<DpPess
 		result.include("maxIndices", getTamanho()/10 + 1);
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("/app/pessoa/exibir")
 	public void exibi(String sigla) {
 		 if(sigla != null) {
@@ -167,7 +167,7 @@ public class DpPessoaController extends SigaSelecionavelControllerSupport<DpPess
 		return null;
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get
 	@Post
 	@Path({"/public/app/pessoa/selecionar","/app/pessoa/selecionar","/app/cosignatario/selecionar", "/pessoa/selecionar.action","/cosignatario/selecionar.action"})
@@ -181,7 +181,7 @@ public class DpPessoaController extends SigaSelecionavelControllerSupport<DpPess
 		}
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/pessoa/listar")
 	@Post("app/pessoa/listar")
 	public void lista(Integer offset, Long idOrgaoUsu, String nome, String cpfPesquisa, Long idCargoPesquisa, Long idFuncaoPesquisa, Long idLotacaoPesquisa) throws Exception {
@@ -247,7 +247,7 @@ public class DpPessoaController extends SigaSelecionavelControllerSupport<DpPess
 		}
 	}
 	
-	@OpenTransaction
+	@Transacional
 	@Get("/app/pessoa/ativarInativar")
 	public void ativarInativar(final Long id, Integer offset, Long idOrgaoUsu, String nome, String cpfPesquisa, Long idCargoPesquisa, Long idFuncaoPesquisa, Long idLotacaoPesquisa) throws Exception{
 		CpOrgaoUsuario ou = new CpOrgaoUsuario();
@@ -277,7 +277,7 @@ public class DpPessoaController extends SigaSelecionavelControllerSupport<DpPess
 		}
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("/app/pessoa/editar")
 	public void edita(final Long id){
 		CpOrgaoUsuario ou = new CpOrgaoUsuario();
@@ -364,7 +364,7 @@ public class DpPessoaController extends SigaSelecionavelControllerSupport<DpPess
 		}
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Post("/app/pessoa/carregarCombos")
 	public void carregarCombos(final Long id, final Long idOrgaoUsu, final String nmPessoa, final String dtNascimento, final String cpf, final String email, final String cpfPesquisa, final Integer offset) {
 		result.include("request",getRequest());
@@ -434,7 +434,7 @@ public class DpPessoaController extends SigaSelecionavelControllerSupport<DpPess
 		}
 	}
 	
-	@OpenTransaction
+	@Transacional
 	@Post("/app/pessoa/gravar")
 	public void editarGravar(final Long id, final Long idOrgaoUsu, final Long idCargo, final Long idFuncao, final Long idLotacao, final String nmPessoa, final String dtNascimento, 
 			final String cpf, final String email) throws Exception{
@@ -536,7 +536,7 @@ public class DpPessoaController extends SigaSelecionavelControllerSupport<DpPess
 		lista(0, null, "", "", null, null, null);
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("/app/pessoa/carregarExcel")
 	public void carregarExcel() {
 		if("ZZ".equals(getTitular().getOrgaoUsuario().getSigla())) {
@@ -548,7 +548,7 @@ public class DpPessoaController extends SigaSelecionavelControllerSupport<DpPess
 		result.use(Results.page()).forwardTo("/WEB-INF/page/dpPessoa/cargaPessoa.jsp");
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Post("/app/pessoa/carga")
 	public Download carga( final UploadedFile arquivo, Long idOrgaoUsu) throws Exception {
 		InputStream inputStream = null;

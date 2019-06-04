@@ -14,7 +14,7 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
 import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.tp.exceptions.RelatorioException;
 import br.gov.jfrj.siga.tp.model.Afastamento;
@@ -55,14 +55,14 @@ public class RelatorioController extends TpController {
         super(request, result, dao, validator, so, em);
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/listarAgendaPorCondutorNoProximoDia/{idCondutor}/{dataPesquisa*}")
     public void listarAgendaPorCondutorNoProximoDia(Long idCondutor, Calendar dataPesquisa) throws ParseException {
         dataPesquisa.add(Calendar.DAY_OF_MONTH, 1);
         result.forwardTo(RelatorioController.class).listarAgendaPorCondutor(idCondutor, formatoDataDDMMYYYY.format(dataPesquisa.getTime()));
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/listarAgendaPorCondutorNoDiaAnterior/{idCondutor}/{dataPesquisa*}")
     public void listarAgendaPorCondutorNoDiaAnterior(Long idCondutor, Calendar dataPesquisa) throws ParseException {
         dataPesquisa.add(Calendar.DAY_OF_MONTH, -1);
@@ -70,33 +70,33 @@ public class RelatorioController extends TpController {
         result.forwardTo(RelatorioController.class).listarAgendaPorCondutor(idCondutor, formatoDataDDMMYYYY.format(dataPesquisa.getTime()));
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/listarAgendaPorVeiculoNoProximoDia/{idVeiculo}/{dataPesquisa*}")
     public void listarAgendaPorVeiculoNoProximoDia(Long idVeiculo, Calendar dataPesquisa) throws ParseException {
         dataPesquisa.add(Calendar.DAY_OF_MONTH, 1);
         result.forwardTo(RelatorioController.class).listarAgendaPorVeiculo(idVeiculo, formatoDataDDMMYYYY.format(dataPesquisa.getTime()));
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/listarAgendaPorVeiculoNoDiaAnterior/{idVeiculo}/{dataPesquisa*}")
     public void listarAgendaPorVeiculoNoDiaAnterior(Long idVeiculo, Calendar dataPesquisa) throws ParseException {
         dataPesquisa.add(Calendar.DAY_OF_MONTH, -1);
         result.forwardTo(RelatorioController.class).listarAgendaPorVeiculo(idVeiculo, formatoDataDDMMYYYY.format(dataPesquisa.getTime()));
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/listarAgendaTodosCondutores")
     public void listarAgendaTodosCondutores() throws ParseException {
         result.forwardTo(RelatorioController.class).listarAgendaPorCondutor(0L, getToday());
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/listarAgendaTodosVeiculos")
     public void listarAgendaTodosVeiculos() throws ParseException {
         result.forwardTo(RelatorioController.class).listarAgendaPorVeiculo(0L, getToday());
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @SuppressWarnings("unused")
 	@Path("/listarAgendaPorCondutor/{idCondutor}/{dataPesquisa*}")
     public void listarAgendaPorCondutor(Long idCondutor, String dataPesquisa) throws ParseException {
@@ -189,7 +189,7 @@ public class RelatorioController extends TpController {
         return dataHoraInicioTemp.getTime();
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @SuppressWarnings("unused")
 	@Path("/listarAgendaPorVeiculo/{idVeiculo}/{dataPesquisa*}")
     public void listarAgendaPorVeiculo(Long idVeiculo, String dataPesquisa) throws ParseException {
@@ -382,7 +382,7 @@ public class RelatorioController extends TpController {
         return delim;
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/listarMissoesEmAndamento")
     public void listarMissoesEmAndamento() {
         List<Missao> missoes = Missao.buscarEmAndamento();
@@ -407,7 +407,7 @@ public class RelatorioController extends TpController {
         result.include(REGISTROS, registros.toString());
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/listarDadosDaMissao/{id}")
     public void listarDadosDaMissao(Long id) throws RelatorioException {
         try {

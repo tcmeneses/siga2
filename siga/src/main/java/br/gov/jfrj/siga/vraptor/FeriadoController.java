@@ -40,8 +40,8 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.cp.model.DpLotacaoSelecao;
 import br.gov.jfrj.siga.dp.CpAplicacaoFeriado;
@@ -59,7 +59,7 @@ public class FeriadoController extends SigaController {
 		super(request, result, CpDao.getInstance(), so, em);
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("/app/feriado/listar")
 	public void lista(Integer id) throws Exception {
 		assertAcesso("FE:Ferramentas;CAD_FERIADO: Cadastrar Feriados");
@@ -72,7 +72,7 @@ public class FeriadoController extends SigaController {
 		result.include("itens", CpDao.getInstance().listarCpFeriadoPorDescricao());
 	}
 	
-	@OpenTransaction
+	@Transacional
 	@Post("/app/feriado/salvar")
 	public void aEditarGravar(String dscFeriado, Integer id) throws Exception {
 		assertAcesso("FE:Ferramentas;CAD_FERIADO: Cadastrar Feriados");
@@ -95,7 +95,7 @@ public class FeriadoController extends SigaController {
 		result.redirectTo(this).lista(null);
 	}
 	
-	@OpenTransaction
+	@Transacional
 	@Get("/app/feriado/excluir")
 	public void excluirFeriado(Integer id) throws Exception {
 		assertAcesso("FE:Ferramentas;CAD_FERIADO: Cadastrar Feriados");
@@ -114,7 +114,7 @@ public class FeriadoController extends SigaController {
 		result.redirectTo(this).lista(null);
 	}
 	
-	@OpenTransaction
+	@Transacional
 	@Get("/app/feriado/excluir-ocorrencia")
 	public void excluirOcorrencia(Long idOcorrencia) throws Exception {
 		assertAcesso("FE:Ferramentas;CAD_FERIADO: Cadastrar Feriados");
@@ -134,7 +134,7 @@ public class FeriadoController extends SigaController {
 	
 	
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("/app/feriado/editar-ocorrencia")
 	public void editaOcorrencia(Integer id, Long idOcorrencia) throws Exception {
 //		assertAcesso("FE:Ferramentas;CAD_FERIADO: Cadastrar Feriados");
@@ -164,7 +164,7 @@ public class FeriadoController extends SigaController {
 		
 	}
 	
-	@OpenTransaction
+	@Transacional
 	@Post("/app/feriado/gravar-ocorrencia")
 	public void gravarOcorrencia(Date dtIniFeriado, Date dtFimFeriado, Long idOcorrencia,
 			Integer id, DpLotacaoSelecao lotacao_lotacaoSel, Long idOrgaoUsu, Long idLocalidade) throws Exception {
@@ -226,7 +226,7 @@ public class FeriadoController extends SigaController {
 	}
 	
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("/app/feriado/localidades")
 	public void listaLocalidades(String nmUF) {
 		List<CpLocalidade> localidades = new ArrayList<>();
@@ -240,7 +240,7 @@ public class FeriadoController extends SigaController {
 		result.include("listaLocalidades", localidades);
 	}
 	
-	@OpenTransaction
+	@Transacional
 	@Get("/app/feriado/excluir-aplicacao")
 	public void excluirAplicacao(Integer idAplicacao) throws Exception {
 //		assertAcesso("FE:Ferramentas;CAD_FERIADO: Cadastrar Feriados");

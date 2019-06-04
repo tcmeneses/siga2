@@ -68,7 +68,8 @@ public class UsuarioFormController extends PpController {
                 descricaoForum = objForum.getDescricao_forum();
                 ContextoPersistencia.em().flush();
             }
-            ArrayList<Foruns> outrosForuns = (ArrayList) Foruns.AR.find("cod_forum <> " + paramCodForum).fetch();
+            @SuppressWarnings("rawtypes")
+			ArrayList<Foruns> outrosForuns = (ArrayList) Foruns.AR.find("cod_forum <> " + paramCodForum).fetch();
             if(!lotacaoSessao.equals("-NI")){ // entra no if caso nao seja lotado em Niteroi
              for (byte i = 0;i<outrosForuns.size();i++) { // varre o arraylist
 				if (outrosForuns.get(i).getCod_forum()==2){ // dois e o codigo de niteroi.

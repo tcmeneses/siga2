@@ -95,6 +95,6 @@ public class JPATransactionInterceptor implements Interceptor {
 	public boolean accepts(ResourceMethod method) {
 		//return true;
 		System.out.println("URI: " + request.getRequestURI());
-		return ! (method.containsAnnotation(NoOpenTransaction.class));
+		return ! (method.containsAnnotation(NaoTransacional.class));
 	}
 }

@@ -42,8 +42,8 @@ import org.apache.commons.beanutils.PropertyUtils;
 import com.google.common.base.Optional;
 
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Texto;
 import br.gov.jfrj.siga.cp.CpConfiguracao;

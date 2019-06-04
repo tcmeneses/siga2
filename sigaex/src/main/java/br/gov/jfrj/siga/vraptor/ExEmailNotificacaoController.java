@@ -36,8 +36,8 @@ import org.jboss.logging.Logger;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.cp.model.DpLotacaoSelecao;
 import br.gov.jfrj.siga.cp.model.DpPessoaSelecao;
@@ -61,7 +61,7 @@ public class ExEmailNotificacaoController extends SigaController{
 		return dao().consultar(id, ExEmailNotificacao.class, false);
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/expediente/emailNotificacao/listar")
 	public void lista() {
 		try {
@@ -74,7 +74,7 @@ public class ExEmailNotificacaoController extends SigaController{
 		}
 	}
 	
-	@OpenTransaction
+	@Transacional
 	@Get("app/expediente/emailNotificacao/excluir")
 	public void excluir(Long id){
 		try {
@@ -100,7 +100,7 @@ public class ExEmailNotificacaoController extends SigaController{
 		result.redirectTo(ExEmailNotificacaoController.class).lista();
 	}
 		
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/expediente/emailNotificacao/editar")
 	public void edita(){	
 		try {
@@ -122,7 +122,7 @@ public class ExEmailNotificacaoController extends SigaController{
 		result.include("pessEmailSel", new DpPessoaSelecao());
 	}
 	
-	@OpenTransaction
+	@Transacional
 	@Get("app/expediente/emailNotificacao/editar_gravar")
 	public void editarGravar(final DpLotacaoSelecao lotaSel, final DpLotacaoSelecao lotaEmailSel, final DpPessoaSelecao pessSel,
 			final DpPessoaSelecao pessEmailSel, final Integer tipoDest, final Integer tipoEmail, final String emailTela){

@@ -12,8 +12,8 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.ex.ExFormaDocumento;
@@ -32,7 +32,7 @@ public class ExFormaDocumentoController extends ExController {
 		super(request, response, context, result, ExDao.getInstance(), so, em);
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/forma/listar")
 	public void listarFormas(final String ordenar) {
 		assertAcesso(ACESSO_SIGA_DOC_MOD);
@@ -48,7 +48,7 @@ public class ExFormaDocumentoController extends ExController {
 		result.include("itens", itens);
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
 	@Get("app/forma/editar")
 	public void editarForma(final Long id) {
 		assertAcesso(ACESSO_SIGA_DOC_MOD);
@@ -99,7 +99,7 @@ public class ExFormaDocumentoController extends ExController {
 		result.include("listaTiposFormaDoc", dao().listarExTiposFormaDoc());
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Get("app/forma/verificar_sigla")
 	public void aVerificarSigla(final Long id, final String sigla) {
 		ExFormaDocumento formaConsulta = new ExFormaDocumento();
@@ -121,7 +121,7 @@ public class ExFormaDocumentoController extends ExController {
 		result.use(Results.page()).forwardTo("/WEB-INF/page/mensagemAjax.jsp");
 	}
 
-	@OpenTransaction
+	@Transacional
     @Post("app/forma/gravar")
 	public void gravar(final Integer postback, final Long id, final String descricao, final String sigla, final Long idTipoFormaDoc, final boolean origemExterno,
 			final boolean origemInternoImportado, final boolean origemInternoProduzido, final boolean origemInternoCapturado, final boolean origemExternoCapturado) {

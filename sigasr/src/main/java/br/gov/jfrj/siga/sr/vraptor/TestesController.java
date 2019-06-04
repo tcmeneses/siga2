@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.dp.DpPessoa;
@@ -23,6 +24,7 @@ public class TestesController extends SrController {
 		result.on(Exception.class).forwardTo(this).exception();
 	}
 
+	@NaoTransacional
 	@Get("/public/app/testes/gadgetTest")
 	public void test(final String matricula) throws Exception {
 		if (matricula == null) {

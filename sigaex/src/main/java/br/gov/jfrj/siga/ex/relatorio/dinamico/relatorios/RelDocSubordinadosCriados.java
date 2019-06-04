@@ -90,7 +90,7 @@ public class RelDocSubordinadosCriados extends RelatorioTemplate {
 
 	}
 	
-	public Collection processarDados() throws Exception {
+	public Collection<String> processarDados() throws Exception {
 
 		// Obtém uma formaDoc a partir da sigla passada e monta trecho da query
 		// para a forma
@@ -269,7 +269,7 @@ public class RelDocSubordinadosCriados extends RelatorioTemplate {
 		return null;
 	}
 
-	public Collection processarDadosAnterior() throws Exception {
+	public Collection<String> processarDadosAnterior() throws Exception {
 
 		// Obtém uma formaDoc a partir da sigla passada e monta trecho da query
 		// para a forma

@@ -21,8 +21,8 @@ import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.interceptor.download.Download;
 import br.com.caelum.vraptor.interceptor.download.InputStreamDownload;
 import br.com.caelum.vraptor.interceptor.multipart.UploadedFile;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Texto;
@@ -54,7 +54,7 @@ public class DpLotacaoController extends SigaSelecionavelControllerSupport<DpLot
 		setItemPagina(10);
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get
 	@Post
 	@Path({"/app/lotacao/buscar", "/lotacao/buscar.action"})
@@ -116,7 +116,7 @@ public class DpLotacaoController extends SigaSelecionavelControllerSupport<DpLot
 		return null;
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get 
 	@Post
 	@Path({"/public/app/lotacao/selecionar","app/lotacao/selecionar","/lotacao/selecionar.action"})
@@ -151,7 +151,7 @@ public class DpLotacaoController extends SigaSelecionavelControllerSupport<DpLot
 		return resultado;
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/lotacao/exibir")
 	public void exibi(String sigla) throws Exception {
 		StringBuilder sb = new StringBuilder();
@@ -179,7 +179,7 @@ public class DpLotacaoController extends SigaSelecionavelControllerSupport<DpLot
     	}
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/lotacao/listar")
 	public void lista(Integer offset, Long idOrgaoUsu, String nome) throws Exception {
 		
@@ -210,7 +210,7 @@ public class DpLotacaoController extends SigaSelecionavelControllerSupport<DpLot
 		result.include("currentPageNumber", calculaPaginaAtual(offset));
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("/app/lotacao/editar")
 	public void edita(final Long id){
 		if (id != null) {
@@ -245,7 +245,7 @@ public class DpLotacaoController extends SigaSelecionavelControllerSupport<DpLot
 		result.include("id",id);
 	}
 	
-	@OpenTransaction
+	@Transacional
 	@Post("/app/lotacao/gravar")
 	public void editarGravar(final Long id, 
 							 final String nmLotacao, 
@@ -349,7 +349,7 @@ public class DpLotacaoController extends SigaSelecionavelControllerSupport<DpLot
 		this.result.redirectTo(this).lista(0, null, "");
 	}
 	
-	@OpenTransaction
+	@Transacional
 	@Get("/app/lotacao/ativarInativar")
     public void ativarInativar(final Long id) throws Exception{
 
@@ -383,7 +383,7 @@ public class DpLotacaoController extends SigaSelecionavelControllerSupport<DpLot
         this.result.redirectTo(this).lista(0, null, "");
     }
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("/app/lotacao/carregarExcel")
 	public void carregarExcel() {
 		if("ZZ".equals(getTitular().getOrgaoUsuario().getSigla())) {
@@ -395,7 +395,7 @@ public class DpLotacaoController extends SigaSelecionavelControllerSupport<DpLot
 		result.use(Results.page()).forwardTo("/WEB-INF/page/dpLotacao/cargaLotacao.jsp");
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Post("/app/lotacao/carga")
 	public Download carga( final UploadedFile arquivo, Long idOrgaoUsu) throws Exception {
 		InputStream inputStream = null;

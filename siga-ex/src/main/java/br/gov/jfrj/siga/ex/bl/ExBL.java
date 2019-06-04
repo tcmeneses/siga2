@@ -5720,7 +5720,7 @@ public class ExBL extends CpBL {
 		if (forma != null)
 			modeloSetFinal = new ArrayList<ExModelo>(forma.getExModeloSet());
 		else
-			modeloSetFinal = (ArrayList) dao()
+			modeloSetFinal = (ArrayList<ExModelo>) dao()
 					.listarTodosModelosOrdenarPorNome(tipo, null);
 		if (criandoSubprocesso && mobPai != null) {
 			ExFormaDocumento especie = mobPai.doc().getExModelo().getExFormaDocumento();

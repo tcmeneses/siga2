@@ -21,8 +21,8 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.cp.CpConfiguracao;
@@ -63,7 +63,7 @@ public class ExConfiguracaoController extends ExController {
 		super(request, response, context, result, ExDao.getInstance(), so, em);
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/expediente/configuracao/listar")
 	public void lista() throws Exception {
 		assertAcesso(VERIFICADOR_ACESSO);
@@ -71,7 +71,7 @@ public class ExConfiguracaoController extends ExController {
 		result.include("orgaosUsu", getOrgaosUsu());
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/expediente/configuracao/editar")
 	public void edita(Long id, boolean campoFixo, Long idOrgaoUsu, Long idTpMov, Long idTpDoc, Long idMod,
 			Long idFormaDoc, Long idNivelAcesso, Long idSituacao, Long idTpConfiguracao, DpPessoaSelecao pessoaSel,
@@ -110,7 +110,7 @@ public class ExConfiguracaoController extends ExController {
 		result.include("configuracao", config);
 	}
 
-	@OpenTransaction
+	@Transacional
 	@Get("app/expediente/configuracao/excluir")
 	public void excluir(Long id, String nmTipoRetorno, Long idMod, Long idFormaDoc) throws Exception {
 		assertAcesso(VERIFICADOR_ACESSO);
@@ -129,7 +129,7 @@ public class ExConfiguracaoController extends ExController {
 		escreveFormRetornoExclusao(nmTipoRetorno, idMod, idFormaDoc);
 	}
 
-	@OpenTransaction
+	@Transacional
 	@Get("app/expediente/configuracao/editar_gravar")
 	public void editarGravar(Long id, Long idOrgaoUsu, Long idTpMov, Long idTpDoc, Long idTpFormaDoc, Long idMod,
 			Long idFormaDoc, Long idNivelAcesso, Long idSituacao, Long idTpConfiguracao, DpPessoaSelecao pessoaSel,
@@ -149,7 +149,7 @@ public class ExConfiguracaoController extends ExController {
 		escreveFormRetorno(nmTipoRetorno, campoFixo, configuracaoBuilder);
 	}
 
-	@OpenTransaction
+	@Transacional
 	@Post("app/expediente/configuracao/gerenciar_publicacao_boletim_gravar")
 	public void gerenciarPublicacaoBoletimGravar(Integer postback, String gerenciaPublicacao, Long idTpMov,
 			Long idTpConfiguracao, Long idFormaDoc, Long idMod, Integer tipoPublicador, Long idSituacao,
@@ -166,7 +166,7 @@ public class ExConfiguracaoController extends ExController {
 				getUrlEncodedParameters()));
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/expediente/configuracao/listar_cadastradas")
 	public void listaCadastradas(Long idTpConfiguracao, Long idOrgaoUsu, Long idTpMov, Long idFormaDoc, Long idMod,
 			String nmTipoRetorno, boolean campoFixo) throws Exception {
@@ -217,7 +217,7 @@ public class ExConfiguracaoController extends ExController {
 		this.getRequest().setAttribute("tpConfiguracao", config.getCpTipoConfiguracao());
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@SuppressWarnings("unchecked")
 	@Post("app/expediente/configuracao/gerenciar_publicacao_boletim")
 	@Get("app/expediente/configuracao/gerenciar_publicacao_boletim")

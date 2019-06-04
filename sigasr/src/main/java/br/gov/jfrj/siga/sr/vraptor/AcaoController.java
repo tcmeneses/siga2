@@ -14,6 +14,8 @@ import org.jfree.util.Log;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.Service;
 import br.gov.jfrj.siga.dp.dao.CpDao;
@@ -37,6 +39,7 @@ public class AcaoController extends SrController {
 	private static final String ACOES = "acoes";
 	private final static Logger log = Logger.getLogger(AcaoController.class);
 
+	@NaoTransacional
 	@AssertAcesso(ADM_ADMINISTRAR)
 	@Path("/listar")
 	public void listar(boolean mostrarDesativados) throws Exception {
@@ -47,11 +50,13 @@ public class AcaoController extends SrController {
 		result.include("mostrarDesativados", mostrarDesativados);
 	}
 
+	@NaoTransacional
 	@Path("/listarDesativados")
 	public void listarDesativados() throws Exception {
 		result.redirectTo(AcaoController.class).listar(Boolean.TRUE);
 	}
 
+	@NaoTransacional
 	@AssertAcesso(ADM_ADMINISTRAR)
 	@Path("/editar")
 	public void editar(Long id) throws Exception {
@@ -62,6 +67,7 @@ public class AcaoController extends SrController {
 		result.include(ACAO, acao);
 	}
 
+	@Transacional
 	@AssertAcesso(ADM_ADMINISTRAR)
 	@Path("/gravar")
 	public void gravar(SrAcao acao, TipoAcaoSelecao tipoAcaoSel) throws Exception {
@@ -83,6 +89,7 @@ public class AcaoController extends SrController {
 		result.use(Results.http()).body(acao.toJson());
 	}
 
+	@Transacional
 	@AssertAcesso(ADM_ADMINISTRAR)
 	@Path("/desativar")
 	public void desativar(Long id, boolean mostrarDesativados) throws Exception {
@@ -92,6 +99,7 @@ public class AcaoController extends SrController {
 		result.use(Results.http()).body(acao.toJson());
 	}
 
+	@Transacional
 	@AssertAcesso(ADM_ADMINISTRAR)
 	@Path("/reativar")
 	public void reativar(Long id, boolean mostrarDesativados) throws Exception {
@@ -101,6 +109,7 @@ public class AcaoController extends SrController {
 		result.use(Results.http()).body(acao.toJson());
 	}
 
+	@NaoTransacional
 	@Path("/selecionar")
 	public void selecionar(String sigla, SrSolicitacao sol)throws Exception {
 		SrAcao acao = new SrAcao().selecionar(sigla, sol != null ? sol.getAcoesDisponiveis() : null);
@@ -109,6 +118,7 @@ public class AcaoController extends SrController {
 			.ajaxRetorno(acao);
 	}
 
+	@NaoTransacional
 	@Path("/buscar")
 	public void buscar(String sigla, String nome, String siglaAcao, String tituloAcao, SrSolicitacao sol, String propriedade) {
 		List<SrAcao> items = null;

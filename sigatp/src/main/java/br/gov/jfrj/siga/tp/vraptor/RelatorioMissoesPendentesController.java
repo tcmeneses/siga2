@@ -11,7 +11,7 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
 import br.gov.jfrj.siga.model.ContextoPersistencia;
 import br.gov.jfrj.siga.tp.auth.AutorizacaoGI;
@@ -31,7 +31,7 @@ public class RelatorioMissoesPendentesController extends TpController {
         super(request, result, TpDao.getInstance(), validator, so, em);
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @SuppressWarnings("unchecked")
     @Path("/gerarRelatorio")
     public void gerarRelatorio() throws Exception {

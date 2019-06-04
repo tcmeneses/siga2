@@ -16,8 +16,8 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.interceptor.multipart.UploadedFile;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.validator.I18nMessage;
 import br.com.caelum.vraptor.validator.ValidationMessage;
 import br.com.caelum.vraptor.view.Results;
@@ -45,13 +45,13 @@ public class CondutorController extends TpController {
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
 	@Path("/listar")
 	public void listar() {
 		result.include("condutores", getCondutores());
 	}
 	
-    @NoOpenTransaction
+    @NaoTransacional
     @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -78,7 +78,7 @@ public class CondutorController extends TpController {
 		result.include(CONDUTOR, condutor);
 	}
 
-	@OpenTransaction
+	@Transacional
     @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -115,7 +115,7 @@ public class CondutorController extends TpController {
 		result.redirectTo(CondutorController.class).listar();
 	}
 
-	@OpenTransaction
+	@Transacional
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -147,7 +147,7 @@ public class CondutorController extends TpController {
 		}
 	}
 	
-    @NoOpenTransaction
+    @NaoTransacional
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -156,14 +156,14 @@ public class CondutorController extends TpController {
 		result.forwardTo(this).editar(0L);
 	}
 	
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/exibirDadosDpPessoa/{idPessoa}")
 	public void exibirDadosDpPessoa(Long idPessoa) throws Exception {
 		DpPessoa pessoa = DpPessoa.AR.findById(idPessoa);
 		result.include("pessoa", pessoa);
 	}
 	
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/exibirImagem/{id}")
 	public void exibirImagem(Long id) throws Exception {
 		Condutor condutor = Condutor.AR.findById(id);

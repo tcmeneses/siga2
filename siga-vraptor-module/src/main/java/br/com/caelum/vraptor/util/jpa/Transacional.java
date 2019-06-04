@@ -6,13 +6,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.text.Annotation;
 /**
- * Anotação criada para ser colocada antes de funcionalidades que não fazem oeprações de DML(INSERT, UPDATE OU DELETE)
+ * Anotação criada para ser colocada antes de funcionalidades que fazem operações de DML(INSERT, UPDATE OU DELETE)
  * tendo como objetivo não abrir transações
  * 
  * @author João Luis
  */
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface NoOpenTransaction {
+public @interface Transacional {
 
 }

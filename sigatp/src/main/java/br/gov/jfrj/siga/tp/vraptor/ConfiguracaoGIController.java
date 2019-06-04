@@ -11,8 +11,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.validator.I18nMessage;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.cp.CpComplexo;
@@ -43,7 +43,7 @@ public class ConfiguracaoGIController extends TpController {
         super(request, result, TpDao.getInstance(), validator, so, em);
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/pesquisar")
     public void pesquisar() throws ConfiguracaoGIControllerException {
         try {
@@ -53,7 +53,7 @@ public class ConfiguracaoGIController extends TpController {
         }
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/pesquisar/{idOrgaoUsu}")
     public void pesquisar(Long idOrgaoUsu) throws ConfiguracaoGIControllerException {
         pesquisarPorOrgaoUsuario(idOrgaoUsu);
@@ -94,7 +94,7 @@ public class ConfiguracaoGIController extends TpController {
         }
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/incluir/{idOrgaoUsu}")
     public void incluir(Long idOrgaoUsu) throws ConfiguracaoGIControllerException {
         CpConfiguracao cpConfiguracao = new CpConfiguracao();
@@ -110,7 +110,7 @@ public class ConfiguracaoGIController extends TpController {
         result.include(CP_CONFIGURACAO, cpConfiguracao);
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/editar/{id}")
     public void editar(Long id) throws ConfiguracaoGIControllerException {
         try {
@@ -157,7 +157,7 @@ public class ConfiguracaoGIController extends TpController {
         }
     }
 
-    @OpenTransaction
+    @Transacional
     @Path("/excluir/{id}")
     public void excluir(Long id) throws ConfiguracaoGIControllerException {
         try {
@@ -169,7 +169,7 @@ public class ConfiguracaoGIController extends TpController {
         }
     }
 
-    @OpenTransaction
+    @Transacional
     public void salvar(CpConfiguracao cpConfiguracao) throws ConfiguracaoGIControllerException {
         try {
             isValid(cpConfiguracao);

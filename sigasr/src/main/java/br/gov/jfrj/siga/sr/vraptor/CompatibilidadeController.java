@@ -7,6 +7,7 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.sr.model.SrSolicitacao;
@@ -23,6 +24,7 @@ public class CompatibilidadeController extends SrController {
         result.on(Exception.class).forwardTo(this).exception();
     }
     
+    @NaoTransacional
     @Get
     @Path("/exibir")
     public void exibir(Long id) throws Exception {

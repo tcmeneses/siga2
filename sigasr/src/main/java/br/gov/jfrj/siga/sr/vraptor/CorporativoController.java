@@ -30,6 +30,7 @@ import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.interceptor.download.ByteArrayDownload;
 import br.com.caelum.vraptor.interceptor.download.Download;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
 import br.gov.jfrj.siga.base.Contexto;
 import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.sr.model.DadosRH;
@@ -50,6 +51,7 @@ public class CorporativoController extends SrController {
 		super(request, result, dao, so, em, srValidator);
 	}
 
+	@NaoTransacional
 	@Get
 	@Path("public/app/corporativo/dadosrh")
 	public Download dadosrh() throws ParserConfigurationException, IOException {

@@ -12,7 +12,7 @@ import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
 import br.gov.jfrj.siga.tp.auth.AutorizacaoGI;
 import br.gov.jfrj.siga.tp.exceptions.ApplicationControllerException;
 import br.gov.jfrj.siga.tp.model.RequisicaoTransporte;
@@ -52,7 +52,7 @@ public class DocumentoController extends TpController {
     }
 	
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Get
     @Post
     @Path("/selecionar")
@@ -64,7 +64,7 @@ public class DocumentoController extends TpController {
         result.include("sel", sel);
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path({ "/exibir/{sigla}", "/exibir" })
     public void exibir(String sigla) throws ApplicationControllerException {
 

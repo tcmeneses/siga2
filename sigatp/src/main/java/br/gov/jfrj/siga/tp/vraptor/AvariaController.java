@@ -10,8 +10,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdmin;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdminFrota;
@@ -35,14 +35,14 @@ public class AvariaController extends TpController {
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
 	@Path("/listar")
 	public void listar() {
 		List<Avaria> avarias = Avaria.listarTodos();
 		result.include("avarias", avarias);
 	}
 	
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/listarPorVeiculo/{idVeiculo}")
 	public void listarPorVeiculo(Long idVeiculo) throws Exception {
 		montarListaDeAvariasPorVeiculo(idVeiculo);
@@ -55,7 +55,7 @@ public class AvariaController extends TpController {
 		MenuMontador.instance(result).recuperarMenuVeiculos(idVeiculo, ItemMenu.AVARIAS);
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
 	@RoleAdmin
 	@RoleAdminFrota
 	@Path("/incluir/{idVeiculo}")
@@ -63,7 +63,7 @@ public class AvariaController extends TpController {
 		result.forwardTo(this).editar(idVeiculo, null, false);
 	}
 	
-    @NoOpenTransaction
+    @NaoTransacional
     @RoleAdmin
 	@RoleAdminFrota
 	@Path("/incluir")
@@ -71,7 +71,7 @@ public class AvariaController extends TpController {
 		result.forwardTo(this).editar(null, null, false);
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
     @RoleAdmin
 	@RoleAdminFrota
 	@Path("/editar/{idVeiculo}/{id}/{fixarVeiculo}")
@@ -103,7 +103,7 @@ public class AvariaController extends TpController {
 		result.include("veiculos", veiculos);
 	}
 
-	@OpenTransaction
+	@Transacional
     @RoleAdmin
 	@RoleAdminFrota
 	@Path("/salvar")
@@ -158,7 +158,7 @@ public class AvariaController extends TpController {
 			result.include(MODO, LABEL_EDITAR);
 	}
 
-	@OpenTransaction
+	@Transacional
 	@RoleAdmin
 	@RoleAdminFrota
 	@Path("/excluir/{id}/{fixarVeiculo}")

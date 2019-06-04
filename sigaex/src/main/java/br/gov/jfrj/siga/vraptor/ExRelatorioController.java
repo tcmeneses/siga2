@@ -53,7 +53,7 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.interceptor.download.Download;
 import br.com.caelum.vraptor.interceptor.download.InputStreamDownload;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.cp.model.DpLotacaoSelecao;
 import br.gov.jfrj.siga.dp.DpLotacao;
@@ -94,7 +94,7 @@ public class ExRelatorioController extends ExController {
 		super(request, response, context, result, CpDao.getInstance(), so, em);
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/expediente/rel/relRelatorios")
 	public void aRelRelatorios(final String nomeArquivoRel) {
 		final DpLotacaoSelecao lotacaoDestinatarioSel = new DpLotacaoSelecao();
@@ -309,7 +309,7 @@ public class ExRelatorioController extends ExController {
 		return new ByteArrayInputStream(JasperExportManager.exportReportToPdf(relGerado));
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/expediente/rel/emiteRelModelos")
 	public Download aRelModelos() throws Exception {
 		final RelatorioModelos rm = new RelatorioModelos(null);
@@ -318,7 +318,7 @@ public class ExRelatorioController extends ExController {
 		return new InputStreamDownload(inputStream, APPLICATION_PDF, "emiteRelDocumentosSubordinados");
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/expediente/rel/emiteRelDocumentosSubordinados")
 	public Download aRelDocumentosSubordinados() throws Exception {
 		assertAcesso(ACESSO_SUBORD);
@@ -343,7 +343,7 @@ public class ExRelatorioController extends ExController {
 		return new InputStreamDownload(inputStream, APPLICATION_PDF, "emiteRelDocumentosSubordinados");
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/expediente/rel/emiteRelMovDocsSubordinados")
 	public Download aRelMovDocumentosSubordinados() throws Exception {
 		assertAcesso(ACESSO_MVSUB);
@@ -368,7 +368,7 @@ public class ExRelatorioController extends ExController {
 		return new InputStreamDownload(inputStream, APPLICATION_PDF, "emiteRelMovDocsSubordinados");
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/expediente/rel/emiteRelDocsSubCriados")
 	public Download aRelDocsSubCriados() throws Exception {
 		assertAcesso(ACESSO_CRSUB);
@@ -404,7 +404,7 @@ public class ExRelatorioController extends ExController {
 		return resultado;
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/expediente/rel/emiteRelDocEntreDatas")
 	public Download aRelDocEntreDatas() throws Exception {
 		assertAcesso(ACESSO_DATAS);
@@ -435,7 +435,7 @@ public class ExRelatorioController extends ExController {
 		return new InputStreamDownload(inputStream, APPLICATION_PDF, "emiteRelDocEntreDatas");
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/expediente/rel/emiteRelMovimentacao")
 	public Download aRelMovimentacao() throws Exception {
 		assertAcesso(ACESSO_DATAS);
@@ -467,7 +467,7 @@ public class ExRelatorioController extends ExController {
 		return new InputStreamDownload(inputStream, APPLICATION_PDF, "emiteRelMovimentacao");
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/expediente/rel/emiteRelMovCad")
 	public Download aRelMovCad() throws Exception {
 		assertAcesso(ACESSO_MOVCAD);
@@ -499,7 +499,7 @@ public class ExRelatorioController extends ExController {
 		return new InputStreamDownload(inputStream, APPLICATION_PDF, "emiteRelMovCad");
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/expediente/rel/emiteRelOrgao")
 	public Download aRelOrgao() throws Exception {
 		assertAcesso(ACESSO_DATAS);
@@ -533,7 +533,7 @@ public class ExRelatorioController extends ExController {
 		return new InputStreamDownload(inputStream, APPLICATION_PDF, "emiteRelOrgao");
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/expediente/rel/emiteRelTipoDoc")
 	public Download aRelTipoDoc() throws Exception {
 		assertAcesso(ACESSO_DATAS);
@@ -564,7 +564,7 @@ public class ExRelatorioController extends ExController {
 		return new InputStreamDownload(inputStream, APPLICATION_PDF, "emiteRelTipoDoc");
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/expediente/rel/emiteRelMovProcesso")
 	public Download aRelMovProcesso() throws Exception {
 		assertAcesso(ACESSO_RELMVP);
@@ -593,7 +593,7 @@ public class ExRelatorioController extends ExController {
 		return new InputStreamDownload(inputStream, APPLICATION_PDF, "emiteRelMovProcesso");
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/expediente/rel/aRelClassificacao")
 	public Download aRelClassificacao() throws Exception {
 		assertAcesso(ACESSO_CLSD);
@@ -609,7 +609,7 @@ public class ExRelatorioController extends ExController {
 		return new InputStreamDownload(inputStream, APPLICATION_PDF, "aRelClassificacao");
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/expediente/rel/emiteRelClassDocDocumentos")
 	public Download aRelClassDocDocumentos() throws Exception {
 		assertAcesso(ACESSO_CLSD_DOCS);

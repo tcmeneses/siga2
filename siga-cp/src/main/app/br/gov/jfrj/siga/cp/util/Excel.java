@@ -132,10 +132,10 @@ public class Excel {
 			Iterator<Row> rowIterator = mySheet.iterator(); 
 			String celula;
 			Integer linha = 0;
-			List<CpLocalidade> localidades = new ArrayList();
-			List<String> nomes = new ArrayList();
-			List<String> siglas = new ArrayList();
-			List<DpLotacao> lista = new ArrayList(); 
+			List<CpLocalidade> localidades = new ArrayList<CpLocalidade>();
+			List<String> nomes = new ArrayList<String>();
+			List<String> siglas = new ArrayList<String>();
+			List<DpLotacao> lista = new ArrayList<DpLotacao>(); 
 			CpLocalidade loc = new CpLocalidade();
 			Date data = new Date(System.currentTimeMillis());
 			
@@ -264,8 +264,8 @@ public class Excel {
 			Iterator<Row> rowIterator = mySheet.iterator(); 
 			String celula;
 			Integer linha = 0;
-			List<String> nomes = new ArrayList();
-			List<DpFuncaoConfianca> lista = new ArrayList(); 
+			List<String> nomes = new ArrayList<String>();
+			List<DpFuncaoConfianca> lista = new ArrayList<DpFuncaoConfianca>(); 
 			Date data = new Date(System.currentTimeMillis());
 			
 			while (rowIterator.hasNext()) {
@@ -363,8 +363,8 @@ public class Excel {
 			Iterator<Row> rowIterator = mySheet.iterator(); 
 			String celula;
 			Integer linha = 0;
-			List<String> nomes = new ArrayList();
-			List<DpCargo> lista = new ArrayList(); 
+			List<String> nomes = new ArrayList<String>();
+			List<DpCargo> lista = new ArrayList<DpCargo>(); 
 			Date data = new Date(System.currentTimeMillis());
 			
 			while (rowIterator.hasNext()) {
@@ -464,7 +464,7 @@ public class Excel {
 			String celula;
 			Integer linha = 0;
 //			List<String> nomes = new ArrayList();
-			List<DpPessoa> lista = new ArrayList(); 
+			List<DpPessoa> lista = new ArrayList<DpPessoa>(); 
 			Date data = new Date(System.currentTimeMillis());
 			DpCargo cargo = new DpCargo();
 			List<DpCargo> listaCargo = new ArrayList<DpCargo>();

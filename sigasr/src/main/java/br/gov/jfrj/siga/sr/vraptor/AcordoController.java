@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.cp.CpComplexo;
@@ -43,7 +45,8 @@ public class AcordoController extends SrController {
         result.on(Exception.class).forwardTo(this).exception();
     }
 
-    @AssertAcesso(ADM_ADMINISTRAR)
+    @NaoTransacional
+	@AssertAcesso(ADM_ADMINISTRAR)
     @SuppressWarnings("unchecked")
     @Path("/listar")
     public void listar(boolean mostrarDesativados) throws Exception {
@@ -69,6 +72,7 @@ public class AcordoController extends SrController {
         PessoaLotaFuncCargoSelecaoHelper.adicionarCamposSelecao(result);
     }
 
+    @Transacional
     @AssertAcesso(ADM_ADMINISTRAR)
     @Path("/gravar")
     public void gravarAcordo(SrAcordo acordo) throws Exception {
@@ -76,10 +80,12 @@ public class AcordoController extends SrController {
         result.use(Results.http()).body(acordo.toJson());
     }
 
-    private boolean isNotEmptyUnidadeMedida(List<Integer> unidadeMedida) {
+    @SuppressWarnings("unused")
+	private boolean isNotEmptyUnidadeMedida(List<Integer> unidadeMedida) {
         return unidadeMedida != null && !unidadeMedida.isEmpty();
     }
 
+    @Transacional
     @AssertAcesso(ADM_ADMINISTRAR)
     @Path("/desativar")
     public void desativar(Long id) throws Exception {
@@ -89,6 +95,7 @@ public class AcordoController extends SrController {
         result.use(Results.http()).body(acordo.toJson());
     }
 
+    @Transacional
     @AssertAcesso(ADM_ADMINISTRAR)
     @Path("/reativar")
     public void reativar(Long id) throws Exception {
@@ -98,6 +105,7 @@ public class AcordoController extends SrController {
         result.use(Results.http()).body(acordo.toJson());
     }
 
+    @NaoTransacional
     @Path("/abrangencias")
     public void buscarAbrangenciasAcordo(Long id, boolean exibirInativos) throws Exception {
         SrAcordo acordo = new SrAcordo();
@@ -109,17 +117,8 @@ public class AcordoController extends SrController {
         result.use(Results.http()).body(SrConfiguracao.convertToJSon(abrangencias));
     }
 
-    @AssertAcesso(ADM_ADMINISTRAR)
-    public void gravarAbrangencia(SrConfiguracao associacao, List<SrItemConfiguracao> itemConfiguracaoSet, List<SrAcao> acoesSet) throws Exception {
-        associacao.setItemConfiguracaoSet(itemConfiguracaoSet);
-        associacao.setAcoesSet(acoesSet);
-
-        associacao.salvarComoAbrangenciaAcordo();
-
-        result.use(Results.http()).body(associacao.toJson());
-    }
-
-    @AssertAcesso(ADM_ADMINISTRAR)
+    @Transacional
+	@AssertAcesso(ADM_ADMINISTRAR)
     @Path("/desativarAbrangenciaEdicao")
     public void desativarAbrangenciaEdicao(Long idAcordo, Long idAssociacao) throws Exception {
         SrConfiguracao abrangencia = SrConfiguracao.AR.findById(idAssociacao);
@@ -127,7 +126,8 @@ public class AcordoController extends SrController {
         result.use(Results.http()).body(abrangencia.toJson());
     }
 
-    @AssertAcesso(ADM_ADMINISTRAR)
+    @NaoTransacional
+	@AssertAcesso(ADM_ADMINISTRAR)
     @SuppressWarnings("unchecked")
     @Path("/buscar")
     public void buscar(boolean mostrarDesativados, String nome, boolean popup, String propriedade) throws Exception {

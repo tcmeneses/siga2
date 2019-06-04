@@ -29,8 +29,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.cp.CpTipoGrupo;
@@ -56,7 +56,7 @@ public class GrupoDeEmailController extends GrupoController {
 		return CpTipoGrupo.TIPO_GRUPO_GRUPO_DE_DISTRIBUICAO;
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/gi/grupoDeEmail/editar")
 	public void edita(Long idCpGrupo) throws Exception {
 		CpConfiguracaoBL conf = Cp.getInstance().getConf();
@@ -93,7 +93,7 @@ public class GrupoDeEmailController extends GrupoController {
 		}
 	}
 
-	@OpenTransaction
+	@Transacional
 	@Post("app/gi/grupoDeEmail/excluir")
 	public void excluir(Long idCpGrupo) throws Exception {
 		assertAcesso("GDISTR:Gerenciar grupos de distribuição;EXC:Excluir");
@@ -101,7 +101,7 @@ public class GrupoDeEmailController extends GrupoController {
 		result.redirectTo(this).lista();
 	}
 
-	@OpenTransaction
+	@Transacional
 	@SuppressWarnings("unchecked")
 	@Post("app/gi/grupoDeEmail/gravar")
 	public void gravar(Long idCpGrupo, String siglaGrupo, String dscGrupo,
@@ -140,7 +140,7 @@ public class GrupoDeEmailController extends GrupoController {
 		}
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/gi/grupoDeEmail/listar")
 	public void lista() throws Exception {
 		CpConfiguracaoBL conf = Cp.getInstance().getConf();
@@ -165,7 +165,7 @@ public class GrupoDeEmailController extends GrupoController {
 
 	}
 
-	@OpenTransaction
+	@Transacional
 	@Get("app/gi/grupoDeEmail/excluirGestorGrupo")
 	public void excluirGestorGrupo(Long idCpGrupo, Long idConfGestor)
 			throws Exception {
@@ -186,7 +186,7 @@ public class GrupoDeEmailController extends GrupoController {
 		result.redirectTo("editar?idCpGrupo=" + idCpGrupo);
 	}
 
-	@OpenTransaction
+	@Transacional
 	@Post("app/gi/grupoDeEmail/gravarGestorGrupo")
 	public void gravarGestorGrupo(Long idCpGrupo,
 			DpLotacaoSelecao lotacaoGestoraSel) throws Exception {
@@ -208,7 +208,7 @@ public class GrupoDeEmailController extends GrupoController {
 		result.redirectTo("editar?idCpGrupo=" + idCpGrupo);
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/gi/grupoDeEmail/selecionar")
 	public void selecionar(String sigla) throws Exception {
 		String fileRedirect = "/WEB-INF/jsp/" + super.aSelecionar(sigla) + ".jsp";
@@ -217,7 +217,7 @@ public class GrupoDeEmailController extends GrupoController {
 		result.use(Results.page()).forwardTo(fileRedirect);	
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get
 	@Post
 	@Path("app/gi/grupoDeEmail/buscar")

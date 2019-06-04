@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.sr.annotation.AssertAcesso;
 import br.gov.jfrj.siga.sr.dao.SrDao;
@@ -26,6 +28,7 @@ public class TipoAcaoController extends SrController {
 		super(request, result, SrDao.getInstance(), so, em, srValidator);
 	}
 
+	@NaoTransacional
 	@AssertAcesso(ADM_ADMINISTRAR)
 	@Path("/listar")
 	public void listar(boolean mostrarDesativados) throws Exception {
@@ -35,6 +38,7 @@ public class TipoAcaoController extends SrController {
 		result.include("mostrarDesativados", mostrarDesativados);
 	}
 
+	@NaoTransacional
 	@AssertAcesso(ADM_ADMINISTRAR)
 	@Path("/editar")
 	public void editar(Long id) throws Exception {
@@ -45,6 +49,7 @@ public class TipoAcaoController extends SrController {
 		result.include("tipoAcao", tipoAcao);
 	}
 
+	@Transacional
 	@AssertAcesso(ADM_ADMINISTRAR)
 	@Path("/gravar")
 	public void gravar(SrTipoAcao tipoAcao) throws Exception {
@@ -55,6 +60,7 @@ public class TipoAcaoController extends SrController {
 		result.use(Results.http()).body(tipoAcao.toJson());
 	}
 
+	@Transacional
 	@AssertAcesso(ADM_ADMINISTRAR)
 	@Path("/desativar")
 	public void desativar(Long id, boolean mostrarDesativados) throws Exception {
@@ -64,6 +70,7 @@ public class TipoAcaoController extends SrController {
 		result.use(Results.http()).body(tipoAcao.toJson());
 	}
 
+	@Transacional
 	@AssertAcesso(ADM_ADMINISTRAR)
 	@Path("/reativar")
 	public void reativar(Long id, boolean mostrarDesativados) throws Exception {
@@ -73,6 +80,7 @@ public class TipoAcaoController extends SrController {
 		result.use(Results.http()).body(tipoAcao.toJson());
 	}
 
+	@NaoTransacional
 	@Path("/selecionar")
 	public void selecionar(String sigla) throws Exception {
 		SrTipoAcao tipoAcao = new SrTipoAcao().selecionar(sigla);
@@ -81,6 +89,7 @@ public class TipoAcaoController extends SrController {
 			.ajaxRetorno(tipoAcao);
 	}
 
+	@NaoTransacional
 	@Path("/buscar")
 	public void buscar(String sigla, String nome, String siglaTipoAcao, String tituloTipoAcao, String propriedade) {	
 

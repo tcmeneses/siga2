@@ -10,8 +10,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdmin;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdminFrota;
@@ -33,14 +33,14 @@ public class PenalidadeController extends TpController {
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/listar")
 	public void listar() {
    		List<Penalidade> penalidades = Penalidade.listarTodos();
    		result.include("penalidades", penalidades);
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @RoleAdmin
     @RoleAdminFrota
 	@Path("/editar/{id}")
@@ -49,7 +49,7 @@ public class PenalidadeController extends TpController {
 		result.include(PENALIDADE_STR, penalidade);
 	}
 
-    @OpenTransaction
+    @Transacional
     @RoleAdmin
     @RoleAdminFrota
 	@Path("/excluir/{id}")
@@ -60,7 +60,7 @@ public class PenalidadeController extends TpController {
 		result.redirectTo(this).listar();
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
     @RoleAdmin
     @RoleAdminFrota
 	@Path("/incluir")
@@ -70,7 +70,7 @@ public class PenalidadeController extends TpController {
      	result.include(PENALIDADE_STR,penalidade);
 	}
 
-    @OpenTransaction
+    @Transacional
     @RoleAdmin
     @RoleAdminFrota
 	@Path("/salvar")
@@ -90,7 +90,7 @@ public class PenalidadeController extends TpController {
     }
 
 	/* Metodo AJAX */
-    @NoOpenTransaction
+    @NaoTransacional
     @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -104,7 +104,7 @@ public class PenalidadeController extends TpController {
 
 
 	/* Metodo AJAX */
-    @NoOpenTransaction
+    @NaoTransacional
     @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo

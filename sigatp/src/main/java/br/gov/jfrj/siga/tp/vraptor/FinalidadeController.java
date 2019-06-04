@@ -11,8 +11,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdmin;
@@ -34,7 +34,7 @@ public class FinalidadeController extends TpController {
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
 	@Path("/listar")
 	public void listar(String mensagem) {
     	MenuMontador.instance(result).recuperarMenuFinalidades(true);
@@ -48,7 +48,7 @@ public class FinalidadeController extends TpController {
 		result.redirectTo(this).listar(null);
 	}
 	
-    @NoOpenTransaction
+    @NaoTransacional
 	@Path("/listarTodas")
 	public void listarTodas() {
     	MenuMontador.instance(result).recuperarMenuFinalidades(false);
@@ -57,7 +57,7 @@ public class FinalidadeController extends TpController {
     	result.include("finalidades", finalidades);
     }
 	
-    @NoOpenTransaction
+    @NaoTransacional
     @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -66,7 +66,7 @@ public class FinalidadeController extends TpController {
 		result.forwardTo(this).editar(null);
 	}
 	
-    @NoOpenTransaction
+    @NaoTransacional
     @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -83,7 +83,7 @@ public class FinalidadeController extends TpController {
     	result.include("finalidade", finalidade);
     }
 	
-	@OpenTransaction
+	@Transacional
     @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -118,7 +118,7 @@ public class FinalidadeController extends TpController {
 		return null != finalidade.getId() && finalidade.getId() > 0;
 	}
 	
-	@OpenTransaction
+	@Transacional
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo

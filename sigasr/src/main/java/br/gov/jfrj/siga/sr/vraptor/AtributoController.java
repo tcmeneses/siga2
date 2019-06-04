@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.cp.CpComplexo;
@@ -43,6 +45,7 @@ public class AtributoController extends SrController {
 		result.on(Exception.class).forwardTo(this).exception();
 	}
 
+	@NaoTransacional
 	@SuppressWarnings("unchecked")
 	@Path("/listar")
 	@AssertAcesso(ADM_ADMINISTRAR)
@@ -66,6 +69,7 @@ public class AtributoController extends SrController {
 		result.include("acao", new SelecionavelVO(null,null));
 	}
 
+	@Transacional
 	@Path("/gravar")
 	@AssertAcesso(ADM_ADMINISTRAR)
 	public void gravarAtributo(SrAtributo atributo) throws Exception {
@@ -75,6 +79,7 @@ public class AtributoController extends SrController {
 		}
 	}
 
+	@Transacional
 	@Path("/desativar")
 	@AssertAcesso(ADM_ADMINISTRAR)
 	public void desativarAtributo(Long id) throws Exception {
@@ -83,6 +88,7 @@ public class AtributoController extends SrController {
 		result.use(Results.http()).body(item.toJson());
 	}
 
+	@Transacional
 	@Path("/reativar")
 	@AssertAcesso(ADM_ADMINISTRAR)
 	public void reativarAtributo(Long id) throws Exception {
@@ -91,6 +97,7 @@ public class AtributoController extends SrController {
 		result.use(Results.http()).body(item.toJson(false));
 	}
 
+	@NaoTransacional
 	@Path("/associacoes")
 	public void buscarAssociacaoAtributo(Long idAtributo) throws Exception {
 		SrAtributo attr = SrAtributo.AR.findById(idAtributo);
@@ -102,6 +109,7 @@ public class AtributoController extends SrController {
 		result.use(Results.http()).body(ret);
 	}
 
+	@NaoTransacional
 	@Path("/atributos")
 	@AssertAcesso(ADM_ADMINISTRAR)
     public void listarAssociacaoAtributo(Long idAtributo, boolean exibirInativos) throws Exception {
@@ -125,6 +133,7 @@ public class AtributoController extends SrController {
 		return true;
 	}
 	
+	@NaoTransacional
 	@Path("/selecionar")
 	public void selecionar(String sigla)throws Exception {
 		SrAtributo atributo = new SrAtributo().selecionar(sigla);
@@ -133,6 +142,7 @@ public class AtributoController extends SrController {
 			.ajaxRetorno(atributo);
 	}
 
+	@NaoTransacional
 	@Path("/buscar")
 	public void buscar(String sigla, String nomeAtributo, String propriedade) {
 		List<SrAtributo> atributos = null;

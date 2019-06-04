@@ -11,8 +11,8 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.core.Localization;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdmin;
@@ -36,7 +36,7 @@ public class AutoDeInfracaoController extends TpController{
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
 	@Path("/listarPorVeiculo/{idVeiculo}")
 	public void listarPorVeiculo(Long idVeiculo) throws Exception {
 		Veiculo veiculo = Veiculo.AR.findById(idVeiculo);
@@ -49,7 +49,7 @@ public class AutoDeInfracaoController extends TpController{
 		result.include("veiculo", veiculo);
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/listarPorCondutor/{idCondutor}")
 	public void listarPorCondutor(Long idCondutor) throws Exception {
 		Condutor condutor = Condutor.AR.findById(idCondutor);
@@ -61,14 +61,14 @@ public class AutoDeInfracaoController extends TpController{
 		result.include("condutor", condutor);
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/listar")
 	public void listar() {
 		List<AutoDeInfracao> autosDeInfracao = AutoDeInfracao.listarOrdenado();
 		result.include("autosDeInfracao", autosDeInfracao);
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
     @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -77,7 +77,7 @@ public class AutoDeInfracaoController extends TpController{
 		result.forwardTo(this).editar(0L, notificacao);
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
     @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -99,7 +99,7 @@ public class AutoDeInfracaoController extends TpController{
 		result.include("tipoNotificacao", tipoNotificacao);
 	}
 
-	@OpenTransaction
+	@Transacional
     @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -127,7 +127,7 @@ public class AutoDeInfracaoController extends TpController{
 		}
 	}
 
-	@OpenTransaction
+	@Transacional
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo

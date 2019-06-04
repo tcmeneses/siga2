@@ -260,7 +260,7 @@ public class AgendamentoController extends PpController {
     public void salaLista(String frm_cod_local, String frm_data_ag){
 		String local = "";
 		String lotacaoSessao = getCadastrante().getLotacao().getSiglaCompleta();
-		List<Locais> listSalas = new ArrayList();
+		List<Locais> listSalas = new ArrayList<Locais>();
 		// pega usuario do sistema
 		String matriculaSessao = getCadastrante().getMatricula().toString();
 		String sesb_pessoaSessao = getCadastrante().getSesbPessoa().toString();
@@ -268,7 +268,7 @@ public class AgendamentoController extends PpController {
 		if (objUsuario != null) {
 			// Pega o usuario do sistema, e, filtra os locais(salas) daquele forum onde ele esta.
 			listSalas = ((List) Locais.AR.find("forumFk='" + objUsuario.getForumFk().getCod_forum() + "' order by ordem_apresentacao ").fetch()); // isso nÃ£o dÃ¡ erro no caso de retorno vazio.
-			List<Agendamentos> listAgendamentosMeusSala = new ArrayList();
+			List<Agendamentos> listAgendamentosMeusSala = new ArrayList<Agendamentos>();
 			if(!(frm_cod_local==null||frm_data_ag.isEmpty())){
 				//lista os agendamentos do dia, e, da lotacao do cadastrante
 				listAgendamentosMeusSala = ((List) Agendamentos.AR.find("localFk.cod_local='" + frm_cod_local + "' and data_ag = to_date('" + frm_data_ag + "','yy-mm-dd') order by hora_ag").fetch());
@@ -686,8 +686,8 @@ public class AgendamentoController extends PpController {
 
     @Path("/calendarioVetor")
     public void calendarioVetor(String frm_cod_local) {
-        List listDatasLotadas = new ArrayList();
-        List listDatasDoMes = new ArrayList();
+        List<String> listDatasLotadas = new ArrayList<String>();
+        List<String> listDatasDoMes = new ArrayList<String>();
         SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         Date parametro = new Date();
         Date dt = new Date();
@@ -711,7 +711,7 @@ public class AgendamentoController extends PpController {
                 String dia_ag_prox;
                 int i = 0;
                 // conta os agendamentos de cada dia, do local que veio do form
-                for (Iterator it = listDatasDoMes.iterator(); it.hasNext();) {
+                for (Iterator<String> it = listDatasDoMes.iterator(); it.hasNext();) {
                     dia_ag_prox = (String) it.next(); // pegou o proximo
                     if (i == 0) {
                         dia_ag_ant = dia_ag_prox;

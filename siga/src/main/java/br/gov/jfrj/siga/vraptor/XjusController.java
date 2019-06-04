@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
 import br.com.caelum.vraptor.view.HttpResult;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.SigaHTTP;
@@ -28,14 +28,14 @@ public class XjusController extends SigaController {
 		super(request, result, dao, so, em);
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/xjus")
 	public void pesquisa(String q) throws Exception {
 		result.include("q", q);
 		result.include("xjusUrl", Cp.getInstance().getProp().xjusUrl());
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/xjus/query")
 	public void buscarNoXjus() throws Exception {
 		final SigaHTTP http = new SigaHTTP();

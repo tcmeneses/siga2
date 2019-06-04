@@ -125,7 +125,7 @@ public class RelConsultaDocEntreDatas extends RelatorioTemplate {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Collection processarDados() throws Exception {
+	public Collection<String> processarDados() throws Exception {
 		List<String> dados = new ArrayList<String>();
 		
 		try {
@@ -151,7 +151,7 @@ public class RelConsultaDocEntreDatas extends RelatorioTemplate {
 		return dados;
 	}
 
-	public Collection processarDadosLento() throws Exception {
+	public Collection<String> processarDadosLento() throws Exception {
 		List<String> dados = new ArrayList<String>();
 		// HibernateUtil.configurarHibernate("/br/gov/jfrj/siga/hibernate/hibernate.cfg.xml");
 

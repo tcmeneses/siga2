@@ -12,8 +12,8 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Texto;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
@@ -37,7 +37,7 @@ public class OrgaoUsuarioController extends SigaSelecionavelControllerSupport<Cp
 		return flt;
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/orgaoUsuario/listar")
 	public void lista(Integer offset, String nome) throws Exception {
 		if(offset == null) {
@@ -56,7 +56,7 @@ public class OrgaoUsuarioController extends SigaSelecionavelControllerSupport<Cp
 		result.include("currentPageNumber", calculaPaginaAtual(offset));
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("/app/orgaoUsuario/editar")
 	public void edita(final Long id){
 		if (id != null) {
@@ -74,7 +74,7 @@ public class OrgaoUsuarioController extends SigaSelecionavelControllerSupport<Cp
 		result.include("id",id);
 	}
 	
-	@OpenTransaction
+	@Transacional
 	@Post("/app/orgaoUsuario/gravar")
 	public void editarGravar(final Long id, 
 							 final String nmOrgaoUsuario,

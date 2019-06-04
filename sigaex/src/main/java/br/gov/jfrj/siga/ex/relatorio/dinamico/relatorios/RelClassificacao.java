@@ -47,7 +47,7 @@ public class RelClassificacao extends RelatorioTemplate {
 	}
 
 	@Override
-	public Collection processarDados() throws Exception {
+	public Collection<String> processarDados() throws Exception {
 		MascaraUtil m = MascaraUtil.getInstance();
 		List<String> dados = new ArrayList<String>();
 		List<ExClassificacao> listaClass;

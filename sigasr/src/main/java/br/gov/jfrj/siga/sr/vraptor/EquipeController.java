@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.cp.CpComplexo;
@@ -40,6 +42,7 @@ public class EquipeController extends SrController {
 		result.on(Exception.class).forwardTo(this).exception();
 	}
 
+	@NaoTransacional
 	@Path("/listar")
 	@AssertAcesso(SrSigaPermissaoPerfil.ADM_ADMINISTRAR)
 	public void listar(boolean mostrarDesativados) {
@@ -71,6 +74,7 @@ public class EquipeController extends SrController {
 		result.include("acao", new SelecionavelVO(null,null));
 	}
 
+	@Transacional
 	@Path("/gravar")
 	@AssertAcesso(SrSigaPermissaoPerfil.ADM_ADMINISTRAR)
 	public void gravarEquipe(SrEquipe equipe, List<SrExcecaoHorario> excecaoHorarioSet, DpLotacaoSelecao lotacaoEquipeSel) throws Exception {
@@ -86,6 +90,7 @@ public class EquipeController extends SrController {
 		result.use(Results.http()).body(equipe.toJson());
 	}
 
+	@NaoTransacional
 	@Path("/{id}/designacoes")
 	public void buscarDesignacoesEquipe(Long id) throws Exception {
 		List<SrConfiguracao> designacoes;

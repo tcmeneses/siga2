@@ -30,8 +30,8 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.cp.CpModelo;
@@ -59,14 +59,14 @@ public class ModeloController extends SigaController {
 		return dao().consultarPorIdInicialCpModelo(daoMod(id).getIdInicial());
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("/app/modelo/listar")
 	public void lista() throws Exception {
 		assertAcesso("FE:Ferramentas;MODVER:Visualizar modelos");
 		result.include("itens", dao().consultaCpModelos());
 	}
 
-	@OpenTransaction
+	@Transacional
 	@Post("/app/modelo/gravar")
 	public void gravar(Integer id, String conteudo) throws Exception {
 		assertAcesso("FE:Ferramentas;MODEDITAR:Editar modelos");
@@ -93,7 +93,7 @@ public class ModeloController extends SigaController {
 		result.redirectTo(this).lista();
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Post("/public/app/modelo/indentar")
 	public void indentar(String conteudo) throws Exception {
 		String r = FreemarkerIndent.indent(conteudo);

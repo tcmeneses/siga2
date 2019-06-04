@@ -16,8 +16,8 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Data;
@@ -109,7 +109,7 @@ public class SubstituicaoController extends SigaController {
 		return substVigentes;
 	}
 		
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("/app/substituicao/listar")
 	public void lista() throws Exception {
 		String substituicao = "false";
@@ -125,7 +125,7 @@ public class SubstituicaoController extends SigaController {
 		result.include("itens", buscarSubstitutos(substituicao, getCadastrante(), getCadastrante().getLotacao()));
 	}	
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("/app/substituicao/editar")
 	public void edita(Long id) throws Exception {
 		String buscarFechadas = "buscarFechadas="+podeCadastrarQualquerSubstituicao();
@@ -181,7 +181,7 @@ public class SubstituicaoController extends SigaController {
 		result.include("lotaSubstitutoSel", lotaSubstitutoSel);//tipoSubstituto=2
 	}
 	
-	@OpenTransaction
+	@Transacional
 	@Post("/app/substituicao/gravar")
 	public void gravar(DpSubstituicao substituicao
 					  ,Integer tipoTitular
@@ -297,7 +297,7 @@ public class SubstituicaoController extends SigaController {
 	}
 	
 
-	@OpenTransaction
+	@Transacional
 	@Get("/app/substituicao/finalizar")
 	public void finalizar() throws Exception {
 		try {
@@ -325,7 +325,7 @@ public class SubstituicaoController extends SigaController {
 		dao().gravar(per);
 	}
 
-	@OpenTransaction
+	@Transacional
 	@Get("/app/substituicao/substituirGravar")
 	public void substituirGravar(Long id) throws Exception {
 		try {
@@ -363,7 +363,7 @@ public class SubstituicaoController extends SigaController {
 			result.redirectTo(PrincipalController.class).principal(false);
 	}	
 	
-	@OpenTransaction
+	@Transacional
 	public void exclui(Long id) throws Exception {
 		
 		try{

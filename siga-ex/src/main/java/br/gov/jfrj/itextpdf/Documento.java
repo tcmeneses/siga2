@@ -728,7 +728,7 @@ public class Documento {
 		PdfReader reader;
 		int n;
 		int pageOffset = 0;
-		ArrayList master = new ArrayList();
+		ArrayList<HashMap<String, Object>> master = new ArrayList<HashMap<String, Object>>();
 		int f = 0;
 		Document document = null;
 		PdfCopy writer = null;
@@ -829,15 +829,15 @@ public class Documento {
 						// PdfOutline oline1 = new PdfOutline(root,
 						// PdfAction.gotoLocalPage("1", false),"Chapter 1");
 
-						HashMap map = new HashMap();
+						HashMap<String, Object> map = new HashMap<String, Object>();
 						map.put("Title", an.getNome());
 						map.put("Action", "GoTo");
 						map.put("Page", j + pageOffset + "");
-						map.put("Kids", new ArrayList());
+						map.put("Kids", new ArrayList<HashMap<String, Object>>());
 
-						ArrayList mapPai = master;
+						ArrayList<HashMap<String, Object>> mapPai = master;
 						for (int i = 0; i < an.getNivel() - nivelInicial; i++) {
-							mapPai = ((ArrayList) ((HashMap) mapPai.get(mapPai
+							mapPai = ((ArrayList<HashMap<String, Object>>) ((HashMap<String, Object>) mapPai.get(mapPai
 									.size() - 1)).get("Kids"));
 						}
 						mapPai.add(map);

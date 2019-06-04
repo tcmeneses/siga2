@@ -9,7 +9,7 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
 import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
 
@@ -25,19 +25,19 @@ public class AgendaController extends TpController {
 
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/listar")
     public void listar() {
         result.redirectTo(this).emDesenvolvimento();
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/listarPorCondutor/{idCondutor}")
     public void listarPorCondutor(Long idCondutor) throws ParseException {
         result.forwardTo(RelatorioController.class).listarAgendaPorCondutor(idCondutor, RelatorioController.getToday());
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/listarPorVeiculo/{idVeiculo}")
     public void listarPorVeiculo(Long idVeiculo) throws ParseException {
         result.forwardTo(RelatorioController.class).listarAgendaPorVeiculo(idVeiculo, RelatorioController.getToday());

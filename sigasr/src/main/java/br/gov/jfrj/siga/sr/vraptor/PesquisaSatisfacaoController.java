@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.cp.CpComplexo;
 import br.gov.jfrj.siga.cp.model.DpPessoaSelecao;
@@ -36,6 +38,7 @@ public class PesquisaSatisfacaoController extends SrController {
 		super(request, result, CpDao.getInstance(), so, em, srValidator);
 	}
 
+	@NaoTransacional
 	@AssertAcesso(ADM_ADMINISTRAR)
 	@SuppressWarnings("unchecked")
 	@Path("/listar")
@@ -59,6 +62,7 @@ public class PesquisaSatisfacaoController extends SrController {
 		result.include("acao", new SelecionavelVO(null,null));
 	}
 
+	@Transacional
 	@AssertAcesso(ADM_ADMINISTRAR)
 	@Path("/desativar")
 	public void desativar(Long id) throws Exception {
@@ -69,6 +73,7 @@ public class PesquisaSatisfacaoController extends SrController {
 
 	}
 
+	@Transacional
 	@AssertAcesso(ADM_ADMINISTRAR)
 	@Path("/reativar")
 	public void reativar(Long id) throws Exception {
@@ -78,6 +83,7 @@ public class PesquisaSatisfacaoController extends SrController {
 		result.use(Results.http()).body(pesq.toJson());
 	}
 
+	@NaoTransacional
 	@AssertAcesso(ADM_ADMINISTRAR)
 	@Path("/editar")
 	public void editar(Long id) throws Exception {
@@ -88,6 +94,7 @@ public class PesquisaSatisfacaoController extends SrController {
 		result.include(PESQUISA, pesquisa);
 	}
 
+	@Transacional
 	@AssertAcesso(ADM_ADMINISTRAR)
 	@Path("/gravar")
 	public void gravarPesquisa(SrPesquisa pesquisa, List<SrPergunta> perguntaSet) throws Exception {
@@ -97,6 +104,7 @@ public class PesquisaSatisfacaoController extends SrController {
 		result.use(Results.http()).body(pesquisa.atualizarTiposPerguntas().toJson());
 	}
 
+	@NaoTransacional
 	@Path("/associacoes")
 	public void buscarAssociacaoPesquisa(Long idPesquisa) throws Exception {
 		SrPesquisa pesq = SrPesquisa.AR.findById(idPesquisa);
@@ -107,6 +115,7 @@ public class PesquisaSatisfacaoController extends SrController {
 		result.use(Results.http()).body("");
 	}
 
+	@NaoTransacional
 	@AssertAcesso(ADM_ADMINISTRAR)
 	@Path("/pesquisas")
 	public void listarAssociacaoPesquisa(Long idPesquisa, boolean exibirInativos) throws Exception {
@@ -118,6 +127,7 @@ public class PesquisaSatisfacaoController extends SrController {
         result.use(Results.http()).body(SrConfiguracao.convertToJSon(associacoes));
 	}
 
+	@Transacional
 	@AssertAcesso(ADM_ADMINISTRAR)
 	@Path("/desativarAssociacaoEdicao")
 	public void desativarAssociacaoEdicao(Long idAssociacao) throws Exception {
@@ -126,6 +136,7 @@ public class PesquisaSatisfacaoController extends SrController {
 		result.use(Results.http()).body(associacao.toJson());
 	}
 
+	@Transacional
 	@AssertAcesso(ADM_ADMINISTRAR)
 	@Path("/desativarAssociacaoPesquisaEdicao")
 	public void desativarAssociacaoPesquisaEdicao(Long idAssociacao) throws Exception {

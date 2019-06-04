@@ -11,8 +11,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdmin;
@@ -37,13 +37,13 @@ public class FornecedorController extends TpController {
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
 	@Path("/listar")
 	public void listar() {
 		result.include("fornecedores", getFornecedores());
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
     @RoleAdmin
 	@RoleAdminFrota
 	@RoleAdminMissao	
@@ -54,7 +54,7 @@ public class FornecedorController extends TpController {
 		result.forwardTo(this).editar(null);
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
     @RoleAdmin
 	@RoleAdminFrota
 	@RoleAdminMissao
@@ -75,7 +75,7 @@ public class FornecedorController extends TpController {
 		result.include("listaUF", Uf.listarTodos());
 	}
 	
-	@OpenTransaction
+	@Transacional
     @RoleAdmin
 	@RoleAdminFrota
 	@RoleAdminMissao
@@ -101,7 +101,7 @@ public class FornecedorController extends TpController {
 		}
 	}
 
-	@OpenTransaction
+	@Transacional
 	@RoleAdmin
 	@RoleAdminFrota
 	@RoleAdminMissao

@@ -16,7 +16,7 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
 import br.com.caelum.vraptor.validator.ValidationMessage;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
@@ -43,7 +43,7 @@ public class RelatorioConsumoMedioController extends TpController {
         super(request, result, dao, validator, so, em);
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/consultar")
     public void consultar() throws RelatorioConsumoMedioException {
         RelatorioConsumoMedio relatorioConsumoMedio = new RelatorioConsumoMedio();
@@ -51,7 +51,7 @@ public class RelatorioConsumoMedioController extends TpController {
         result.include("relatorioConsumoMedio", relatorioConsumoMedio);
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/gerarRelatorio")
     public void gerarRelatorio(RelatorioConsumoMedio relatorioConsumoMedio) throws RelatorioConsumoMedioException {
         if (validator.hasErrors()) {
@@ -172,7 +172,7 @@ public class RelatorioConsumoMedioController extends TpController {
         }
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/carregarComboAbastecimentoInicial/{idVeiculo}")
     public void carregarComboAbastecimentoInicial(Long idVeiculo) throws RelatorioConsumoMedioException {
     	StringBuffer htmlSelectAbastecimentoInicial = new StringBuffer();

@@ -13,6 +13,7 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.interceptor.multipart.UploadedFile;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.SigaBaseProperties;
 import br.gov.jfrj.siga.dp.DpPessoa;
@@ -164,6 +165,7 @@ public class SolicitacaoEmailController extends SrController {
 		return pessoa;
 	}
 	
+	@Transacional
 	@Path("/incluir")
 	public void incluir(String emailRemetente, String assunto, String textoEmail, String msgBase64, Calendar dataEnvio) {
 		Retorno retorno = null;

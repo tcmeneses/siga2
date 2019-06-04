@@ -35,8 +35,8 @@ import javax.servlet.http.HttpServletRequest;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.acesso.ConfiguracaoAcesso;
 import br.gov.jfrj.siga.base.AplicacaoException;
@@ -77,7 +77,7 @@ public class AcessoController extends GiControllerSupport {
 		perfilSel = new CpPerfilSelecao();
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("/app/gi/acesso/listar")
 	public void acessoconf(int idAbrangencia
 						  ,DpPessoaSelecao pessoaSel
@@ -212,7 +212,7 @@ public class AcessoController extends GiControllerSupport {
 		return lista;
 	}
 
-	@OpenTransaction
+	@Transacional
 	@Get("/app/gi/acesso/gravar")
 	public void gravar(Long idServico
 			          ,Long idSituacao

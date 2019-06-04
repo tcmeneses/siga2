@@ -10,8 +10,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.cp.model.DpLotacaoSelecao;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
@@ -44,14 +44,14 @@ public class VeiculoController extends TpController {
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
 	@Path("/listar")
 	public void listar() throws Exception {
 		CpOrgaoUsuario cpOrgaoUsuario = getTitular().getOrgaoUsuario();
 		result.include("veiculos", Veiculo.listarTodos(cpOrgaoUsuario));
 	}
 
-	@OpenTransaction
+	@Transacional
     @RoleAdmin
 	@RoleAdminFrota
 	@Path("/salvar")
@@ -72,7 +72,7 @@ public class VeiculoController extends TpController {
 		result.redirectTo(this).listar();
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
 	@RoleAdmin
 	@RoleAdminFrota
 	@Path("/incluir")
@@ -80,7 +80,7 @@ public class VeiculoController extends TpController {
 		result.forwardTo(this).editar(null);
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
     @RoleAdmin
 	@RoleAdminFrota
 	@Path("/editar/{id}")
@@ -92,7 +92,7 @@ public class VeiculoController extends TpController {
 
 	}
 
-	@OpenTransaction
+	@Transacional
     @RoleAdmin
 	@RoleAdminFrota
 	@Path("/excluir/{id}")
@@ -102,7 +102,7 @@ public class VeiculoController extends TpController {
 		result.redirectTo(this).listar();
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
 	@Path("/ler/{id}")
 	public void ler(Long id) throws Exception {
 		Veiculo veiculo = obterVeiculoParaEdicao(id);
@@ -112,13 +112,13 @@ public class VeiculoController extends TpController {
 		result.include("veiculo", veiculo);
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/{idVeiculo}/avarias")
 	public void listarAvarias(Long idVeiculo) throws Exception {
 		result.redirectTo(AvariaController.class).listarPorVeiculo(idVeiculo);
 	}
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/buscarPeloId/{id}")
 	public void buscarPeloId(Long id) throws Exception {
 		Veiculo veiculo = Veiculo.AR.findById(id);

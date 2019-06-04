@@ -12,8 +12,8 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.cp.CpUnidadeMedida;
 import br.gov.jfrj.siga.ex.ExTemporalidade;
@@ -32,7 +32,7 @@ public class ExTemporalidadeController extends ExController {
 		super(request, response, context, result, ExDao.getInstance(), so, em);
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/expediente/temporalidade/listar")
 	public void listarTemporalidade() {
 		assertAcesso(ACESSO_FE_TT);
@@ -42,7 +42,7 @@ public class ExTemporalidadeController extends ExController {
 		result.include("temporalidadeVigente", temporalidadeVigente);
 	}
 
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/expediente/temporalidade/editar")
 	public void editarTemporalidade(final Long idTemporalidade, final String acao) {
 		assertAcesso(ACESSO_FE_TT);
@@ -60,7 +60,7 @@ public class ExTemporalidadeController extends ExController {
 		result.include("listaCpUnidade", listaCpUnidade);
 	}
 
-	@OpenTransaction
+	@Transacional
 	@Post("app/expediente/temporalidade/gravar")
 	public void gravar(final Long idTemporalidade, final String acao, final String descTemporalidade, Integer valorTemporalidade, final Long idCpUnidade) {
 		assertAcesso(ACESSO_FE_TT);
@@ -114,7 +114,7 @@ public class ExTemporalidadeController extends ExController {
 		exTemporal.setCpUnidadeMedida(cpUnidade);
 	}
 
-	@OpenTransaction
+	@Transacional
 	@Get("app/expediente/temporalidade/excluir")
 	public void excluir(final Long idTemporalidade) {
 		assertAcesso(ACESSO_FE_TT);

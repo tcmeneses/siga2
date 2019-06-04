@@ -8,8 +8,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Texto;
@@ -34,7 +34,7 @@ public class OrgaoController extends SigaSelecionavelControllerSupport<CpOrgao, 
 		return flt;
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("app/orgao/listar")
 	public void lista() throws Exception {
 		setItens(CpDao.getInstance().consultarCpOrgaoOrdenadoPorNome());
@@ -45,7 +45,7 @@ public class OrgaoController extends SigaSelecionavelControllerSupport<CpOrgao, 
 		
 	}
 	
-	@OpenTransaction
+	@Transacional
 	public void excluir(final Long id) throws Exception{
 		assertAcesso("FE:Ferramentas;CAD_ORGAO: Cadastrar Orgãos");
 		if (id != null) {
@@ -60,7 +60,7 @@ public class OrgaoController extends SigaSelecionavelControllerSupport<CpOrgao, 
 		this.result.redirectTo(this).lista();
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get("/app/orgao/editar")
 	public void edita(final Long id){
 		if (id != null) {
@@ -75,7 +75,7 @@ public class OrgaoController extends SigaSelecionavelControllerSupport<CpOrgao, 
 		result.include("orgaosUsu",this.getOrgaosUsu());
 	}
 	
-	@OpenTransaction
+	@Transacional
 	@Post("/app/orgao/gravar")
 	public void editarGravar(final Long id, 
 							 final String nmOrgao,
@@ -119,7 +119,7 @@ public class OrgaoController extends SigaSelecionavelControllerSupport<CpOrgao, 
 		return dao().consultar(id, CpOrgao.class, false);
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get
 	@Post
 	@Path({"/app/orgao/buscar","/orgao/buscar.action"})
@@ -139,7 +139,7 @@ public class OrgaoController extends SigaSelecionavelControllerSupport<CpOrgao, 
 		result.include("propriedade",propriedade);
 	}
 	
-	@NoOpenTransaction
+	@NaoTransacional
 	@Get
 	@Post
 	@Path({"/app/orgao/selecionar","/orgao/selecionar.action"})

@@ -10,8 +10,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
-import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
-import br.com.caelum.vraptor.util.jpa.OpenTransaction;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
 import br.gov.jfrj.siga.dp.dao.CpDao;
@@ -41,7 +41,7 @@ public class GabineteController extends TpController {
         super(request, result, dao, validator, so, em);
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/listar")
     public void listar() {
         List<Abastecimento> abastecimentos = Abastecimento.listarTodos();
@@ -50,7 +50,7 @@ public class GabineteController extends TpController {
     }
 
     // Verificar se o MenuMontador e realmente utilizado
-    @NoOpenTransaction
+    @NaoTransacional
     @Path("/listarPorVeiculo/{idVeiculo}")
     public void listarPorVeiculo(Long idVeiculo) throws GabineteControllerException {
         try {
@@ -65,7 +65,7 @@ public class GabineteController extends TpController {
         }
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @RoleAdmin
     @Path("/incluir")
     public void incluir() throws GabineteControllerException {
@@ -87,7 +87,7 @@ public class GabineteController extends TpController {
         }
     }
 
-    @NoOpenTransaction
+    @NaoTransacional
     @RoleAdmin
     @Path("/editar/{id}")
     public void editar(Long id) throws GabineteControllerException {
@@ -107,7 +107,7 @@ public class GabineteController extends TpController {
         }
     }
 
-    @OpenTransaction
+    @Transacional
     @RoleAdmin
     public void salvar(@Valid Abastecimento abastecimento) throws GabineteControllerException {
         try {
@@ -132,7 +132,7 @@ public class GabineteController extends TpController {
         }
     }
 
-    @OpenTransaction
+    @Transacional
     @RoleAdmin
     @Path("/excluir/{id}")
     public void excluir(Long id) throws GabineteControllerException {
