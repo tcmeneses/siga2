@@ -16,6 +16,8 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.interceptor.multipart.UploadedFile;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.OpenTransaction;
 import br.com.caelum.vraptor.validator.I18nMessage;
 import br.com.caelum.vraptor.validator.ValidationMessage;
 import br.com.caelum.vraptor.view.Results;
@@ -43,12 +45,14 @@ public class CondutorController extends TpController {
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 
+    @NoOpenTransaction
 	@Path("/listar")
 	public void listar() {
 		result.include("condutores", getCondutores());
 	}
 	
-	@RoleAdmin
+    @NoOpenTransaction
+    @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
 	@Path("/editar/{id}")
@@ -74,7 +78,8 @@ public class CondutorController extends TpController {
 		result.include(CONDUTOR, condutor);
 	}
 
-	@RoleAdmin
+	@OpenTransaction
+    @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
 	@Path("/salvar")
@@ -110,6 +115,7 @@ public class CondutorController extends TpController {
 		result.redirectTo(CondutorController.class).listar();
 	}
 
+	@OpenTransaction
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -141,6 +147,7 @@ public class CondutorController extends TpController {
 		}
 	}
 	
+    @NoOpenTransaction
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -149,13 +156,15 @@ public class CondutorController extends TpController {
 		result.forwardTo(this).editar(0L);
 	}
 	
-	@Path("/exibirDadosDpPessoa/{idPessoa}")
+    @NoOpenTransaction
+    @Path("/exibirDadosDpPessoa/{idPessoa}")
 	public void exibirDadosDpPessoa(Long idPessoa) throws Exception {
 		DpPessoa pessoa = DpPessoa.AR.findById(idPessoa);
 		result.include("pessoa", pessoa);
 	}
 	
-	@Path("/exibirImagem/{id}")
+    @NoOpenTransaction
+    @Path("/exibirImagem/{id}")
 	public void exibirImagem(Long id) throws Exception {
 		Condutor condutor = Condutor.AR.findById(id);
 		result.include(CONDUTOR, condutor);

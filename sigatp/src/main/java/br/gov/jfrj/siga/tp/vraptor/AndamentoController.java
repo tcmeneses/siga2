@@ -10,6 +10,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.OpenTransaction;
 import br.com.caelum.vraptor.validator.I18nMessage;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.dp.DpPessoa;
@@ -36,6 +38,7 @@ public class AndamentoController extends TpController {
         super(request, result, TpDao.getInstance(), validator, so, em);
     }
 
+    @NoOpenTransaction
     @Path("listarPorRequisicao/{idRequisicao}/{popUp}")
     public void listarPorRequisicao(Long idRequisicao, boolean popUp) throws AndamentoControllerException {
         RequisicaoTransporte requisicaoTransporte = RequisicaoTransporte.AR.findById(idRequisicao);
@@ -46,6 +49,7 @@ public class AndamentoController extends TpController {
 
     }
 
+    @OpenTransaction
     @RoleAdmin
     @RoleAdminFrota
     @RoleAdminMissao
@@ -104,6 +108,7 @@ public class AndamentoController extends TpController {
         }
     }
 
+    @OpenTransaction
     @RoleAdmin
     @RoleAdminMissao
     @RoleAprovador
@@ -113,6 +118,7 @@ public class AndamentoController extends TpController {
         result.forwardTo(this).atualizarEstado(id);
     }
 
+    @OpenTransaction
     @RoleAdmin
     @RoleAdminMissao
     @RoleAprovador
@@ -122,6 +128,7 @@ public class AndamentoController extends TpController {
         result.forwardTo(this).atualizarEstado(id);
     }
 
+    @OpenTransaction
     @RoleAdmin
     @RoleAdminMissao
     @RoleAprovador
@@ -131,6 +138,7 @@ public class AndamentoController extends TpController {
         result.forwardTo(this).atualizarEstado(id);
     }
 
+    @OpenTransaction
     public void atualizarEstado(Long id) throws AndamentoControllerException {
 
         Andamento andamento = new Andamento();

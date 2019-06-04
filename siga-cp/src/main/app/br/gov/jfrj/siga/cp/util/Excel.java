@@ -189,7 +189,7 @@ public class Excel {
 			if(problemas == null || "".equals(problemas.toString())) {
 				try {
 	            	for (DpLotacao dpLotacao : lista) {
-		            	CpDao.getInstance().iniciarTransacao();
+		//            	CpDao.getInstance().iniciarTransacao();
 		    			CpDao.getInstance().gravar(dpLotacao);
 		    			
 	    				if(dpLotacao.getIdLotacaoIni() == null && dpLotacao.getId() != null) {
@@ -198,9 +198,9 @@ public class Excel {
 	        				CpDao.getInstance().gravar(dpLotacao);
 	        			}
 					}
-	    			CpDao.getInstance().commitTransacao();			
+//	    			CpDao.getInstance().commitTransacao();			
 	    		} catch (final Exception e) {
-	    			CpDao.getInstance().rollbackTransacao();
+//	    			CpDao.getInstance().rollbackTransacao();
 	    			throw new AplicacaoException("Erro na gravação", 0, e);
 	    		}
 			}
@@ -294,7 +294,7 @@ public class Excel {
 			if(problemas == null || "".equals(problemas.toString())) {
 				try {
 	            	for (DpFuncaoConfianca dpFuncaoConfianca : lista) {
-		            	CpDao.getInstance().iniciarTransacao();
+	//	            	CpDao.getInstance().iniciarTransacao();
 		    			CpDao.getInstance().gravar(dpFuncaoConfianca);
 		    			
 	    				if(dpFuncaoConfianca.getIdFuncaoIni() == null && dpFuncaoConfianca.getId() != null) {
@@ -303,9 +303,9 @@ public class Excel {
 	        				CpDao.getInstance().gravar(dpFuncaoConfianca);
 	        			}
 					}
-	    			CpDao.getInstance().commitTransacao();			
+//	    			CpDao.getInstance().commitTransacao();			
 	    		} catch (final Exception e) {
-	    			CpDao.getInstance().rollbackTransacao();
+//	    			CpDao.getInstance().rollbackTransacao();
 	    			throw new AplicacaoException("Erro na gravação", 0, e);
 	    		}
 			}
@@ -393,7 +393,7 @@ public class Excel {
 			if(problemas == null || "".equals(problemas.toString())) {
 				try {
 	            	for (DpCargo dpCargo : lista) {
-		            	CpDao.getInstance().iniciarTransacao();
+		//            	CpDao.getInstance().iniciarTransacao();
 		    			CpDao.getInstance().gravar(dpCargo);
 		    			
 	    				if(dpCargo.getIdCargoIni() == null && dpCargo.getId() != null) {
@@ -402,9 +402,9 @@ public class Excel {
 	        				CpDao.getInstance().gravar(dpCargo);
 	        			}
 					}
-	    			CpDao.getInstance().commitTransacao();			
+//	    			CpDao.getInstance().commitTransacao();			
 	    		} catch (final Exception e) {
-	    			CpDao.getInstance().rollbackTransacao();
+//	    			CpDao.getInstance().rollbackTransacao();
 	    			throw new AplicacaoException("Erro na gravação", 0, e);
 	    		}
 			}
@@ -698,7 +698,7 @@ public class Excel {
 			}
 			if(problemas == null || "".equals(problemas.toString())) {
 				try {
-					CpDao.getInstance().iniciarTransacao();
+	//				CpDao.getInstance().iniciarTransacao();
 	            	for (DpPessoa dpPessoa : lista) {
 		    			CpDao.getInstance().gravar(dpPessoa);
 
@@ -709,9 +709,9 @@ public class Excel {
 	        				CpDao.getInstance().gravar(dpPessoa);
 	        			}
 					}
-	    			CpDao.getInstance().commitTransacao();			
+//	    			CpDao.getInstance().commitTransacao();			
 	    		} catch (final Exception e) {
-	    			CpDao.getInstance().rollbackTransacao();
+//	    			CpDao.getInstance().rollbackTransacao();
 	    			throw new AplicacaoException("Erro na gravação", 0, e);
 	    		}
 			}

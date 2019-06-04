@@ -17,6 +17,8 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.OpenTransaction;
 import br.gov.jfrj.siga.Service;
 import br.gov.jfrj.siga.base.HttpRequestUtils;
 import br.gov.jfrj.siga.cp.AbstractCpAcesso;
@@ -47,6 +49,7 @@ public class LoginController extends SigaController {
 		this.context = context;
 	}
 
+	@NoOpenTransaction	
 	@Get("public/app/login")
 	public void login(String cont) throws IOException {
 		Map<String, String> manifest = new HashMap<>();
@@ -67,6 +70,7 @@ public class LoginController extends SigaController {
 		result.include("cont", cont);
 	}
 
+	@OpenTransaction
 	@Post("public/app/login")
 	public void auth(String username, String password, String cont) throws IOException {
 		try {
@@ -103,6 +107,7 @@ public class LoginController extends SigaController {
 		}
 	}
 
+	@NoOpenTransaction
 	@Get("public/app/logout")
 	public void logout() {
 		this.response.addCookie(AuthJwtFormFilter.buildEraseCookie());

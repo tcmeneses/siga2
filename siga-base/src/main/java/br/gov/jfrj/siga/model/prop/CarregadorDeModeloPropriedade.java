@@ -51,7 +51,7 @@ public class CarregadorDeModeloPropriedade {
 	@SuppressWarnings("unchecked")
 	public static Properties obterTodas(ModeloPropriedade obj) throws Exception {
 		Properties geral = new Properties();
-		Class cls = obj.getClass();
+		Class<?> cls = obj.getClass();
 		String clsNme = cls.getName();
 		// retorna propriedades da cache, se tem lï¿½
 		Properties prpCache = cache.get(clsNme);
@@ -60,7 +60,7 @@ public class CarregadorDeModeloPropriedade {
 		//
 		while (true) {
 			Properties prp = carregarPara(cls);
-			Enumeration ks = prp.keys();
+			Enumeration<?> ks = prp.keys();
 			while (ks.hasMoreElements()) {
 				Object k = ks.nextElement();
 				if (!geral.containsKey(k)) {
@@ -195,7 +195,7 @@ public class CarregadorDeModeloPropriedade {
 	@SuppressWarnings("unchecked")
 	private static String getClassNameOf(Object obj) {
 		if (obj.getClass().getName().equals("java.lang.Class")) {
-			return ((Class) obj).getName();
+			return ((Class<?>) obj).getName();
 		} else {
 			return obj.getClass().getName();
 		}

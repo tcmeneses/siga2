@@ -36,6 +36,8 @@ import org.jboss.logging.Logger;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.OpenTransaction;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.cp.model.DpLotacaoSelecao;
 import br.gov.jfrj.siga.cp.model.DpPessoaSelecao;
@@ -59,6 +61,7 @@ public class ExEmailNotificacaoController extends SigaController{
 		return dao().consultar(id, ExEmailNotificacao.class, false);
 	}
 
+	@NoOpenTransaction
 	@Get("app/expediente/emailNotificacao/listar")
 	public void lista() {
 		try {
@@ -71,6 +74,7 @@ public class ExEmailNotificacaoController extends SigaController{
 		}
 	}
 	
+	@OpenTransaction
 	@Get("app/expediente/emailNotificacao/excluir")
 	public void excluir(Long id){
 		try {
@@ -83,12 +87,12 @@ public class ExEmailNotificacaoController extends SigaController{
 		
 		if (id != null) {
 			try {
-				dao().iniciarTransacao();
+	//			dao().iniciarTransacao();
 				ExEmailNotificacao email = daoEmail(id);				
 				dao().excluir(email);				
-				dao().commitTransacao();				
+	//			dao().commitTransacao();				
 			} catch (final Exception e) {
-				dao().rollbackTransacao();
+	//			dao().rollbackTransacao();
 				throw new AplicacaoException("Erro na exclusão do email", 0, e);
 			}
 		} else
@@ -96,6 +100,7 @@ public class ExEmailNotificacaoController extends SigaController{
 		result.redirectTo(ExEmailNotificacaoController.class).lista();
 	}
 		
+	@NoOpenTransaction
 	@Get("app/expediente/emailNotificacao/editar")
 	public void edita(){	
 		try {
@@ -117,6 +122,7 @@ public class ExEmailNotificacaoController extends SigaController{
 		result.include("pessEmailSel", new DpPessoaSelecao());
 	}
 	
+	@OpenTransaction
 	@Get("app/expediente/emailNotificacao/editar_gravar")
 	public void editarGravar(final DpLotacaoSelecao lotaSel, final DpLotacaoSelecao lotaEmailSel, final DpPessoaSelecao pessSel,
 			final DpPessoaSelecao pessEmailSel, final Integer tipoDest, final Integer tipoEmail, final String emailTela){
@@ -135,11 +141,11 @@ public class ExEmailNotificacaoController extends SigaController{
 		recuperaInteressado(lotaEmailSel, pessEmailSel, tipoEmail, emailTela,exEmail);
 	
 		try {
-			dao().iniciarTransacao();
+	//		dao().iniciarTransacao();
 			dao().gravar(exEmail);
-			dao().commitTransacao();			
+	//		dao().commitTransacao();			
 		} catch (final Exception e) {
-			dao().rollbackTransacao();
+	//		dao().rollbackTransacao();
 			throw new AplicacaoException("Erro na gravação", 0, e);
 		}
 		

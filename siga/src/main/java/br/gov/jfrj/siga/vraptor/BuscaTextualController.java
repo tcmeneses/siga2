@@ -13,6 +13,7 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
 import br.com.caelum.vraptor.view.HttpResult;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.SigaHTTP;
@@ -31,12 +32,14 @@ public class BuscaTextualController extends SigaController {
 		super(request, result, dao, so, em);
 	}
 
+	@NoOpenTransaction
 	@Get("app/busca")
 	public void buscaTextual(String q) throws Exception {
 		result.include("q", q);
 		result.include("gsaUrl", Cp.getInstance().getProp().gsaUrl());
 	}
 
+	@NoOpenTransaction
 	@Get("app/buscargsa")
 	public void buscarNoGSA() throws Exception {
 		final SigaHTTP http = new SigaHTTP();

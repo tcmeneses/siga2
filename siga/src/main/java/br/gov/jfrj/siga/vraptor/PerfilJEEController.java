@@ -29,6 +29,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.OpenTransaction;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.cp.CpTipoGrupo;
@@ -51,6 +53,7 @@ public class PerfilJEEController extends GrupoController {
 		return CpTipoGrupo.TIPO_GRUPO_PERFIL_JEE;
 	}
 	
+	@NoOpenTransaction
 	@Get("/app/gi/perfilJEE/listar")
 	public void lista() throws Exception {
 		assertAcesso("PERFILJEE:Gerenciar grupos de email");
@@ -64,6 +67,7 @@ public class PerfilJEEController extends GrupoController {
 	}
 	
 
+	@NoOpenTransaction
 	@Get("/app/gi/perfilJEE/editar")
 	public void edita(Long idCpGrupo) throws Exception {
 		assertAcesso("PERFILJEE:Gerenciar grupos de email");
@@ -87,6 +91,7 @@ public class PerfilJEEController extends GrupoController {
 	}
 	
 	@SuppressWarnings("unchecked")
+	@OpenTransaction
 	@Post("/app/gi/perfilJEE/gravar")
 	public void gravar(Long idCpGrupo
 			          ,String siglaGrupo
@@ -112,6 +117,7 @@ public class PerfilJEEController extends GrupoController {
 		result.redirectTo(MessageFormat.format("/app/gi/perfilJEE/editar?idCpGrupo={0}", novoIdCpGrupo.toString()));
 	}	
 
+	@OpenTransaction
 	@Post("/app/gi/perfilJEE/excluir")
 	public void excluir(Long idCpGrupo) throws Exception {
 		assertAcesso("PERFILJEE:Gerenciar grupos de email");
@@ -119,6 +125,7 @@ public class PerfilJEEController extends GrupoController {
 		result.redirectTo(this).lista();
 	}
 	
+	@NoOpenTransaction
 	@Get
 	@Post
 	@Path("/app/gi/perfilJEE/buscar")
@@ -132,6 +139,7 @@ public class PerfilJEEController extends GrupoController {
 		result.include("nome", getNome());
 	}
 	
+	@NoOpenTransaction
 	@Get("/app/gi/perfilJEE/selecionar")
 	public void selecionar(String sigla) {
 		String resultado =  super.aSelecionar(sigla);

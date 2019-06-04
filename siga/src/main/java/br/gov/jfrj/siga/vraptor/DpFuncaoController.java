@@ -19,6 +19,8 @@ import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.interceptor.download.Download;
 import br.com.caelum.vraptor.interceptor.download.InputStreamDownload;
 import br.com.caelum.vraptor.interceptor.multipart.UploadedFile;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.OpenTransaction;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Texto;
@@ -69,6 +71,7 @@ public class DpFuncaoController extends SigaSelecionavelControllerSupport<DpFunc
 		return null;
 	}
 	
+	@NoOpenTransaction
 	@Get
 	@Post
 	@Path({"/app/funcao/buscar", "/funcao/buscar.action"})
@@ -92,6 +95,7 @@ public class DpFuncaoController extends SigaSelecionavelControllerSupport<DpFunc
 		result.include("offset",offset);
 	}
 
+	@NoOpenTransaction
 	@Get("/app/funcao/selecionar")
 	public void selecionar(String sigla) {
 		String resultado =  super.aSelecionar(sigla);
@@ -103,6 +107,7 @@ public class DpFuncaoController extends SigaSelecionavelControllerSupport<DpFunc
 		}
 	}
 	
+	@NoOpenTransaction
 	@Get("app/funcao/listar")
 	public void lista(Integer offset, Long idOrgaoUsu, String nome) throws Exception {
 		
@@ -132,6 +137,7 @@ public class DpFuncaoController extends SigaSelecionavelControllerSupport<DpFunc
 		result.include("currentPageNumber", calculaPaginaAtual(offset));
 	}
 	
+	@NoOpenTransaction
 	@Get("/app/funcao/editar")
 	public void edita(final Long id){
 		if (id != null) {
@@ -158,6 +164,7 @@ public class DpFuncaoController extends SigaSelecionavelControllerSupport<DpFunc
 		result.include("id",id);
 	}
 	
+	@OpenTransaction
 	@Post("/app/funcao/gravar")
 	public void editarGravar(final Long id, 
 							 final String nmFuncao, 
@@ -207,21 +214,19 @@ public class DpFuncaoController extends SigaSelecionavelControllerSupport<DpFunc
 		}
 		
 		try {
-			dao().iniciarTransacao();
 			dao().gravar(funcao);
 			if(funcao.getIdFuncaoIni() == null && funcao.getId() != null) {
 				funcao.setIdFuncaoIni(funcao.getId());
 				funcao.setIdeFuncao(funcao.getId().toString());
 				dao().gravar(funcao);
 			}
-			dao().commitTransacao();			
 		} catch (final Exception e) {
-			dao().rollbackTransacao();
 			throw new AplicacaoException("Erro na gravação", 0, e);
 		}
 		this.result.redirectTo(this).lista(0, null, "");
 	}
 	
+	@NoOpenTransaction
 	@Get("/app/funcao/carregarExcel")
 	public void carregarExcel() {
 		if("ZZ".equals(getTitular().getOrgaoUsuario().getSigla())) {
@@ -233,6 +238,7 @@ public class DpFuncaoController extends SigaSelecionavelControllerSupport<DpFunc
 		result.use(Results.page()).forwardTo("/WEB-INF/page/dpFuncao/cargaFuncao.jsp");
 	}
 	
+	@NoOpenTransaction
 	@Post("/app/funcao/carga")
 	public Download carga( final UploadedFile arquivo, Long idOrgaoUsu) throws Exception {
 		InputStream inputStream = null;

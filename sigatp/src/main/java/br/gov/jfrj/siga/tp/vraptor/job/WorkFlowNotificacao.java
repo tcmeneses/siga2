@@ -96,12 +96,12 @@ public class WorkFlowNotificacao implements Task {
 
 					if (enviarEmail(titulo, lstPessoas, sequencia)) {
 						try {
-							TpDao.iniciarTransacao();
+	//						TpDao.iniciarTransacao();
 							Andamento.gravarDataNotificacaoWorkFlow(item.getId());
-							TpDao.commitTransacao();
+	//						TpDao.commitTransacao();
 						} catch (Exception ex) {
 							Logger.getLogger(SIGATP_WORKFLOW).info("Falha ao gravar notifica\u00E7\u00E3o: " + ex.getMessage());
-							TpDao.rollbackTransacao();
+	//						TpDao.rollbackTransacao();
 						}
 					}
 				}

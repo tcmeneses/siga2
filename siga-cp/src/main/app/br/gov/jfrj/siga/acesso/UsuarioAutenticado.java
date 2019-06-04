@@ -72,10 +72,10 @@ public class UsuarioAutenticado {
 				idCertNova.setDscSenhaIdentidadeCripto(null);
 				idCertNova.setDscSenhaIdentidadeCriptoSinc(null);
 				// TODO: verificar o porquï¿½ da nï¿½o gravaï¿½ï¿½o da identidade
-				dao().iniciarTransacao();
+//				dao().iniciarTransacao();
 				// dao().gravar(idCertNova);
 				dao().gravarComHistorico(idCertNova, null, dt, null);
-				dao().commitTransacao();
+//				dao().commitTransacao();
 			} catch (Exception e) {
 				throw new AplicacaoException(
 						"Não foi possível criar uma identidade para o certificado.");

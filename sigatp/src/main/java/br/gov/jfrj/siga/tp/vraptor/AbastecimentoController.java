@@ -12,6 +12,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.OpenTransaction;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.tp.auth.AutorizacaoGI;
 import br.gov.jfrj.siga.tp.auth.annotation.LogMotivo;
@@ -51,6 +53,7 @@ public class AbastecimentoController extends TpController {
         this.autorizacaoGI = autorizacaoGI;
     }
 
+    @NoOpenTransaction
     @Path("/listar")
     public void listar() throws Exception {
         List<Abastecimento> abastecimentos = Lists.newArrayList();
@@ -79,6 +82,7 @@ public class AbastecimentoController extends TpController {
         montarCombos();
     }
 
+    @NoOpenTransaction   
     @Path({"/listarPorVeiculo/{idVeiculo}", "/listarPorVeiculo"})
     public void listarPorVeiculo(Long idVeiculo) throws Exception {
         Veiculo veiculo = Veiculo.AR.findById(idVeiculo);
@@ -88,6 +92,7 @@ public class AbastecimentoController extends TpController {
         result.include("veiculo", veiculo);
     }
     
+    @NoOpenTransaction
     @RoleAgente
 	@RoleAdmin
 	@RoleAdminMissao
@@ -117,7 +122,8 @@ public class AbastecimentoController extends TpController {
 	 	result.include("fornecedores", listarTodos());
 	}
 
-    @RoleAdmin
+	@NoOpenTransaction
+	@RoleAdmin
     @RoleGabinete
     @RoleAdminFrota
     @RoleAdminMissao
@@ -140,6 +146,8 @@ public class AbastecimentoController extends TpController {
         return null != getRequest().getAttribute(ABASTECIMENTO) ? getRequest().getAttribute(ABASTECIMENTO) : new Abastecimento();
     }
 
+    
+    @OpenTransaction
     @RoleAdmin
     @RoleAdminGabinete
     @RoleAdminMissao
@@ -176,6 +184,7 @@ public class AbastecimentoController extends TpController {
         }
     }
 
+    @NoOpenTransaction
     @RoleAdmin
     @RoleGabinete
     @RoleAdminFrota
@@ -198,6 +207,7 @@ public class AbastecimentoController extends TpController {
         result.include(TIPOS_COMBUSTIVEL_PARA_ABASTECIMENTO, TipoDeCombustivel.tiposParaAbastecimento());
     }
 
+    @OpenTransaction
     @LogMotivo
     @RoleAdmin
     @RoleAdminGabinete

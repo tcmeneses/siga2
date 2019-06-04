@@ -19,6 +19,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.OpenTransaction;
 import br.com.caelum.vraptor.validator.I18nMessage;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
@@ -80,6 +82,7 @@ public class MissaoController extends TpController {
 		this.requisicaoController = requisicaoController;
 	}
 
+    @NoOpenTransaction
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAgente
@@ -159,6 +162,7 @@ public class MissaoController extends TpController {
 		return Missao.AR.find(criterioBusca.toString() + " order by dataHoraSaida desc", parametrosParaBuscar).fetch();
 	}
 
+    @NoOpenTransaction
 	@RoleAgente
 	@Path("/listarPorCondutorLogado")
 	public void listarPorCondutorLogado() throws Exception {
@@ -176,7 +180,8 @@ public class MissaoController extends TpController {
 		result.use(Results.page()).of(MissaoController.class).listar();
 	}
 
-	@RoleAgente
+    @NoOpenTransaction
+    @RoleAgente
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -206,6 +211,7 @@ public class MissaoController extends TpController {
 		checarCondutorPeloUsuarioAutenticado(missao);
 	}
 
+    @NoOpenTransaction
 	@RoleAgente
 	@RoleAdmin
 	@RoleAdminMissao
@@ -233,6 +239,7 @@ public class MissaoController extends TpController {
 		return null == estado ? EstadoMissao.PROGRAMADA : estado;
 	}
 
+	@OpenTransaction
 	@RoleAgente
 	@RoleAdmin
 	@RoleAdminMissao
@@ -369,6 +376,7 @@ public class MissaoController extends TpController {
 		andamento.save();
 	}
 
+    @NoOpenTransaction
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -398,7 +406,8 @@ public class MissaoController extends TpController {
 		condicaoComponentesVeiculo();
 	}
 
-	@RoleAdmin
+	@OpenTransaction
+    @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
 	@RoleAgente
@@ -452,7 +461,8 @@ public class MissaoController extends TpController {
         return odometro.equals(0.0);
     }    
     
-	@RoleAdmin
+	@OpenTransaction
+    @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
 	@RoleAgente
@@ -507,6 +517,7 @@ public class MissaoController extends TpController {
 		return missao;
 	}
 
+	@OpenTransaction
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -562,7 +573,8 @@ public class MissaoController extends TpController {
         error(missao.getOdometroSaidaEmKm().equals(0.0), MISSAO_STR, "veiculo.odometroEmKmAtual.zero.validation");
     }
 
-	@RoleAdmin
+    @NoOpenTransaction
+    @RoleAdmin
 	@RoleAgente
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -604,7 +616,8 @@ public class MissaoController extends TpController {
 		result.include("niveisCombustivelSaida", NivelDeCombustivel.values());
     }
 
-	@RoleAdmin
+    @NoOpenTransaction
+    @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
 	@Path("/cancelar/{id}")
@@ -618,7 +631,8 @@ public class MissaoController extends TpController {
 		result.include(MISSAO_STR, missao);
 	}
 
-	@RoleAdmin
+	@OpenTransaction
+    @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
 	@Path("/cancelarMissao")
@@ -728,6 +742,7 @@ public class MissaoController extends TpController {
 		}
 	}
 
+    @NoOpenTransaction
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -745,7 +760,8 @@ public class MissaoController extends TpController {
 		result.forwardTo(this).inicioRapido(missao);
 	}
 
-	@RoleAdmin
+    @NoOpenTransaction
+    @RoleAdmin
     @RoleAdminMissao
     @RoleAdminMissaoComplexo
     @Path("/inicioRapido")
@@ -763,6 +779,7 @@ public class MissaoController extends TpController {
 			result.redirectTo(this).incluir();
 	}
 
+    @NoOpenTransaction
 	@RoleAdmin
 	@RoleAgente
 	@RoleAdminMissao
@@ -806,7 +823,8 @@ public class MissaoController extends TpController {
 		}
     }
 
-	@RoleAdmin
+    @NoOpenTransaction
+    @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
 	@RoleAgente
@@ -821,13 +839,15 @@ public class MissaoController extends TpController {
 		}
 	}
 
-	@Path("/ler")
+    @NoOpenTransaction
+    @Path("/ler")
 	public void ler() {
 		/**
 		 * Direciona para a view LER
 		 */
 	}
 
+    @NoOpenTransaction
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -857,6 +877,7 @@ public class MissaoController extends TpController {
 		result.include("condutoresEscalados", condutores);
 	}
 	
+	@OpenTransaction
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -869,6 +890,7 @@ public class MissaoController extends TpController {
 		result.redirectTo(this).listar();
 	}
 
+    @NoOpenTransaction
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -977,6 +999,7 @@ public class MissaoController extends TpController {
 		validator.add(new I18nMessage("categoriaCnhCondutor", "missao.categoriaCNHCondutorErradaParaVeiculo.validation"));
 	}
 
+    @NoOpenTransaction
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -1000,7 +1023,8 @@ public class MissaoController extends TpController {
 		result.use(Results.page()).of(MissaoController.class).incluir();
 	}
 
-	@RoleAdmin
+    @NoOpenTransaction
+    @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
 	@Path("/incluir")
@@ -1187,12 +1211,14 @@ public class MissaoController extends TpController {
 	}
 
 	/* Metodo AJAX */
+    @NoOpenTransaction
 	@Path("/getMissaoLinhasTotal")
 	public void getMissaoLinhasTotal() {
 		result.use(Results.http()).body(Parametro.buscarConfigSistemaEmVigor("missao.linhas.total"));
     }
 	
-	@Path("/listarMissoesPendentesPorCondutor/{idCondutor}")
+    @NoOpenTransaction
+    @Path("/listarMissoesPendentesPorCondutor/{idCondutor}")
 	public void listarMissoesPendentesPorCondutor(Long idCondutor) throws Exception {
 		List<Missao> missoes = Missao.buscarMissoesProgramadasPorCondutor(idCondutor);
 		EstadoMissao estMis = EstadoMissao.CANCELADA;

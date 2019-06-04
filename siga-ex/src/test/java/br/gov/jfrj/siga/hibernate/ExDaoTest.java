@@ -86,7 +86,7 @@ public class ExDaoTest extends TestCase {
 		if (true)
 			return;
 		
-		ExDao.iniciarTransacao();
+	//	ExDao.iniciarTransacao();
 		
 		ExMobilDaoFiltro flt = new ExMobilDaoFiltro();
 		//flt.setSigla("TRF2-MEM-2013/00001-A");

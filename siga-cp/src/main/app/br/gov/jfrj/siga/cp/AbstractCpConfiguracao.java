@@ -82,7 +82,7 @@ import br.gov.jfrj.siga.sinc.lib.NaoRecursivo;
 		@NamedQuery(name = "consultarCpConfiguracoesPorTipoLotacao", query = "from CpConfiguracao cpcfg where (cpcfg.cpTipoLotacao.idTpLotacao = :idTpLotacao) and hisDtFim is null"),
 		@NamedQuery(name = "consultarCpConfiguracoesPorTipo", query = " from "
 				+ "CpConfiguracao cpcfg where (cpcfg.cpTipoConfiguracao.idTpConfiguracao = :idTpConfiguracao)"
-				+ "and hisDtFim is null and cpcfg.cpServico.idServico not in (6,7,8,9,10,2567,2568)"),
+				+ "and hisDtFim is null"),
 		@NamedQuery(name = "consultarCpConfiguracoesAtivas", query = " from "
 				+ "CpConfiguracao cpcfg where hisDtFim is null") })
 public abstract class AbstractCpConfiguracao extends HistoricoAuditavelSuporte

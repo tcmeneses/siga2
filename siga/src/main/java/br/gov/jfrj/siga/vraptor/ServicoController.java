@@ -37,6 +37,8 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.OpenTransaction;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.cp.CpConfiguracao;
@@ -98,6 +100,7 @@ public class ServicoController 	extends SigaController {
 	}
 
 	
+	@NoOpenTransaction
 	@Get("/app/gi/servico/editar")
 	public void edita() throws Exception {
 		ConfiguracaoConfManual configuracaoConfManual = new ConfiguracaoConfManual(dao, obterLotacaoEfetiva());
@@ -319,6 +322,7 @@ public class ServicoController 	extends SigaController {
 	}
 	
 
+	@OpenTransaction
 	@Post("/app/gi/servico/inserirPessoaExtra")
 	public void aInserirPessoaExtra() throws Exception{
 		DpPessoa pes = dao.consultar(paramLong("pessoaExtra_pessoaSel.id"), DpPessoa.class,false);
@@ -349,6 +353,7 @@ public class ServicoController 	extends SigaController {
 	
 	
 	
+	@OpenTransaction
 	@Get("/app/gi/servico/excluir-pessoa-extra/{id}")
 	public void excluirPessoaExtra(Long id) throws Exception{
 		DpPessoa pes = dao().consultar(id, DpPessoa.class,false);
@@ -358,6 +363,7 @@ public class ServicoController 	extends SigaController {
 		result.redirectTo(this).edita();
 	}
 	
+	@OpenTransaction
 	@Get("/app/gi/servico/gravar")
 	public void gravar(String idPessoaConfiguracao, 
 					String idServicoConfiguracao, 
@@ -393,7 +399,7 @@ public class ServicoController 	extends SigaController {
 				t_smrResposta.setMembersFrom(t_hmpRetorno);
 				setRespostaXMLStringRPC(t_smrResposta.toXMLString());	
 			} catch (Exception e) {
-				CpDao.rollbackTransacao();
+	//			CpDao.rollbackTransacao();
 				FaultMethodResponseRPC t_fmrRetorno = new FaultMethodResponseRPC();
 				t_fmrRetorno.set(0, e.getMessage());
 				setRespostaXMLStringRPC(t_fmrRetorno.toXMLString());

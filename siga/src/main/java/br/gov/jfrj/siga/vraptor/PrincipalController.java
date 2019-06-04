@@ -22,6 +22,7 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.interceptor.download.ByteArrayDownload;
 import br.com.caelum.vraptor.interceptor.download.Download;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.Contexto;
 import br.gov.jfrj.siga.base.Data;
@@ -44,6 +45,7 @@ public class PrincipalController extends SigaController {
 		this.response = response;
 	}
 
+	@NoOpenTransaction
 	@Get("app/principal")
 	public void principal(Boolean exibirAcessoAnterior) {
 		if (exibirAcessoAnterior != null && exibirAcessoAnterior) {
@@ -57,14 +59,17 @@ public class PrincipalController extends SigaController {
 		}
 	}
 
+	@NoOpenTransaction
 	@Get("app/pagina_vazia")
 	public void paginaVazia() {
 	}
 
+	@NoOpenTransaction
 	@Get("app/usuario_autenticado")
 	public void usuarioAutenticado() {
 	}
 
+	@NoOpenTransaction
 	@Get("permalink/{sigla}")
 	public void permalink(final String sigla) {
 		GenericoSelecao sel = buscarGenericoPorSigla(sigla, getTitular(), getLotaTitular(),
@@ -76,11 +81,13 @@ public class PrincipalController extends SigaController {
 		}
 	}
 
+	@NoOpenTransaction
 	@Get("permalink/{sigla}/{parte}")
 	public void permalink(final String sigla, final String parte) {
 		result.redirectTo(Contexto.urlBase(request) + "/sigaex/app/expediente/mov/exibir?id=" + parte);
 	}
 
+	@NoOpenTransaction
 	@Get("public/app/generico/selecionar")
 	public void selecionar(final String sigla, final String matricula) {
 		try {
@@ -210,6 +217,7 @@ public class PrincipalController extends SigaController {
 		return sel;
 	}
 
+	@NoOpenTransaction
 	@Options("/public/app/graphviz/svg")
 	public void graphvizProxyOptions() {
 		// result.use(Results.status()).header("Allow", allowMethods);
@@ -222,6 +230,7 @@ public class PrincipalController extends SigaController {
 		result.use(Results.status()).noContent();
 	}
 
+	@NoOpenTransaction
 	@Post
 	@Consumes("text/vnd.graphviz")
 	@Path("/public/app/graphviz/svg")

@@ -11,6 +11,8 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.core.Localization;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.OpenTransaction;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdmin;
@@ -34,6 +36,7 @@ public class AutoDeInfracaoController extends TpController{
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 
+    @NoOpenTransaction
 	@Path("/listarPorVeiculo/{idVeiculo}")
 	public void listarPorVeiculo(Long idVeiculo) throws Exception {
 		Veiculo veiculo = Veiculo.AR.findById(idVeiculo);
@@ -46,7 +49,8 @@ public class AutoDeInfracaoController extends TpController{
 		result.include("veiculo", veiculo);
 	}
 
-	@Path("/listarPorCondutor/{idCondutor}")
+    @NoOpenTransaction
+    @Path("/listarPorCondutor/{idCondutor}")
 	public void listarPorCondutor(Long idCondutor) throws Exception {
 		Condutor condutor = Condutor.AR.findById(idCondutor);
 		List<AutoDeInfracao> autosDeInfracao = AutoDeInfracao
@@ -57,13 +61,15 @@ public class AutoDeInfracaoController extends TpController{
 		result.include("condutor", condutor);
 	}
 
-	@Path("/listar")
+    @NoOpenTransaction
+    @Path("/listar")
 	public void listar() {
 		List<AutoDeInfracao> autosDeInfracao = AutoDeInfracao.listarOrdenado();
 		result.include("autosDeInfracao", autosDeInfracao);
 	}
 
-	@RoleAdmin
+    @NoOpenTransaction
+    @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
 	@Path("/incluir/{notificacao}")
@@ -71,7 +77,8 @@ public class AutoDeInfracaoController extends TpController{
 		result.forwardTo(this).editar(0L, notificacao);
 	}
 
-	@RoleAdmin
+    @NoOpenTransaction
+    @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
 	@Path("/editar/{id}")
@@ -92,7 +99,8 @@ public class AutoDeInfracaoController extends TpController{
 		result.include("tipoNotificacao", tipoNotificacao);
 	}
 
-	@RoleAdmin
+	@OpenTransaction
+    @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
 	@Path("/salvar")
@@ -119,6 +127,7 @@ public class AutoDeInfracaoController extends TpController{
 		}
 	}
 
+	@OpenTransaction
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo

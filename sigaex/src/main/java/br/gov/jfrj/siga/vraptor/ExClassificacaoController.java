@@ -39,6 +39,7 @@ import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.OpenTransaction;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Texto;
@@ -191,7 +192,7 @@ public class ExClassificacaoController
 		return exClass;
 	}
 
-	@NoOpenTransaction
+	@OpenTransaction
 	@Get("app/expediente/classificacao/gravar")
 	public void gravar(ExClassificacao exClassificacao,
 			String codificacaoAntiga, String acao) throws Exception {
@@ -213,7 +214,6 @@ public class ExClassificacaoController
 			}
 		}
 
-		dao().iniciarTransacao();
 		try {
 
 			if (exClassificacao.getCodificacao().length() == 0
@@ -261,41 +261,36 @@ public class ExClassificacaoController
 
 			}
 
-			dao().commitTransacao();
 			setMensagem("Classificação salva!");
 			result.redirectTo("editar?codificacao="
 					+ exClassificacao.getCodificacao()
 					+ "&acao=editar_classificacao");
 		} catch (Exception e) {
-			dao().rollbackTransacao();
 			throw new AplicacaoException(
 					"Não foi possível gravar classificação no banco de dados."
 							+ e.getMessage());
 		}
 	}
 
-	@NoOpenTransaction
+	@OpenTransaction
 	@Get("app/expediente/classificacao/excluir")
 	public void excluir(String codificacao) throws Exception {
 		assertAcesso(ACESSO_SIGA_DOC_FE_PC);
-		dao().iniciarTransacao();
 		try {
 			ExClassificacao exClass;
 			exClass = buscarExClassificacao(codificacao);
 			Ex.getInstance()
 					.getBL()
 					.excluirExClassificacao(exClass, getIdentidadeCadastrante());
-			dao().commitTransacao();
 			result.redirectTo(this).lista();
 		} catch (Exception e) {
-			dao().rollbackTransacao();
 			throw new AplicacaoException(
 					"Não foi possível excluir classificação do banco de dados."
 							+ e.getMessage());
 		}
 	}
 
-	@NoOpenTransaction
+	@OpenTransaction
 	@Post("app/expediente/classificacao/gravarVia")
 	public void gravarVia(String acao, String codificacao, Long idVia, String obsVia, Long idDestino, Long idTemporalidadeArqCorr,
 			Long idTemporalidadeArqInterm, Long idDestinacaoFinal) throws Exception {
@@ -304,7 +299,6 @@ public class ExClassificacaoController
 			throw new AplicacaoException(
 					"A destinação da via deve ser definida!");
 		}
-		dao().iniciarTransacao();
 		try {
 
 			Date dt = dao().consultarDataEHoraDoServidor();
@@ -386,23 +380,20 @@ public class ExClassificacaoController
 					.getBL()
 					.copiarReferencias(exClassNovo, exClassAntiga, dt,
 							getIdentidadeCadastrante());
-			dao().commitTransacao();
 
 			result.redirectTo("editar?codificacao="+codificacao+"&acao="+acao);
 		} catch (Exception e) {
-			dao().rollbackTransacao();
 			throw new AplicacaoException(
 					"Não foi possível gravar via no banco de dados."
 							+ e.getMessage());
 		}
 	}
 
-	@NoOpenTransaction
+	@OpenTransaction
 	@Get("app/expediente/classificacao/excluirVia")
 	public void excluirVia(Long idVia, String codificacao, String acao)
 			throws Exception {
 		assertAcesso(ACESSO_SIGA_DOC_FE_PC);
-		dao().iniciarTransacao();
 		try {
 			ExVia exVia = dao().consultar(idVia, ExVia.class, false);
 			dao().excluirComHistorico(exVia, null, getIdentidadeCadastrante());
@@ -420,10 +411,8 @@ public class ExClassificacaoController
 							dao().consultarDataEHoraDoServidor(),
 							getIdentidadeCadastrante());
 
-			dao().commitTransacao();
 
 		} catch (Exception e) {
-			dao().rollbackTransacao();
 			throw new AplicacaoException(
 					"Não foi possível excluir via do banco de dados."
 							+ e.getMessage());

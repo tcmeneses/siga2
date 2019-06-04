@@ -22,14 +22,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.hibernate.Session;
 
-import br.com.caelum.vraptor.InterceptionException;
 import br.com.caelum.vraptor.Intercepts;
 import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.core.InterceptorStack;
 import br.com.caelum.vraptor.interceptor.Interceptor;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.resource.ResourceMethod;
-import br.gov.jfrj.siga.model.ContextoPersistencia;
 
 /**
  * An interceptor that manages Entity Manager Transaction. All requests are
@@ -57,13 +55,12 @@ public class JPATransactionInterceptor implements Interceptor {
 		EntityTransaction transaction = null;
 		try {
 			transaction = manager.getTransaction();
-			transaction.begin();
 
+			transaction.begin();
+		
 			System.out.println("JPATransaction Url que abre transacao: " + request.getRequestURI() + " Classe: " + method.getClass().getName());
 			stack.next(method, instance);
 			System.out.println("JPATransaction Url que fecha transacao: " + request.getRequestURI() + " Classe: " + method.getClass().getName());
-
-			transaction = manager.getTransaction();
 
 			if (!validator.hasErrors() && transaction.isActive()) {
 				// Executando flush no EM e a Session para garantir não nada
@@ -96,6 +93,8 @@ public class JPATransactionInterceptor implements Interceptor {
 
 	@Override
 	public boolean accepts(ResourceMethod method) {
+		//return true;
+		System.out.println("URI: " + request.getRequestURI());
 		return ! (method.containsAnnotation(NoOpenTransaction.class));
 	}
 }

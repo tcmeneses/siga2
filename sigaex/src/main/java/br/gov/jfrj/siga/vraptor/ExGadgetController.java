@@ -88,6 +88,7 @@ public class ExGadgetController extends ExController {
 		result.include("apenasQuadro", apenasQuadro);
 	}
 
+	@NoOpenTransaction
 	@Get("/public/app/testes/gadgetTest")
 	public void test(final String matricula, final Integer idTpFormaDoc) throws Exception {
 		if (matricula == null) {

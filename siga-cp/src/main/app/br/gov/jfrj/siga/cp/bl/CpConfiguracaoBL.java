@@ -803,9 +803,9 @@ public class CpConfiguracaoBL {
 						srv.setDscServico(sDesc);
 						srv.setCpServicoPai(srvPai);
 						srv.setCpTipoServico(tpsrv);
-						dao().iniciarTransacao();
+//						dao().iniciarTransacao();
 						srvRecuperado = dao().gravar(srv);
-						dao().commitTransacao();
+//						dao().commitTransacao();
 					}
 					srvPai = srvRecuperado;
 				}
@@ -917,7 +917,7 @@ public class CpConfiguracaoBL {
 
 	public void excluirPessoaExtra(DpPessoa pes, DpLotacao lot,
 			CpTipoConfiguracao tpConf, CpIdentidade identidadeCadastrante) {
-		ModeloDao.iniciarTransacao();
+//		ModeloDao.iniciarTransacao();
 		try {
 			Set<CpConfiguracao> configs = getListaPorTipo(tpConf
 					.getIdTpConfiguracao());
@@ -928,7 +928,7 @@ public class CpConfiguracaoBL {
 					dao().gravarComHistorico(c, identidadeCadastrante);
 				}
 			}
-			ModeloDao.commitTransacao();
+//			ModeloDao.commitTransacao();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

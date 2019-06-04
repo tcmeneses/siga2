@@ -12,6 +12,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.OpenTransaction;
 import br.com.caelum.vraptor.validator.I18nMessage;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.dp.dao.CpDao;
@@ -41,6 +43,7 @@ public class ControleGabineteController extends TpController {
         this.autorizacaoGI = autorizacaoGI;
     }
 
+    @NoOpenTransaction
     @RoleGabinete
     @RoleAdminGabinete
     @Path("/listar")
@@ -55,6 +58,7 @@ public class ControleGabineteController extends TpController {
     }
 
     // Verificar se o MenuMontador e realmente utilizado
+    @NoOpenTransaction
     @RoleGabinete
     @RoleAdminGabinete
     @Path("/listarPorVeiculo/{idVeiculo}")
@@ -71,6 +75,7 @@ public class ControleGabineteController extends TpController {
         }
     }
 
+    @NoOpenTransaction
     @RoleGabinete
     @RoleAdminGabinete
     @Path("/incluir")
@@ -107,6 +112,7 @@ public class ControleGabineteController extends TpController {
         }
     }
 
+    @NoOpenTransaction
     @RoleGabinete
     @RoleAdminGabinete
     @Path("/editar/{id}")
@@ -152,6 +158,7 @@ public class ControleGabineteController extends TpController {
             validator.add(new I18nMessage("odometroEmKmSaida", "controlesGabinete.odometroEmKmSaida.validation"));
     }
 
+    @OpenTransaction
     @RoleGabinete
     @RoleAdminGabinete
     public void salvar(@Valid ControleGabinete controleGabinete) throws ControleGabineteControllerException {
@@ -183,6 +190,7 @@ public class ControleGabineteController extends TpController {
         }
     }
 
+    @OpenTransaction
     @RoleGabinete
     @RoleAdminGabinete
     @Path("/excluir/{id}")

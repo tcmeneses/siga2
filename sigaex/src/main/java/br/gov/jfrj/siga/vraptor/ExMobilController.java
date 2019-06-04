@@ -41,6 +41,7 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.OpenTransaction;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Texto;
@@ -77,6 +78,7 @@ public class ExMobilController extends
 		setItemPagina(50);
 	}
 
+	@OpenTransaction
 	@Get("app/expediente/doc/marcar_tudo")
 	public void aMarcarTudo() {
 		assertAcesso("");
@@ -85,6 +87,7 @@ public class ExMobilController extends
 		result.redirectTo("/app/expediente/doc/finalizou_rotina");
 	}
 
+	@OpenTransaction
 	@Get("app/expediente/doc/numerar_tudo")
 	public void aNumerarTudo() {
 		assertAcesso("");
@@ -97,6 +100,7 @@ public class ExMobilController extends
 		result.redirectTo("/app/expediente/doc/finalizou_rotina");
 	}
 
+	@OpenTransaction
 	@Get("app/expediente/doc/marcar")
 	public void aMarcar() {
 		assertAcesso("");
@@ -113,6 +117,7 @@ public class ExMobilController extends
 		result.redirectTo("/app/expediente/doc/finalizou_rotina");
 	}
 
+	@NoOpenTransaction
 	@Get("app/expediente/doc/finalizou_rotina")
 	public void aFinalizouRotina() {
 //		System.out.println("Finalizou rotina");

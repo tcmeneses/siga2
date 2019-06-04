@@ -24,6 +24,8 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.interceptor.download.ByteArrayDownload;
 import br.com.caelum.vraptor.interceptor.download.Download;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.OpenTransaction;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Texto;
 import br.gov.jfrj.siga.cp.CpModelo;
@@ -53,6 +55,7 @@ public class ExModeloController extends ExSelecionavelController {
 		super(request, result, dao, so, em);
 	}
 
+	@NoOpenTransaction
 	@Get("app/modelo/listar")
 	public void lista(final String script) throws Exception {
 		try {
@@ -69,6 +72,7 @@ public class ExModeloController extends ExSelecionavelController {
 		}
 	}
 
+	@NoOpenTransaction
 	@Get("app/modelo/editar")
 	public void edita(final Long id, final Integer postback)
 			throws UnsupportedEncodingException {
@@ -117,6 +121,7 @@ public class ExModeloController extends ExSelecionavelController {
 		}
 	}
 
+	@OpenTransaction
 	@Post("app/modelo/gravar")
 	public void editarGravar(final Long id, final String nome,
 			final String tipoModelo, final String conteudo,
@@ -162,9 +167,10 @@ public class ExModeloController extends ExSelecionavelController {
 		result.redirectTo(ExModeloController.class).lista(null);
 	}
 
+	@OpenTransaction
 	@Get("app/modelo/desativar")
 	public void desativar(final Long id) throws Exception {
-		ModeloDao.iniciarTransacao();
+//		ModeloDao.iniciarTransacao();
 		assertAcesso(VERIFICADOR_ACESSO);
 		if (id == null) {
 			throw new AplicacaoException("ID não informada");
@@ -172,11 +178,12 @@ public class ExModeloController extends ExSelecionavelController {
 		final ExModelo modelo = dao().consultar(id, ExModelo.class, false);
 		dao().excluirComHistorico(modelo, dao().consultarDataEHoraDoServidor(),
 				getIdentidadeCadastrante());
-		ModeloDao.commitTransacao();
+//		ModeloDao.commitTransacao();
 
 		result.redirectTo(ExModeloController.class).lista(null);
 	}
 
+	@NoOpenTransaction
 	@Get("app/modelo/exportar")
 	public Download exportar(HttpServletResponse response) throws Exception {
 		final String modelo = "modelo";
@@ -278,6 +285,7 @@ public class ExModeloController extends ExSelecionavelController {
 		}
 	}
 
+	@NoOpenTransaction
 	@Get("app/modelo/exportarxml")
 	public Download exportarXml(HttpServletResponse response) {
 		final String modelos = "siga-doc-modelos";

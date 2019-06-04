@@ -8,6 +8,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.OpenTransaction;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Texto;
@@ -32,6 +34,7 @@ public class OrgaoController extends SigaSelecionavelControllerSupport<CpOrgao, 
 		return flt;
 	}
 	
+	@NoOpenTransaction
 	@Get("app/orgao/listar")
 	public void lista() throws Exception {
 		setItens(CpDao.getInstance().consultarCpOrgaoOrdenadoPorNome());
@@ -42,16 +45,14 @@ public class OrgaoController extends SigaSelecionavelControllerSupport<CpOrgao, 
 		
 	}
 	
+	@OpenTransaction
 	public void excluir(final Long id) throws Exception{
 		assertAcesso("FE:Ferramentas;CAD_ORGAO: Cadastrar Orgãos");
 		if (id != null) {
 			try {
-				dao().iniciarTransacao();
 				CpOrgao orgao = daoOrgao(id);				
 				dao().excluir(orgao);				
-				dao().commitTransacao();				
 			} catch (final Exception e) {
-				dao().rollbackTransacao();
 				throw new AplicacaoException("Erro na exclusão de Orgão", 0, e);
 			}
 		} else
@@ -59,6 +60,7 @@ public class OrgaoController extends SigaSelecionavelControllerSupport<CpOrgao, 
 		this.result.redirectTo(this).lista();
 	}
 	
+	@NoOpenTransaction
 	@Get("/app/orgao/editar")
 	public void edita(final Long id){
 		if (id != null) {
@@ -73,6 +75,7 @@ public class OrgaoController extends SigaSelecionavelControllerSupport<CpOrgao, 
 		result.include("orgaosUsu",this.getOrgaosUsu());
 	}
 	
+	@OpenTransaction
 	@Post("/app/orgao/gravar")
 	public void editarGravar(final Long id, 
 							 final String nmOrgao,
@@ -105,11 +108,8 @@ public class OrgaoController extends SigaSelecionavelControllerSupport<CpOrgao, 
 		orgao.setAtivo(String.valueOf(ativo));
 		
 		try {
-			dao().iniciarTransacao();
 			dao().gravar(orgao);
-			dao().commitTransacao();			
 		} catch (final Exception e) {
-			dao().rollbackTransacao();
 			throw new AplicacaoException("Erro na gravação", 0, e);
 		}
 		this.result.redirectTo(this).lista();
@@ -119,6 +119,7 @@ public class OrgaoController extends SigaSelecionavelControllerSupport<CpOrgao, 
 		return dao().consultar(id, CpOrgao.class, false);
 	}
 	
+	@NoOpenTransaction
 	@Get
 	@Post
 	@Path({"/app/orgao/buscar","/orgao/buscar.action"})
@@ -138,6 +139,7 @@ public class OrgaoController extends SigaSelecionavelControllerSupport<CpOrgao, 
 		result.include("propriedade",propriedade);
 	}
 	
+	@NoOpenTransaction
 	@Get
 	@Post
 	@Path({"/app/orgao/selecionar","/orgao/selecionar.action"})

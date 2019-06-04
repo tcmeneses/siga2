@@ -12,6 +12,8 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.OpenTransaction;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Texto;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
@@ -35,6 +37,7 @@ public class OrgaoUsuarioController extends SigaSelecionavelControllerSupport<Cp
 		return flt;
 	}
 	
+	@NoOpenTransaction
 	@Get("app/orgaoUsuario/listar")
 	public void lista(Integer offset, String nome) throws Exception {
 		if(offset == null) {
@@ -53,6 +56,7 @@ public class OrgaoUsuarioController extends SigaSelecionavelControllerSupport<Cp
 		result.include("currentPageNumber", calculaPaginaAtual(offset));
 	}
 	
+	@NoOpenTransaction
 	@Get("/app/orgaoUsuario/editar")
 	public void edita(final Long id){
 		if (id != null) {
@@ -70,6 +74,7 @@ public class OrgaoUsuarioController extends SigaSelecionavelControllerSupport<Cp
 		result.include("id",id);
 	}
 	
+	@OpenTransaction
 	@Post("/app/orgaoUsuario/gravar")
 	public void editarGravar(final Long id, 
 							 final String nmOrgaoUsuario,
@@ -133,12 +138,9 @@ public class OrgaoUsuarioController extends SigaSelecionavelControllerSupport<Cp
 		}
 		
 		try {
-			dao().iniciarTransacao();
 			dao().gravar(orgaoUsuario);
-			dao().commitTransacao();
 			dao().getSessao().flush();
 		} catch (final Exception e) {
-			dao().rollbackTransacao();
 			throw new AplicacaoException("Erro na gravação", 0, e);
 		}
 

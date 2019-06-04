@@ -10,6 +10,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.OpenTransaction;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.cp.model.DpLotacaoSelecao;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
@@ -42,13 +44,15 @@ public class VeiculoController extends TpController {
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 
+    @NoOpenTransaction
 	@Path("/listar")
 	public void listar() throws Exception {
 		CpOrgaoUsuario cpOrgaoUsuario = getTitular().getOrgaoUsuario();
 		result.include("veiculos", Veiculo.listarTodos(cpOrgaoUsuario));
 	}
 
-	@RoleAdmin
+	@OpenTransaction
+    @RoleAdmin
 	@RoleAdminFrota
 	@Path("/salvar")
 	public void salvar(final Veiculo veiculo, DpLotacaoSelecao lotacaoAtualSel) throws Exception {
@@ -68,6 +72,7 @@ public class VeiculoController extends TpController {
 		result.redirectTo(this).listar();
 	}
 
+    @NoOpenTransaction
 	@RoleAdmin
 	@RoleAdminFrota
 	@Path("/incluir")
@@ -75,7 +80,8 @@ public class VeiculoController extends TpController {
 		result.forwardTo(this).editar(null);
 	}
 
-	@RoleAdmin
+    @NoOpenTransaction
+    @RoleAdmin
 	@RoleAdminFrota
 	@Path("/editar/{id}")
 	public void editar(Long id) throws Exception {
@@ -86,7 +92,8 @@ public class VeiculoController extends TpController {
 
 	}
 
-	@RoleAdmin
+	@OpenTransaction
+    @RoleAdmin
 	@RoleAdminFrota
 	@Path("/excluir/{id}")
 	public void excluir(Long id) throws Exception {
@@ -95,6 +102,7 @@ public class VeiculoController extends TpController {
 		result.redirectTo(this).listar();
 	}
 
+    @NoOpenTransaction
 	@Path("/ler/{id}")
 	public void ler(Long id) throws Exception {
 		Veiculo veiculo = obterVeiculoParaEdicao(id);
@@ -104,12 +112,14 @@ public class VeiculoController extends TpController {
 		result.include("veiculo", veiculo);
 	}
 
-	@Path("/{idVeiculo}/avarias")
+    @NoOpenTransaction
+    @Path("/{idVeiculo}/avarias")
 	public void listarAvarias(Long idVeiculo) throws Exception {
 		result.redirectTo(AvariaController.class).listarPorVeiculo(idVeiculo);
 	}
 
-	@Path("/buscarPeloId/{id}")
+    @NoOpenTransaction
+    @Path("/buscarPeloId/{id}")
 	public void buscarPeloId(Long id) throws Exception {
 		Veiculo veiculo = Veiculo.AR.findById(id);
 		veiculo.configurarOdometroParaMudancaDeLotacao();

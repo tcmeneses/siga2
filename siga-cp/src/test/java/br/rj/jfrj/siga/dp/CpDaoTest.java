@@ -85,7 +85,7 @@ public class CpDaoTest extends TestCase {
 		CpTipoGrupo tpGrp = dao.consultar(
 				CpTipoGrupo.TIPO_GRUPO_GRUPO_DE_DISTRIBUICAO,
 				CpTipoGrupo.class, false);
-		dao.iniciarTransacao();
+	//	dao.iniciarTransacao();
 
 		CpGrupo grpNovo = new CpGrupoDeEmail();
 		grpNovo.setCpTipoGrupo(tpGrp);
@@ -111,7 +111,7 @@ public class CpDaoTest extends TestCase {
 		CpTipoGrupo tpGrp = dao.consultar(
 				CpTipoGrupo.TIPO_GRUPO_GRUPO_DE_DISTRIBUICAO,
 				CpTipoGrupo.class, false);
-		dao.iniciarTransacao();
+	//	dao.iniciarTransacao();
 
 		CpGrupo grpNovo = new CpGrupoDeEmail();
 		grpNovo.setCpTipoGrupo(tpGrp);
@@ -142,7 +142,7 @@ public class CpDaoTest extends TestCase {
 		if (true)
 			return;
 
-		dao.iniciarTransacao();
+	//	dao.iniciarTransacao();
 
 		CpGrupo grpIni = dao.listarGruposDeEmail().get(0);
 
@@ -163,7 +163,7 @@ public class CpDaoTest extends TestCase {
 		if (true)
 			return;
 
-		dao.iniciarTransacao();
+	//	dao.iniciarTransacao();
 
 		CpGrupo grpIni = dao.listarGruposDeEmail().get(0);
 
@@ -378,9 +378,9 @@ public class CpDaoTest extends TestCase {
 		System.out.println("Data e hora da ultima atualização - "
 				+ dao.consultarDataUltimaAtualizacao());
 
-		dao.iniciarTransacao();
+//		dao.iniciarTransacao();
 		// dao.importarAcessoTomcat();
-		dao.commitTransacao();
+//		dao.commitTransacao();
 
 		if (true)
 			return;

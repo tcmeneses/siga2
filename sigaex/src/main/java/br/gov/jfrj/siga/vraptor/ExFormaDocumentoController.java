@@ -13,6 +13,7 @@ import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.OpenTransaction;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.ex.ExFormaDocumento;
@@ -120,7 +121,8 @@ public class ExFormaDocumentoController extends ExController {
 		result.use(Results.page()).forwardTo("/WEB-INF/page/mensagemAjax.jsp");
 	}
 
-	@Post("app/forma/gravar")
+	@OpenTransaction
+    @Post("app/forma/gravar")
 	public void gravar(final Integer postback, final Long id, final String descricao, final String sigla, final Long idTipoFormaDoc, final boolean origemExterno,
 			final boolean origemInternoImportado, final boolean origemInternoProduzido, final boolean origemInternoCapturado, final boolean origemExternoCapturado) {
 		assertAcesso(ACESSO_SIGA_DOC_MOD);

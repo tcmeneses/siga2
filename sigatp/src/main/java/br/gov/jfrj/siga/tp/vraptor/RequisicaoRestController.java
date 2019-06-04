@@ -16,6 +16,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.OpenTransaction;
 import br.com.caelum.vraptor.validator.I18nMessage;
 import br.com.caelum.vraptor.validator.Message;
 import br.com.caelum.vraptor.view.Results;
@@ -42,6 +44,7 @@ public class RequisicaoRestController extends TpController {
         super(request, result, TpDao.getInstance(), validator, so, em);
     }
 
+    @NoOpenTransaction
     @Path("/ver/{id}")
     public void ver(Long id) throws RestControllerException {
         try {
@@ -56,6 +59,7 @@ public class RequisicaoRestController extends TpController {
         }
     }
 
+    @NoOpenTransaction
     @Path("/buscar/{codigoDocumento*}")
     public void buscar(String codigoDocumento) throws RestControllerException {
         try {
@@ -71,16 +75,19 @@ public class RequisicaoRestController extends TpController {
         
     }
 
+    @NoOpenTransaction
     @Path("/estaAutorizada/{codigoDocumento*}")
     public void estaAutorizada(String codigoDocumento) throws RestControllerException {
         result.use(Results.http()).body(estaNesseEstado(codigoDocumento, EstadoRequisicao.AUTORIZADA).toString());
     }
 
+    @NoOpenTransaction
     @Path("/estaRejeitada/{codigoDocumento*}")
     public void estaRejeitada(String codigoDocumento) throws RestControllerException {
         result.use(Results.http()).body(estaNesseEstado(codigoDocumento, EstadoRequisicao.REJEITADA).toString());
     }
 
+    @NoOpenTransaction
     @Path("/estaAtendida/{codigoDocumento*}")
     public void estaAtendida(String codigoDocumento) throws RestControllerException {
         result.use(Results.http()).body(estaNesseEstado(codigoDocumento, EstadoRequisicao.ATENDIDA).toString());
@@ -113,6 +120,7 @@ public class RequisicaoRestController extends TpController {
             validator.add(new I18nMessage("finalidade", "requisicaoTransporte.finalidade.validation"));
     }
 
+    @OpenTransaction 
     @Path("/incluir/{body*}")
     public void incluir(String body) throws RestControllerException {
         try {
@@ -176,6 +184,7 @@ public class RequisicaoRestController extends TpController {
         result.include("cadastrante", usuario);
     }
 
+    @OpenTransaction
     @Path("/alterar/{body*}")
     public void alterar(String body) throws RestControllerException {
         try {
@@ -209,6 +218,7 @@ public class RequisicaoRestController extends TpController {
         }
     }
 
+    @OpenTransaction
     @Path("/excluir")
     public void excluir() {
         result.use(Results.http()).body("Opera&ccedil;&atilde;o n&atilde;o suportada");

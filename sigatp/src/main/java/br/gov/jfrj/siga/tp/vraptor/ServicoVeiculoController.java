@@ -13,6 +13,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
+import br.com.caelum.vraptor.util.jpa.OpenTransaction;
 import br.com.caelum.vraptor.validator.I18nMessage;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
@@ -45,6 +47,7 @@ public class ServicoVeiculoController extends TpController {
         super(request, result, TpDao.getInstance(), validator, so, em);
     }
 
+    @NoOpenTransaction
     @RoleAdmin
     @RoleAdminFrota
     @Path("/incluir")
@@ -57,6 +60,7 @@ public class ServicoVeiculoController extends TpController {
         result.include("estadoServico", estadoServico);
     }
 
+    @NoOpenTransaction
     @RoleAdmin
     @RoleAdminFrota
     @Path("/cancelar")
@@ -69,6 +73,7 @@ public class ServicoVeiculoController extends TpController {
         result.include(estadoServico);
     }
 
+    @OpenTransaction
     @RoleAdmin
     @RoleAdminFrota
     @Path("/salvar")
@@ -175,7 +180,8 @@ public class ServicoVeiculoController extends TpController {
         validator.validate(servico);
 	}
 
-    @Path("/listar")
+    @NoOpenTransaction
+	@Path("/listar")
     public void listar() {
         CpOrgaoUsuario cpOrgaoUsuario = getTitular().getOrgaoUsuario();
         List<ServicoVeiculo> servicos = ServicoVeiculo.AR.find("cpOrgaoUsuario", cpOrgaoUsuario).fetch();
@@ -186,6 +192,7 @@ public class ServicoVeiculoController extends TpController {
         result.include("situacaoServico", situacaoServico);
     }
 
+    @NoOpenTransaction
     @Path("/listarFiltrado/{parametroEstado}")
     public void listarFiltrado(String parametroEstado) {
         EstadoServico estado = null != parametroEstado ? EstadoServico.valueOf(parametroEstado) : EstadoServico.AGENDADO;
@@ -208,6 +215,7 @@ public class ServicoVeiculoController extends TpController {
         }
     }
 
+    @NoOpenTransaction
     @RoleAdmin
     @RoleAdminFrota
     @Path("/editar/{id}")
@@ -218,6 +226,7 @@ public class ServicoVeiculoController extends TpController {
         result.include(SERVICO_STR, servico);
     }
 
+    @OpenTransaction
     @Path("/gravarAndamentosRequisicao/{estadoRequisicao}/{dpPessoa}")
     private void gravarAndamentosRequisicao(EstadoRequisicao estadoRequisicao, DpPessoa dpPessoa, String descricao, RequisicaoTransporte requisicaoTransporte) {
         Andamento andamento = new Andamento();
@@ -253,6 +262,7 @@ public class ServicoVeiculoController extends TpController {
         return requisicaoTransporte;
     }
 
+    @OpenTransaction
     @RoleAdmin
     @RoleAdminFrota
     @Path("/excluir/{id}")
@@ -281,6 +291,7 @@ public class ServicoVeiculoController extends TpController {
         result.redirectTo(ServicoVeiculoController.class).listar();
     }
 
+    @NoOpenTransaction
     @Path("/buscarServico/{popUp}/{sequence*}")
     public void buscarServico(Boolean popUp, String sequence) throws Exception {
         ServicoVeiculo servico = recuperarPelaSigla(sequence, popUp);
@@ -288,6 +299,7 @@ public class ServicoVeiculoController extends TpController {
         result.forwardTo(ServicoVeiculoController.class).ler(servico.getId());
     }
 
+    @NoOpenTransaction
     @Path("/ler/{id}")
     public void ler(Long id) {
         ServicoVeiculo servico = ServicoVeiculo.AR.findById(id);

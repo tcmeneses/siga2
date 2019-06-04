@@ -43,16 +43,16 @@ public class ConfiguracaoGrupoTransacao {
 			p_cgeConfiguracao.setCpConfiguracao(new CpConfiguracao());
 		}
 		p_cgeConfiguracao.atualizarCpConfiguracao();
-		CpDao.getInstance().iniciarTransacao();
+//		CpDao.getInstance().iniciarTransacao();
 		try {
 			CpDao.getInstance().gravarComHistorico( 
 					p_cgeConfiguracao.getCpConfiguracao(),
 					identidadeCadastrante);
 		} catch (Exception e) {
-			CpDao.getInstance().rollbackTransacao();
+//			CpDao.getInstance().rollbackTransacao();
 			throw new AplicacaoException("Erro ao gravar: ", 0, e);
 		}
-		CpDao.getInstance().commitTransacao();
+//		CpDao.getInstance().commitTransacao();
 	}
 
 	/**
@@ -69,14 +69,14 @@ public class ConfiguracaoGrupoTransacao {
 		if (p_cgeConfiguracao.getCpConfiguracao() == null) {
 			return;
 		}
-		CpDao.getInstance().iniciarTransacao();
+//		CpDao.getInstance().iniciarTransacao();
 		try {
 			CpDao.getInstance().excluir(p_cgeConfiguracao.getCpConfiguracao());
 			p_cgeConfiguracao.setCpConfiguracao(null);
 		} catch (Exception e) {
-			CpDao.getInstance().rollbackTransacao();
+//			CpDao.getInstance().rollbackTransacao();
 			throw new AplicacaoException("Erro ao excluir: ", 0, e);
 		}
-		CpDao.getInstance().commitTransacao();
+//		CpDao.getInstance().commitTransacao();
 	}
 }

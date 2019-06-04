@@ -407,7 +407,7 @@ public class ExBL extends CpBL {
 	}
 
 	public void marcar(ExDocumento doc) {
-		ExDao.iniciarTransacao();
+	//	ExDao.iniciarTransacao();
 		atualizarMarcas(doc);
 		// Nato: será que precisamos contar o número de páginas cada vez que
 		// trocamos as marcas? Essa é uma operação custosa! Desabilitei para ver
@@ -416,7 +416,7 @@ public class ExBL extends CpBL {
 		// m.setNumPaginas(m.getContarNumeroDePaginas());
 		// dao().gravar(m);
 		// }
-		ExDao.commitTransacao();
+	//	ExDao.commitTransacao();
 	}
 
 	/**
@@ -428,12 +428,12 @@ public class ExBL extends CpBL {
 	 * @throws Exception
 	 */
 	public Integer ContarNumeroDePaginas(ExDocumento doc) {
-		ExDao.iniciarTransacao();
+	//	ExDao.iniciarTransacao();
 		Integer numeroDePaginas = doc.getContarNumeroDePaginas();
 		doc.setNumPaginas(numeroDePaginas);
 		dao().gravar(doc);
 		try {
-			ExDao.commitTransacao();
+	//		ExDao.commitTransacao();
 		} catch (Throwable e) {
 			System.out
 					.println("Erro ao contar o número de páginas do documento."
@@ -453,12 +453,12 @@ public class ExBL extends CpBL {
 	 * @throws Exception
 	 */
 	public Integer ContarNumeroDePaginas(ExMovimentacao mov) {
-		ExDao.iniciarTransacao();
+	//	ExDao.iniciarTransacao();
 		Integer numeroDePaginas = mov.getContarNumeroDePaginas();
 		mov.setNumPaginas(numeroDePaginas);
 		dao().gravar(mov);
 		try {
-			ExDao.commitTransacao();
+	//		ExDao.commitTransacao();
 		} catch (Throwable e) {
 			System.out
 					.println("Erro ao contar o número de páginas da movimentação."
@@ -508,7 +508,7 @@ public class ExBL extends CpBL {
 				}
 				System.out.print(doc.getIdDoc() + " ok - ");
 			}
-			ExDao.commitTransacao();
+	//		ExDao.commitTransacao();
 			dao().getSessao().clear();
 			long duracao = System.currentTimeMillis() - inicio;
 			System.out.println();
@@ -623,7 +623,7 @@ public class ExBL extends CpBL {
 
 			}
 			if (efetivar) {
-				ExDao.commitTransacao();
+	//			ExDao.commitTransacao();
 				// System.gc();
 			}
 			dao().getSessao().clear();
@@ -1198,19 +1198,19 @@ public class ExBL extends CpBL {
 		arquivarCorrente(cadastrante, lotaCadastrante, mob, null, null, null,
 				true);
 		try {
-			ExDao.iniciarTransacao();
+		//	ExDao.iniciarTransacao();
 			for (ExMarca marc : mob.getExMarcaSet()) {
 				if (!marc.getCpMarcador().getIdMarcador()
 						.equals(CpMarcador.MARCADOR_ARQUIVADO_CORRENTE)) {
 					dao().excluir(marc);
 				}
 			}
-			ExDao.commitTransacao();
+	//		ExDao.commitTransacao();
 		} catch (final AplicacaoException e) {
-			ExDao.rollbackTransacao();
+		//	ExDao.rollbackTransacao();
 			throw e;
 		} catch (final Exception e) {
-			ExDao.rollbackTransacao();
+		//	ExDao.rollbackTransacao();
 			throw new AplicacaoException("Ocorreu um Erro durante a Operação",
 					0, e);
 		}
@@ -3809,7 +3809,7 @@ public class ExBL extends CpBL {
 														 */
 	throws Exception {
 		try {
-			ExDao.iniciarTransacao();
+	//		ExDao.iniciarTransacao();
 
 			try {
 				final Date d = doc.getDtRegDoc();
@@ -3865,12 +3865,12 @@ public class ExBL extends CpBL {
 			}
 
 			dao().excluir(doc);
-			ExDao.commitTransacao();
+	//		ExDao.commitTransacao();
 		} catch (final AplicacaoException e) {
-			ExDao.rollbackTransacao();
+	//		ExDao.rollbackTransacao();
 			throw e;
 		} catch (final Exception e) {
-			ExDao.rollbackTransacao();
+	//		ExDao.rollbackTransacao();
 			throw new AplicacaoException("Ocorreu um Erro durante a Operação",
 					0, e);
 		}
@@ -5544,7 +5544,7 @@ public class ExBL extends CpBL {
 	}
 
 	private void iniciarAlteracao() throws AplicacaoException {
-		ExDao.iniciarTransacao();
+	//	ExDao.iniciarTransacao();
 	}
 	
 	private void concluirAlteracaoParcial(ExMobil mob) {
@@ -5606,7 +5606,7 @@ public class ExBL extends CpBL {
 			if (recalcularAcesso)
 				atualizarVariaveisDenormalizadas(doc);
 		}
-		ExDao.commitTransacao();
+	//	ExDao.commitTransacao();
 		// if (doc != null)
 		// atualizarWorkflow(doc, null);
 
@@ -5625,7 +5625,7 @@ public class ExBL extends CpBL {
 	}
 
 	private void cancelarAlteracao() throws AplicacaoException {
-		ExDao.rollbackTransacao();
+	//	ExDao.rollbackTransacao();
 		SortedSet<ExMobil> set = threadAlteracaoParcial.get();
 		if (set != null)
 			set.clear();
@@ -6216,13 +6216,13 @@ public class ExBL extends CpBL {
 			throw new AplicacaoException(
 					"não é possível salvar um modelo sem informar a descrição.");
 		try {
-			ExDao.iniciarTransacao();
+		//	ExDao.iniciarTransacao();
 			dao().gravarComHistorico(modNovo, modAntigo, dt,
 					identidadeCadastrante);
-			ExDao.commitTransacao();
+		//	ExDao.commitTransacao();
 		} catch (Exception e) {
-			ExDao.rollbackTransacao();
-			throw new AplicacaoException("Erro ao salvar um modelo.", 0, e);
+		//	ExDao.rollbackTransacao();
+		 	throw new AplicacaoException("Erro ao salvar um modelo.", 0, e);
 		}
 	}
 
@@ -6245,11 +6245,11 @@ public class ExBL extends CpBL {
 			throw new AplicacaoException("Esta sigla já estásendo utilizada.");
 
 		try {
-			ExDao.iniciarTransacao();
+		//	ExDao.iniciarTransacao();
 			dao().gravar(forma);
-			ExDao.commitTransacao();
+		//	ExDao.commitTransacao();
 		} catch (Exception e) {
-			ExDao.rollbackTransacao();
+		//	ExDao.rollbackTransacao();
 			throw new AplicacaoException("Erro ao salvar um tipo.", 0, e);
 		}
 	}

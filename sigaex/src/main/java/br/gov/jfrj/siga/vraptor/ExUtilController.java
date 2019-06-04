@@ -27,6 +27,7 @@ import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.util.jpa.NoOpenTransaction;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.itextpdf.ConversorHtml;
 import br.gov.jfrj.itextpdf.Documento;
@@ -86,6 +87,7 @@ public class ExUtilController extends ExController {
 		int size;
 	}
 
+	@NoOpenTransaction
 	@Post("/public/app/util/html-pdf")
 	public void html2pdf(String html, int conv) throws Exception {
 		try {
@@ -121,6 +123,7 @@ public class ExUtilController extends ExController {
 		}
 	}
 
+	@NoOpenTransaction
 	@Post("/public/app/util/pdf-info")
 	public void pdf2info(String pdf) throws Exception {
 		class Resp {
