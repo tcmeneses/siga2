@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.model.ContextoPersistencia;
 import br.gov.jfrj.siga.pp.dao.PpDao;
@@ -26,6 +28,7 @@ public class SalaController extends PpController {
         super(request, result, PpDao.getInstance(), so, em);
     }
 
+    @NaoTransacional
     @Path("/incluir")
     public void incluir() {
 		// pega usuario do sistema
@@ -37,6 +40,7 @@ public class SalaController extends PpController {
 		}
 	}
 
+    @Transacional
     @Path("/insert")
     public void insert(Locais formLocal, int cod_forum) {
     	Foruns objForum = new Foruns(cod_forum, " ", " ");
@@ -61,6 +65,7 @@ public class SalaController extends PpController {
     	result.include("resposta", resposta);
     }
 
+    @NaoTransacional
     @Path("/listar")
     public void listar(String cod_local, String sala, String desc_forum) {
 		// pega usuario do sistema
@@ -134,6 +139,7 @@ public class SalaController extends PpController {
 		}
 	}
 
+    @Transacional
     @Path("/delete")
     public void delete(String cod_sala) {
 		String resposta = " ";

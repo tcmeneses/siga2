@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.model.ContextoPersistencia;
 import br.gov.jfrj.siga.pp.dao.PpDao;
@@ -27,6 +28,7 @@ public class UsuarioFormController extends PpController {
         super(request, result, PpDao.getInstance(), so, em);
     }
     
+    @Transacional
     @Path("/atualiza")
     public void atualiza(String paramCodForum) throws Exception {
     	/** Item de menu "configuração"

@@ -13,6 +13,7 @@ import org.hibernate.validator.util.Contracts;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.model.ContextoPersistencia;
 import br.gov.jfrj.siga.pp.models.Foruns;
@@ -26,6 +27,7 @@ public class PermissaoController extends PpController {
     public PermissaoController(HttpServletRequest request, Result result, CpDao dao, SigaObjects so, EntityManager em) {
         super(request, result, dao, so, em);
     }
+    @Transacional
     @Path("/exclui")
     public void exclui(String matricula_proibida, String sesb_proibida){
 		String mensagem = "";
@@ -59,6 +61,7 @@ public class PermissaoController extends PpController {
 		}else{redirecionaPaginaErro("Usu&aacute;rio sem permiss&atilde;o." , null );}
     }
 
+    @Transacional
     @Path("/inclui")
     public void inclui(String matricula_permitida, String sesb_permitida, String nome_permitido, String forum_permitido ) throws Exception {
     	// ALTERAR A PAGINA DE CADASTRO DE USUARIOS PARA INCLUIR SESB_PESSOA_PERMITIDA.
