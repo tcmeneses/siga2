@@ -28,13 +28,16 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Immutable;
 
+import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.model.ActiveRecord;
 
 @Entity
-@Table(name = "CP_MARCADOR", schema = "CORPORATIVO")
+@Immutable
 @Cacheable
-@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+@Cache(region = CpDao.CACHE_QUERY_HOURS, usage = CacheConcurrencyStrategy.READ_ONLY)
+@Table(name = "CP_MARCADOR", schema = "CORPORATIVO")
 public class CpMarcador extends AbstractCpMarcador {
 
 	final static public long MARCADOR_EM_ELABORACAO = 1;
@@ -173,6 +176,8 @@ public class CpMarcador extends AbstractCpMarcador {
 
 	final static public long MARCADOR_PRONTO_PARA_ASSINAR = 71;
 
+	public static final long MARCADOR_COMO_REVISOR = 72;
+	
 	final static public long MARCADOR_URGENTE = 1000;
 
 	final static public long MARCADOR_IDOSO = 1001;
