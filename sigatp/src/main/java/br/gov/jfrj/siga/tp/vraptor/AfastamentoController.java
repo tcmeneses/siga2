@@ -9,6 +9,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.validator.I18nMessage;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.dp.dao.CpDao;
@@ -35,6 +37,7 @@ public class AfastamentoController extends TpController {
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 
+    @NaoTransacional
 	@Path("/listarPorCondutor/{idCondutor}")
 	public void listarPorCondutor(Long idCondutor) throws Exception {
 		Condutor condutor = Condutor.AR.findById(idCondutor);
@@ -44,7 +47,8 @@ public class AfastamentoController extends TpController {
 		result.include("condutor", condutor);
 	}
 	
-	@RoleAdmin
+    @NaoTransacional
+    @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
 	@Path("/incluir/{idCondutor}")
@@ -52,7 +56,8 @@ public class AfastamentoController extends TpController {
 		result.forwardTo(AfastamentoController.class).editar(idCondutor, null);
 	}
 
-	@RoleAdmin
+    @NaoTransacional
+    @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
 	@Path("/editar/{idCondutor}/{id}")
@@ -70,7 +75,8 @@ public class AfastamentoController extends TpController {
 		result.include(AFASTAMENTO, afastamento);
 	}
 
-	@RoleAdmin
+	@Transacional
+    @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
 	@Path("/salvar")
@@ -114,6 +120,7 @@ public class AfastamentoController extends TpController {
 		}
 	}
 
+	@Transacional
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo

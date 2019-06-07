@@ -48,7 +48,7 @@ public abstract class ModeloDao {
 
 	protected ModeloDao() {
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	protected static <T extends ModeloDao> T getInstance(Class<T> clazz,
 			Session sessao) {
@@ -149,6 +149,7 @@ public abstract class ModeloDao {
 	 * @return Retorna o atributo sessao.
 	 */
 	public Session getSessao() {
+		
 		return HibernateUtil.getSessao();
 	}
 
@@ -230,6 +231,7 @@ public abstract class ModeloDao {
 		this.cacheRegion = cacheRegion;
 	}
 
+	/* Comentado por estar em branco por João Luis na optimização feita para somente abrir transactions em métodos com operações DML
 	public static void iniciarTransacao() {
 	}
 
@@ -237,7 +239,7 @@ public abstract class ModeloDao {
 	}
 
 	public static void rollbackTransacao() {
-	}
+	} */ 
 
 	/**
 	 * @return true se a sessão do Hibernate não for nula e estiver aberta.

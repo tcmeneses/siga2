@@ -148,7 +148,7 @@ public abstract class AbstractRelatorioBaseBuilder extends DynamicReportBuilder 
 //		ds = new JRBeanCollectionDataSource(lista);
 //	}
 	
-	public abstract void setDados(Collection dados) throws Exception;
+	public abstract void setDados(Collection<?> dados) throws Exception;
 	/**
 	 *  Configura os dados que serão exibidos no relatório com Collections
 	 *  de Maps.

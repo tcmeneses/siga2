@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.gov.jfrj.siga.dp.DpPessoa;
 import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.model.ContextoPersistencia;
@@ -33,6 +35,7 @@ public class AgendamentoController extends PpController {
         super(request, result, PpDao.getInstance(), so, em);
     }
 
+    @NaoTransacional
     @Path("/hoje")
     public void hoje(String selFiltraSala) { 
 		String matriculaSessao = getCadastrante().getMatricula().toString();
@@ -96,6 +99,7 @@ public class AgendamentoController extends PpController {
 		}
     }
 
+    @NaoTransacional
     @Path("/hojePrint")
     public void hojePrint(String frm_data_ag) {
 		String matriculaSessao = getCadastrante().getMatricula().toString();
@@ -127,6 +131,7 @@ public class AgendamentoController extends PpController {
 		}
     }
     
+    @NaoTransacional
     @Path("/amanha")
     public void amanha(){
     	String matriculaSessao = getCadastrante().getMatricula().toString();
@@ -203,6 +208,7 @@ public class AgendamentoController extends PpController {
 		}
     }
     
+    @NaoTransacional
     @Path("/amanhaPrint")
     public void amanhaPrint(String frm_data_ag){
     	String matriculaSessao = getCadastrante().getMatricula().toString();
@@ -237,6 +243,7 @@ public class AgendamentoController extends PpController {
 		}
     }
     
+    @NaoTransacional
     @Path("/print")
     public void print(String frm_data_ag, String frm_sala_ag, String frm_processo_ag, String frm_periciado ){
 		if(frm_periciado == "" || frm_periciado == null){
@@ -256,11 +263,12 @@ public class AgendamentoController extends PpController {
 		}
     }
 
+    @NaoTransacional
     @Path("/salaLista")
     public void salaLista(String frm_cod_local, String frm_data_ag){
 		String local = "";
 		String lotacaoSessao = getCadastrante().getLotacao().getSiglaCompleta();
-		List<Locais> listSalas = new ArrayList();
+		List<Locais> listSalas = new ArrayList<Locais>();
 		// pega usuario do sistema
 		String matriculaSessao = getCadastrante().getMatricula().toString();
 		String sesb_pessoaSessao = getCadastrante().getSesbPessoa().toString();
@@ -268,7 +276,7 @@ public class AgendamentoController extends PpController {
 		if (objUsuario != null) {
 			// Pega o usuario do sistema, e, filtra os locais(salas) daquele forum onde ele esta.
 			listSalas = ((List) Locais.AR.find("forumFk='" + objUsuario.getForumFk().getCod_forum() + "' order by ordem_apresentacao ").fetch()); // isso nÃ£o dÃ¡ erro no caso de retorno vazio.
-			List<Agendamentos> listAgendamentosMeusSala = new ArrayList();
+			List<Agendamentos> listAgendamentosMeusSala = new ArrayList<Agendamentos>();
 			if(!(frm_cod_local==null||frm_data_ag.isEmpty())){
 				//lista os agendamentos do dia, e, da lotacao do cadastrante
 				listAgendamentosMeusSala = ((List) Agendamentos.AR.find("localFk.cod_local='" + frm_cod_local + "' and data_ag = to_date('" + frm_data_ag + "','yy-mm-dd') order by hora_ag").fetch());
@@ -378,6 +386,7 @@ public class AgendamentoController extends PpController {
 		}
     }
 
+    @Transacional
     @Path("/incluirAjax")
     public void incluirAjax(String fixo_perito_juizo) {
         String fixo_perito_juizo_nome = "";
@@ -411,6 +420,8 @@ public class AgendamentoController extends PpController {
             redirecionaPaginaErro("Usu&aacute;rio sem permiss&atilde;o", null);
         }
     }
+    
+    @Transacional
     @Path("/update")
     public void update(String cod_sala, String data_ag, String hora_ag, String processo, String periciado, String perito_juizo, String perito_parte, String orgao_ag){
         processo = verificaCampoEInicializaCasoNull(processo);
@@ -449,6 +460,7 @@ public class AgendamentoController extends PpController {
 		}
     }
 
+    @NaoTransacional
     @Path("/imprime")
     public void imprime(String frm_data_ag){
 		String matriculaSessao = getCadastrante().getMatricula().toString();
@@ -513,6 +525,7 @@ public class AgendamentoController extends PpController {
     	}
     }
 
+    @Transacional
     @Path("/excluir")
     public void excluir(String data, String filtra_forum) {
         // pega matricula do usuario do sistema
@@ -572,6 +585,7 @@ public class AgendamentoController extends PpController {
         }
     }
     
+    @NaoTransacional
     @Path("/agendadas")
     public void agendadas(String data) {
         // pega matricula do usuario do sistema
@@ -626,6 +640,7 @@ public class AgendamentoController extends PpController {
     }
 
 
+    @Transacional
     @Path("/atualiza")
     public void atualiza(String cod_sala, String data_ag, String hora_ag) {
     	// pega usuario do sistema
@@ -684,10 +699,11 @@ public class AgendamentoController extends PpController {
     }
     
 
+    @NaoTransacional
     @Path("/calendarioVetor")
     public void calendarioVetor(String frm_cod_local) {
-        List listDatasLotadas = new ArrayList();
-        List listDatasDoMes = new ArrayList();
+        List<String> listDatasLotadas = new ArrayList<String>();
+        List<String> listDatasDoMes = new ArrayList<String>();
         SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         Date parametro = new Date();
         Date dt = new Date();
@@ -711,7 +727,7 @@ public class AgendamentoController extends PpController {
                 String dia_ag_prox;
                 int i = 0;
                 // conta os agendamentos de cada dia, do local que veio do form
-                for (Iterator it = listDatasDoMes.iterator(); it.hasNext();) {
+                for (Iterator<String> it = listDatasDoMes.iterator(); it.hasNext();) {
                     dia_ag_prox = (String) it.next(); // pegou o proximo
                     if (i == 0) {
                         dia_ag_ant = dia_ag_prox;
@@ -738,6 +754,7 @@ public class AgendamentoController extends PpController {
         result.include("listDatasLotadas", listDatasLotadas);
     }
     
+    @NaoTransacional
     @Path("/horarioVetor")
     public void horarioVetor(String frm_cod_local, String frm_data_ag) {
         List<String> listHorasLivres = new ArrayList<String>();

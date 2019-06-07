@@ -213,9 +213,9 @@ public class CpDao extends ModeloDao {
 	}
 	
 	public CpServico acrescentarServico(CpServico srv) {
-		iniciarTransacao();
+	//	iniciarTransacao();
 		CpServico srvGravado = gravar(srv);
-		commitTransacao();
+	//	commitTransacao();
 		cacheServicos.put(srv.getSigla(), srv);
 		return srvGravado;
 	}

@@ -114,7 +114,7 @@ public class AlteracaoDireitosRelatorio extends RelatorioTemplate {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Collection processarDados() {
+	public Collection<String> processarDados() {
 		ArrayList<String> dados = new ArrayList<String>();
 		try {
 			List<Item> list = compararDasPessoasDoOrgaoNoPeriodo(

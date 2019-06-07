@@ -36,6 +36,8 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.interceptor.download.Download;
 import br.com.caelum.vraptor.interceptor.download.InputStreamDownload;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.gov.jfrj.itextpdf.Documento;
 import br.gov.jfrj.siga.Service;
 import br.gov.jfrj.siga.base.AplicacaoException;
@@ -68,6 +70,7 @@ public class ExArquivoController extends ExController {
 		super(request, response, context, result, ExDao.getInstance(), so, em);
 	}
 
+	@NaoTransacional
 	@Get("/app/arquivo/exibir")
 	public Download aExibir(final String sigla, final boolean popup, final String arquivo, byte[] certificado, String hash, final String HASH_ALGORITHM,
 			final String certificadoB64, boolean completo, final boolean semmarcas) {
@@ -191,6 +194,7 @@ public class ExArquivoController extends ExController {
 	}
 
 
+	@NaoTransacional
 	@Get("/app/arquivo/download")
 	public Download download(String arquivo, String hash, HttpServletResponse response) throws Exception {
 		boolean isZip = arquivo.endsWith(".zip");

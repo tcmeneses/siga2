@@ -11,6 +11,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdmin;
@@ -35,12 +37,14 @@ public class FornecedorController extends TpController {
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 
+    @NaoTransacional
 	@Path("/listar")
 	public void listar() {
 		result.include("fornecedores", getFornecedores());
 	}
 
-	@RoleAdmin
+    @NaoTransacional
+    @RoleAdmin
 	@RoleAdminFrota
 	@RoleAdminMissao	
 	@RoleAdminGabinete
@@ -50,7 +54,8 @@ public class FornecedorController extends TpController {
 		result.forwardTo(this).editar(null);
 	}
 
-	@RoleAdmin
+    @NaoTransacional
+    @RoleAdmin
 	@RoleAdminFrota
 	@RoleAdminMissao
 	@RoleAdminGabinete
@@ -70,7 +75,8 @@ public class FornecedorController extends TpController {
 		result.include("listaUF", Uf.listarTodos());
 	}
 	
-	@RoleAdmin
+	@Transacional
+    @RoleAdmin
 	@RoleAdminFrota
 	@RoleAdminMissao
 	@RoleAdminGabinete
@@ -95,6 +101,7 @@ public class FornecedorController extends TpController {
 		}
 	}
 
+	@Transacional
 	@RoleAdmin
 	@RoleAdminFrota
 	@RoleAdminMissao

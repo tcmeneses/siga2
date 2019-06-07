@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
 import br.gov.jfrj.siga.sr.dao.SrDao;
 import br.gov.jfrj.siga.sr.model.SrSelecionavel;
 import br.gov.jfrj.siga.sr.validator.SrValidator;
@@ -19,6 +20,7 @@ public class SelecaoController extends SrController {
 		super(request, result, SrDao.getInstance(), so, em, srValidator);
 	}
 
+	@NaoTransacional
 	@Path("/ajaxRetorno")
 	public void ajaxRetorno(SrSelecionavel selecionavel) {
 		result.include("sel", selecionavel);

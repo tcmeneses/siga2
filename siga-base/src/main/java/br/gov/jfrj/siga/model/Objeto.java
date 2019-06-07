@@ -199,7 +199,7 @@ public class Objeto extends ObjetoBase{
 		// Cascade save
 		try {
 			Set<Field> fields = new HashSet<Field>();
-			Class clazz = this.getClass();
+			Class<?> clazz = this.getClass();
 			while (!clazz.equals(Objeto.class)) {
 				Collections.addAll(fields, clazz.getDeclaredFields());
 				clazz = clazz.getSuperclass();
@@ -249,20 +249,20 @@ public class Objeto extends ObjetoBase{
 										(PersistentCollection) value,
 										willBeSaved);
 
-								for (Object o : (Collection) value) {
+								for (Object o : (Collection<?>) value) {
 									saveAndCascadeIfObjeto(o,
 											willBeSaved);
 								}
 							} else {
 								cascadeOrphans(this, col, willBeSaved);
 
-								for (Object o : (Collection) value) {
+								for (Object o : (Collection<?>) value) {
 									saveAndCascadeIfObjeto(o,
 											willBeSaved);
 								}
 							}
 						} else if (value instanceof Collection) {
-							for (Object o : (Collection) value) {
+							for (Object o : (Collection<?>) value) {
 								saveAndCascadeIfObjeto(o,
 										willBeSaved);
 							}
@@ -305,7 +305,7 @@ public class Objeto extends ObjetoBase{
 					entityName = ((EntityType) ct)
 							.getAssociatedEntityName(session.getFactory());
 					if (ce.getSnapshot() != null) {
-						Collection orphans = ce.getOrphans(entityName,
+						Collection<?> orphans = ce.getOrphans(entityName,
 								persistentCollection);
 						for (Object o : orphans) {
 							saveAndCascadeIfObjeto(o, willBeSaved);
@@ -400,6 +400,7 @@ public class Objeto extends ObjetoBase{
 		return getClass().getSimpleName() + "[" + keyStr + "]";
 	}
 
+	@SuppressWarnings("serial")
 	public static class JPAQueryException extends RuntimeException {
 
 		public JPAQueryException(String message) {

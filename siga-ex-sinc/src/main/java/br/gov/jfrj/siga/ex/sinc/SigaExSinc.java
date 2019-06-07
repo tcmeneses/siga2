@@ -400,7 +400,7 @@ public class SigaExSinc {
 			throw new Exception("Erro na gravação", e);
 		}
 		try {
-			ExDao.getInstance().iniciarTransacao();
+	//		ExDao.getInstance().iniciarTransacao();
 			OperadorComHistorico o = new OperadorComHistorico() {
 				public Sincronizavel gravar(Sincronizavel s) {
 					Sincronizavel o = ExDao.getInstance().gravar(s);
@@ -420,7 +420,7 @@ public class SigaExSinc {
 				log("As alterações não serão efetivadas! Executando rollback...");
 				log("");
 				log("");
-				ExDao.getInstance().rollbackTransacao();
+		//		ExDao.getInstance().rollbackTransacao();
 			} else if (maxSinc > 0 && list.size() > maxSinc) {
 				log("");
 				log("");
@@ -431,14 +431,14 @@ public class SigaExSinc {
 				log("");
 				log("");
 
-				ExDao.getInstance().rollbackTransacao();
+//				ExDao.getInstance().rollbackTransacao();
 			} else {
 
-				ExDao.getInstance().commitTransacao();
+//				ExDao.getInstance().commitTransacao();
 				log("Transação confirmada");
 			}
 		} catch (Exception e) {
-			ExDao.getInstance().rollbackTransacao();
+//			ExDao.getInstance().rollbackTransacao();
 			log("Transação abortada por erro: " + e.getMessage());
 			throw new Exception("Erro na gravação", e);
 		}

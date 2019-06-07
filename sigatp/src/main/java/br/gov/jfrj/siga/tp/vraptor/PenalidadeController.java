@@ -10,6 +10,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdmin;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdminFrota;
@@ -31,12 +33,14 @@ public class PenalidadeController extends TpController {
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 
-	@Path("/listar")
+    @NaoTransacional
+    @Path("/listar")
 	public void listar() {
    		List<Penalidade> penalidades = Penalidade.listarTodos();
    		result.include("penalidades", penalidades);
     }
 
+    @NaoTransacional
     @RoleAdmin
     @RoleAdminFrota
 	@Path("/editar/{id}")
@@ -45,6 +49,7 @@ public class PenalidadeController extends TpController {
 		result.include(PENALIDADE_STR, penalidade);
 	}
 
+    @Transacional
     @RoleAdmin
     @RoleAdminFrota
 	@Path("/excluir/{id}")
@@ -55,6 +60,7 @@ public class PenalidadeController extends TpController {
 		result.redirectTo(this).listar();
 	}
 
+    @NaoTransacional
     @RoleAdmin
     @RoleAdminFrota
 	@Path("/incluir")
@@ -64,6 +70,7 @@ public class PenalidadeController extends TpController {
      	result.include(PENALIDADE_STR,penalidade);
 	}
 
+    @Transacional
     @RoleAdmin
     @RoleAdminFrota
 	@Path("/salvar")
@@ -83,7 +90,8 @@ public class PenalidadeController extends TpController {
     }
 
 	/* Metodo AJAX */
-	@RoleAdmin
+    @NaoTransacional
+    @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
 	@RoleAgente
@@ -96,7 +104,8 @@ public class PenalidadeController extends TpController {
 
 
 	/* Metodo AJAX */
-	@RoleAdmin
+    @NaoTransacional
+    @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
 	@RoleAgente

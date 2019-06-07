@@ -16,6 +16,8 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Data;
@@ -107,6 +109,7 @@ public class SubstituicaoController extends SigaController {
 		return substVigentes;
 	}
 		
+	@NaoTransacional
 	@Get("/app/substituicao/listar")
 	public void lista() throws Exception {
 		String substituicao = "false";
@@ -122,6 +125,7 @@ public class SubstituicaoController extends SigaController {
 		result.include("itens", buscarSubstitutos(substituicao, getCadastrante(), getCadastrante().getLotacao()));
 	}	
 	
+	@NaoTransacional
 	@Get("/app/substituicao/editar")
 	public void edita(Long id) throws Exception {
 		String buscarFechadas = "buscarFechadas="+podeCadastrarQualquerSubstituicao();
@@ -177,6 +181,7 @@ public class SubstituicaoController extends SigaController {
 		result.include("lotaSubstitutoSel", lotaSubstitutoSel);//tipoSubstituto=2
 	}
 	
+	@Transacional
 	@Post("/app/substituicao/gravar")
 	public void gravar(DpSubstituicao substituicao
 					  ,Integer tipoTitular
@@ -204,7 +209,6 @@ public class SubstituicaoController extends SigaController {
 		this.lotaSubstitutoSel = lotaSubstitutoSel;//tipoSubstituto=2
 		
 		try {
-			dao().iniciarTransacao();
 			if (tipoTitular == 1) {
 				if (this.titularSel.getId() == null)
 					throw new AplicacaoException("Titular não informado");
@@ -285,24 +289,21 @@ public class SubstituicaoController extends SigaController {
 
 			subst = dao().gravar(subst);
 			result.redirectTo(this).lista();
-
-			dao().commitTransacao();
 		} catch (final Exception e) {
-			dao().rollbackTransacao();
 			result.include("exceptionStack", e);
 			throw new AplicacaoException("Não foi possível Gravar", 0, e);			
 		}
 
 	}
 	
+
+	@Transacional
 	@Get("/app/substituicao/finalizar")
 	public void finalizar() throws Exception {
 		try {
-			dao().iniciarTransacao();
 			gravarFinalizar();
-			dao().commitTransacao();
 		} catch (Exception e) {
-			dao().rollbackTransacao();
+			throw new AplicacaoException("Não foi possível Finalizar", 0, e);
 		}
 		String referer = getRequest().getHeader("Referer");
 		if (referer != null)
@@ -323,11 +324,11 @@ public class SubstituicaoController extends SigaController {
 		per.setLotaSubstituindo(null);
 		dao().gravar(per);
 	}
-	
+
+	@Transacional
 	@Get("/app/substituicao/substituirGravar")
 	public void substituirGravar(Long id) throws Exception {
 		try {
-			dao().iniciarTransacao();
 			gravarFinalizar();
 			
 			if (id == null)
@@ -351,11 +352,9 @@ public class SubstituicaoController extends SigaController {
 			per.setLotaSubstituindo(getLotaTitular() != getCadastrante().getLotacao() ? getLotaTitular() : null);
 		
 			dao().gravar(per);
-			dao().commitTransacao();
 //			result.use(Results.referer()).redirect();
 		} catch (Exception e) {
 			e.printStackTrace();
-			dao().rollbackTransacao();
 		}
 		String referer = getRequest().getHeader("Referer");
 		if (referer != null)
@@ -364,6 +363,7 @@ public class SubstituicaoController extends SigaController {
 			result.redirectTo(PrincipalController.class).principal(false, null);
 	}	
 	
+	@Transacional
 	public void exclui(Long id) throws Exception {
 		
 		try{
@@ -376,10 +376,8 @@ public class SubstituicaoController extends SigaController {
 				||(dpSub.getTitular() != null && dpSub.getTitular().equivale(getCadastrante()))					
 				|| (dpSub.getTitular() == null && dpSub.getLotaTitular().equivale(getCadastrante().getLotacao()))
 				|| podeCadastrarQualquerSubstituicao()) {
-				dao().iniciarTransacao();		
 				dpSub.setDtFimRegistro(new Date());
 				dpSub = dao().gravar(dpSub);
-				dao().commitTransacao();
 				String referer = getRequest().getHeader("Referer");
 				if (referer != null)
 					result.redirectTo(referer);

@@ -35,6 +35,7 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.interceptor.download.Download;
 import br.com.caelum.vraptor.interceptor.download.InputStreamDownload;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.cp.CpServico;
@@ -74,6 +75,7 @@ public class RelatorioController extends SigaController {
 	private String respostaXMLStringRPC;
 
 
+	@NaoTransacional
 	@Get("/app/gi/relatorio/selecionar_acesso_servico")
 	public void selecionarAcessoServico() throws Exception {
 		result.include("cpServicos", cpServicos);	
@@ -81,6 +83,7 @@ public class RelatorioController extends SigaController {
 	}
 
 	
+	@NaoTransacional
 	@Post("/app/gi/relatorio/emitir_acesso_servico")
 	public Download emitirAcessoServico(String idServico, String idOrgaoUsuario, String situacoesSelecionadas) throws Exception {
 		Map<String, String> listaParametros = new HashMap<String, String>();
@@ -95,11 +98,13 @@ public class RelatorioController extends SigaController {
 		return new InputStreamDownload(inputStream, "application/pdf", "relatorio.pdf");
 	}
 
+	@NaoTransacional
 	@Get("app/gi/relatorio/selecionar_permissao_usuario")
 	public void permissao_usuario_selecionar() {
 		System.out.println("Filtro do Relatório foi chamado.");
 	}
 
+	@NaoTransacional
 	@Get("app/gi/relatorio/emitir_permissao_usuario")
 	public Download emitirRelPermissaoUsuario(String idPessoa) throws Exception {
 		Map<String, String> listaParametros = new HashMap<String, String>();
@@ -115,12 +120,14 @@ public class RelatorioController extends SigaController {
 		return "relatorio";
 	}	
 	
+	@NaoTransacional
 	@Get("app/gi/relatorio/selecionar_historico_usuario")
 	public void historico_usuario_selecionar() {
 		System.out.println("Filtro do Relatório foi chamado.");
 	}
 
 	
+	@NaoTransacional
 	@Get("app/gi/relatorio/emitir_historico_usuario")
 	public Download emitirRelHistoricoUsuario(String idPessoa) throws Exception {
 		Map<String, String> listaParametros = new HashMap<String, String>();
@@ -131,11 +138,13 @@ public class RelatorioController extends SigaController {
 		return new InputStreamDownload(getInputStream(), "application/pdf", "relatorio.pdf");		
 	}
 
+	@NaoTransacional
 	@Get("app/gi/relatorio/selecionar_alteracao_direitos")
 	public void alteracao_direitos_selecionar() {
 		result.include("cpOrgaosUsuario", getCpOrgaosUsuario());
 	}
 
+	@NaoTransacional
 	@Get("app/gi/relatorio/emitir_alteracao_direitos")
 	public Download emitirRelAlteracaoDireitos(String dataInicio
 			                                  ,String dataFim
@@ -150,6 +159,7 @@ public class RelatorioController extends SigaController {
 		return new InputStreamDownload(getInputStream(), "application/pdf", "relatorio.pdf");
 	}
 
+	@NaoTransacional
 	@Get("/app/gi/relatorio/obter_situacoes_servico")
 	public void obterSituacoesServico(String idServico) {
 		try {

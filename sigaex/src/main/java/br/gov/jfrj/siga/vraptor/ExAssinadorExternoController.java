@@ -42,6 +42,8 @@ import br.com.caelum.vraptor.Put;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.itextpdf.Documento;
 import br.gov.jfrj.siga.bluc.service.BlucService;
@@ -81,6 +83,7 @@ public class ExAssinadorExternoController extends ExController {
 		boolean available;
 	}
 
+	@NaoTransacional
 	@Get("/public/app/assinador-externo/test")
 	public void assinadorExternoTest() throws Exception {
 		try {
@@ -97,6 +100,7 @@ public class ExAssinadorExternoController extends ExController {
 
 	}
 
+	@NaoTransacional
 	@Get("/public/app/assinador-externo/doc/list")
 	public void assinadorExternoList() throws Exception {
 		try {
@@ -160,6 +164,7 @@ public class ExAssinadorExternoController extends ExController {
 
 	}
 
+	@NaoTransacional
 	@Get("/public/app/assinador-externo/doc/{id}/pdf")
 	public void assinadorExternoPdf(String id) throws Exception {
 		try {
@@ -206,6 +211,7 @@ public class ExAssinadorExternoController extends ExController {
 		return pdfd;
 	}
 
+	@NaoTransacional
 	@Get("/app/assinador-popup/doc/{id}/hash")
 	public void assinadorPopupHash(String id) throws Exception {
 		try {
@@ -224,6 +230,7 @@ public class ExAssinadorExternoController extends ExController {
 		}
 	}
 
+	@NaoTransacional
 	@Get("/public/app/assinador-externo/doc/{id}/hash")
 	public void assinadorExternoHash(String id) throws Exception {
 		try {
@@ -244,6 +251,7 @@ public class ExAssinadorExternoController extends ExController {
 		}
 	}
 	
+	@Transacional
 	@Put("/public/app/assinador-externo/doc/{id}/sign")
 	public void assinadorExternoSave(String id) throws Exception {
 		try {
@@ -256,6 +264,7 @@ public class ExAssinadorExternoController extends ExController {
 		assinadorPopupSave(id);
 	}
 
+	@Transacional
 	@Put("/app/assinador-popup/doc/{id}/sign")
 	public void assinadorPopupSave(String id) throws Exception {
 		try {
@@ -366,6 +375,7 @@ public class ExAssinadorExternoController extends ExController {
 		public List<Movement> movement;
 	}
 
+	@NaoTransacional
 	@Get("/public/app/assinador-externo/doc/{id}/info")
 	public void assinadorExternoDocInfo(String id) throws Exception {
 		try {
@@ -419,6 +429,7 @@ public class ExAssinadorExternoController extends ExController {
 		public Date time;
 	}
 
+	@NaoTransacional
 	@Get("/public/app/assinador-externo/sign/{ref}")
 	public void assinadorExternoSignCms(String ref) throws Exception {
 		try {

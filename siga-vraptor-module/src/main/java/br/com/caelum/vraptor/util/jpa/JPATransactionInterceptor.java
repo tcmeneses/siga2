@@ -18,6 +18,7 @@ package br.com.caelum.vraptor.util.jpa;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.servlet.http.HttpServletRequest;
 
 import org.hibernate.Session;
 
@@ -27,7 +28,6 @@ import br.com.caelum.vraptor.core.InterceptorStack;
 import br.com.caelum.vraptor.interceptor.Interceptor;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.resource.ResourceMethod;
-import br.gov.jfrj.siga.model.ContextoPersistencia;
 
 /**
  * An interceptor that manages Entity Manager Transaction. All requests are
@@ -42,21 +42,25 @@ public class JPATransactionInterceptor implements Interceptor {
 
 	private final EntityManager manager;
 	private final Validator validator;
+	private HttpServletRequest request;
 
-	public JPATransactionInterceptor(EntityManager manager, Validator validator) {
+	public JPATransactionInterceptor(EntityManager manager, Validator validator,HttpServletRequest request) {
 		this.manager = manager;
 		this.validator = validator;
+		this.request = request;
+		
 	}
 
 	public void intercept(InterceptorStack stack, ResourceMethod method, Object instance) {
 		EntityTransaction transaction = null;
 		try {
 			transaction = manager.getTransaction();
+
 			transaction.begin();
-
+		
+			System.out.println("JPATransaction Url que abre transacao: " + request.getRequestURI() + " Classe: " + method.getClass().getName());
 			stack.next(method, instance);
-
-			transaction = manager.getTransaction();
+			System.out.println("JPATransaction Url que fecha transacao: " + request.getRequestURI() + " Classe: " + method.getClass().getName());
 
 			if (!validator.hasErrors() && transaction.isActive()) {
 				// Executando flush no EM e a Session para garantir não nada
@@ -86,7 +90,12 @@ public class JPATransactionInterceptor implements Interceptor {
 		}
 	}
 
+
+	@Override
 	public boolean accepts(ResourceMethod method) {
-		return true; // Will intercept all requests
+		//return true;
+		System.out.println("URI: " + request.getRequestURI());
+
+		return (method.containsAnnotation(Transacional.class) && !(request.getRequestURI().startsWith("app/sigawf")));
 	}
 }

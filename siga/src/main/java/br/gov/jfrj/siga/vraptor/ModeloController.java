@@ -30,13 +30,14 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.cp.CpModelo;
 import br.gov.jfrj.siga.cp.bl.Cp;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
 import br.gov.jfrj.siga.dp.dao.CpDao;
-import br.gov.jfrj.siga.model.dao.ModeloDao;
 import br.gov.jfrj.siga.util.FreemarkerIndent;
 
 @Resource
@@ -58,12 +59,14 @@ public class ModeloController extends SigaController {
 		return dao().consultarPorIdInicialCpModelo(daoMod(id).getIdInicial());
 	}
 
+	@NaoTransacional
 	@Get("/app/modelo/listar")
 	public void lista() throws Exception {
 		assertAcesso("FE:Ferramentas;MODVER:Visualizar modelos");
 		result.include("itens", dao().consultaCpModelos());
 	}
 
+	@Transacional
 	@Post("/app/modelo/gravar")
 	public void gravar(Integer id, String conteudo) throws Exception {
 		assertAcesso("FE:Ferramentas;MODEDITAR:Editar modelos");
@@ -74,7 +77,6 @@ public class ModeloController extends SigaController {
 					.alterarCpModelo(mod, conteudo, getIdentidadeCadastrante());
 		} else {
 			try {
-				ModeloDao.iniciarTransacao();
 				CpModelo mod = new CpModelo();
 				mod.setConteudoBlobString(conteudo);
 				if (paramLong("idOrgUsu") != null)
@@ -82,9 +84,7 @@ public class ModeloController extends SigaController {
 							paramLong("idOrgUsu"), CpOrgaoUsuario.class, false));
 				mod.setHisDtIni(dao().consultarDataEHoraDoServidor());
 				dao().gravarComHistorico(mod, getIdentidadeCadastrante());
-				ModeloDao.commitTransacao();
 			} catch (Exception e) {
-				ModeloDao.rollbackTransacao();
 				throw new AplicacaoException(
 						"Não foi possível gravar o modelo.", 9, e);
 			}
@@ -93,6 +93,7 @@ public class ModeloController extends SigaController {
 		result.redirectTo(this).lista();
 	}
 
+	@NaoTransacional
 	@Post("/public/app/modelo/indentar")
 	public void indentar(String conteudo) throws Exception {
 		String r = FreemarkerIndent.indent(conteudo);

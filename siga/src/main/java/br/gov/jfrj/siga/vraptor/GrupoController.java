@@ -39,7 +39,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
+import com.google.common.base.Optional;
+
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Texto;
 import br.gov.jfrj.siga.cp.CpConfiguracao;
@@ -64,9 +68,6 @@ import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.dp.dao.CpGrupoDaoFiltro;
 import br.gov.jfrj.siga.model.Objeto;
 import br.gov.jfrj.siga.model.Selecionavel;
-import br.gov.jfrj.siga.model.dao.ModeloDao;
-
-import com.google.common.base.Optional;
 
 public abstract class GrupoController<T extends CpGrupo> extends
 		GiSelecionavelControllerSupport<T, CpGrupoDaoFiltro> {
@@ -200,7 +201,6 @@ public abstract class GrupoController<T extends CpGrupo> extends
 	 */
 	protected String aExcluir(Long idCpGrupo) throws Exception {
 		try {
-			ModeloDao.iniciarTransacao();
 			Date dt = dao().consultarDataEHoraDoServidor();
 			CpGrupo grp = daoGrupo(idCpGrupo);
 			configuracoesGrupo = Cp.getInstance().getConf().obterCfgGrupo(grp);
@@ -213,9 +213,7 @@ public abstract class GrupoController<T extends CpGrupo> extends
 			}
 			grp.setHisDtFim(dt);
 			dao().gravarComHistorico(grp, getIdentidadeCadastrante());
-			ModeloDao.commitTransacao();
 		} catch (Exception e) {
-			ModeloDao.rollbackTransacao();
 			throw new AplicacaoException("Erro ao excluir grupo de id: "
 					+ idCpGrupo + ".", 0, e);
 		}
@@ -293,7 +291,6 @@ public abstract class GrupoController<T extends CpGrupo> extends
 			grpNovo.setDscGrupo(dscGrupo);
 			grpNovo.setSiglaGrupo(siglaGrupo);
 
-			dao().iniciarTransacao();
 			grp = (CpGrupo) dao().gravarComHistorico(grpNovo, grp, dt,
 					getIdentidadeCadastrante());
 			idCpGrupo = grp.getIdGrupo();
@@ -411,7 +408,6 @@ public abstract class GrupoController<T extends CpGrupo> extends
 				}
 			}
 
-			dao().commitTransacao();
 			Cp.getInstance().getConf().limparCacheSeNecessario();
 			return idCpGrupo;
 		} catch (Exception e) {
@@ -441,7 +437,6 @@ public abstract class GrupoController<T extends CpGrupo> extends
 		if (lot == null) {
 			throw new AplicacaoException("A unidade deve ser definida!");
 		} else {
-			dao().iniciarTransacao();
 			CpTipoConfiguracao tpConf = dao().consultar(
 					CpTipoConfiguracao.TIPO_CONFIG_GERENCIAR_GRUPO,
 					CpTipoConfiguracao.class, false);
@@ -457,20 +452,17 @@ public abstract class GrupoController<T extends CpGrupo> extends
 			conf.setHisDtIni(dao().consultarDataEHoraDoServidor());
 			dao().gravarComHistorico(conf, getIdentidadeCadastrante());
 			setIdCpGrupo(idCpGrupo);
-			dao().commitTransacao();
 		}
 
 	}
 
 	protected void aExcluirGestorGrupo(Long idCpGrupo, Long idConfGestor) {
-		dao().iniciarTransacao();
 		CpConfiguracao conf = dao().consultar(idConfGestor,
 				CpConfiguracao.class, false);
 		conf.setHisDtFim(dao().consultarDataEHoraDoServidor());
 		dao().gravarComHistorico(conf, getIdentidadeCadastrante());
 
 		setIdCpGrupo(idCpGrupo);
-		dao().commitTransacao();
 	}
 
 	protected List<CpConfiguracao> getConfGestores(Long idCpGrupo) {

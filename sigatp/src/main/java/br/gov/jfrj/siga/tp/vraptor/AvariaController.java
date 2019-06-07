@@ -10,6 +10,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdmin;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdminFrota;
@@ -33,13 +35,15 @@ public class AvariaController extends TpController {
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 
+    @NaoTransacional
 	@Path("/listar")
 	public void listar() {
 		List<Avaria> avarias = Avaria.listarTodos();
 		result.include("avarias", avarias);
 	}
 	
-	@Path("/listarPorVeiculo/{idVeiculo}")
+    @NaoTransacional
+    @Path("/listarPorVeiculo/{idVeiculo}")
 	public void listarPorVeiculo(Long idVeiculo) throws Exception {
 		montarListaDeAvariasPorVeiculo(idVeiculo);
 	}
@@ -51,6 +55,7 @@ public class AvariaController extends TpController {
 		MenuMontador.instance(result).recuperarMenuVeiculos(idVeiculo, ItemMenu.AVARIAS);
 	}
 
+    @NaoTransacional
 	@RoleAdmin
 	@RoleAdminFrota
 	@Path("/incluir/{idVeiculo}")
@@ -58,14 +63,16 @@ public class AvariaController extends TpController {
 		result.forwardTo(this).editar(idVeiculo, null, false);
 	}
 	
-	@RoleAdmin
+    @NaoTransacional
+    @RoleAdmin
 	@RoleAdminFrota
 	@Path("/incluir")
 	public void incluir() throws Exception {
 		result.forwardTo(this).editar(null, null, false);
 	}
 
-	@RoleAdmin
+    @NaoTransacional
+    @RoleAdmin
 	@RoleAdminFrota
 	@Path("/editar/{idVeiculo}/{id}/{fixarVeiculo}")
 	public void editar(final Long idVeiculo, final Long id, final Boolean fixarVeiculo) throws Exception {
@@ -96,7 +103,8 @@ public class AvariaController extends TpController {
 		result.include("veiculos", veiculos);
 	}
 
-	@RoleAdmin
+	@Transacional
+    @RoleAdmin
 	@RoleAdminFrota
 	@Path("/salvar")
 	public void salvar(@Valid Avaria avaria, boolean fixarVeiculo) throws Exception {
@@ -150,6 +158,7 @@ public class AvariaController extends TpController {
 			result.include(MODO, LABEL_EDITAR);
 	}
 
+	@Transacional
 	@RoleAdmin
 	@RoleAdminFrota
 	@Path("/excluir/{id}/{fixarVeiculo}")

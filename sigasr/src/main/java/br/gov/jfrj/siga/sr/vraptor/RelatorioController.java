@@ -20,6 +20,7 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.interceptor.download.Download;
 import br.com.caelum.vraptor.interceptor.download.InputStreamDownload;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
 import br.gov.jfrj.siga.cp.model.DpLotacaoSelecao;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
 import br.gov.jfrj.siga.dp.DpLotacao;
@@ -44,6 +45,7 @@ public class RelatorioController extends SrController {
 
 	private static final String APPLICATION_EXCEL = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
+	@NaoTransacional
 	@SuppressWarnings("unchecked")
 	@AssertAcesso(REL_RELATORIOS)
 	@Path("/atendimentos")
@@ -52,6 +54,7 @@ public class RelatorioController extends SrController {
 		result.include("orgaos", orgaos);
 	}
 	
+	@NaoTransacional
 	@AssertAcesso(REL_RELATORIOS)
 	@Path("/atendimentos/gerar")
 	public Download gerarRelAtendimentos(DpLotacao lotacao, String listaLotacoes, String siglaLotacao, 

@@ -12,6 +12,8 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.cp.CpUnidadeMedida;
 import br.gov.jfrj.siga.ex.ExTemporalidade;
@@ -30,6 +32,7 @@ public class ExTemporalidadeController extends ExController {
 		super(request, response, context, result, ExDao.getInstance(), so, em);
 	}
 
+	@NaoTransacional
 	@Get("app/expediente/temporalidade/listar")
 	public void listarTemporalidade() {
 		assertAcesso(ACESSO_FE_TT);
@@ -39,6 +42,7 @@ public class ExTemporalidadeController extends ExController {
 		result.include("temporalidadeVigente", temporalidadeVigente);
 	}
 
+	@NaoTransacional
 	@Get("app/expediente/temporalidade/editar")
 	public void editarTemporalidade(final Long idTemporalidade, final String acao) {
 		assertAcesso(ACESSO_FE_TT);
@@ -56,6 +60,7 @@ public class ExTemporalidadeController extends ExController {
 		result.include("listaCpUnidade", listaCpUnidade);
 	}
 
+	@Transacional
 	@Post("app/expediente/temporalidade/gravar")
 	public void gravar(final Long idTemporalidade, final String acao, final String descTemporalidade, Integer valorTemporalidade, final Long idCpUnidade) {
 		assertAcesso(ACESSO_FE_TT);
@@ -74,7 +79,7 @@ public class ExTemporalidadeController extends ExController {
 			throw new AplicacaoException("Você deve especificar um valor para a unidade de medida informada!");
 		}
 
-		ModeloDao.iniciarTransacao();
+	//	ModeloDao.iniciarTransacao();
 
 		ExTemporalidade exTemporal = buscarExTemporalidade(idTemporalidade);
 		if ("nova_temporalidade".equals(acao)) {
@@ -92,7 +97,7 @@ public class ExTemporalidadeController extends ExController {
 			Ex.getInstance().getBL().alterarExTemporalidade(exTempNovo, exTemporal, dao().consultarDataEHoraDoServidor(), getIdentidadeCadastrante());
 		}
 
-		ModeloDao.commitTransacao();
+//		ModeloDao.commitTransacao();
 
 		result.redirectTo("/app/expediente/temporalidade/listar");
 	}
@@ -109,10 +114,11 @@ public class ExTemporalidadeController extends ExController {
 		exTemporal.setCpUnidadeMedida(cpUnidade);
 	}
 
+	@Transacional
 	@Get("app/expediente/temporalidade/excluir")
 	public void excluir(final Long idTemporalidade) {
 		assertAcesso(ACESSO_FE_TT);
-		ModeloDao.iniciarTransacao();
+//		ModeloDao.iniciarTransacao();
 		final ExTemporalidade exTemporal = buscarExTemporalidade(idTemporalidade);
 		Date dt = dao().consultarDataEHoraDoServidor();
 
@@ -153,7 +159,7 @@ public class ExTemporalidadeController extends ExController {
 		}
 
 		dao().excluirComHistorico(exTemporal, dt, getIdentidadeCadastrante());
-		ModeloDao.commitTransacao();
+//		ModeloDao.commitTransacao();
 
 		result.redirectTo("/app/expediente/temporalidade/listar");
 	}

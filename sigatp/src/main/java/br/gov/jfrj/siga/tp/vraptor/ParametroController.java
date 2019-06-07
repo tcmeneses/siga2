@@ -10,6 +10,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.cp.CpComplexo;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
@@ -27,12 +29,14 @@ public class ParametroController extends TpController {
         super(request, result, TpDao.getInstance(), validator, so, em);
     }
 
+    @NaoTransacional
     @Path("/listar")
     public void listar() {
         List<Parametro> parametros = Parametro.listarTodos();
         result.include("parametros", parametros);
     }
 
+    @NaoTransacional
     @RoleAdmin
     @Path("/editar/{id}")
     public void editar(Long id) {
@@ -41,6 +45,7 @@ public class ParametroController extends TpController {
         result.include("parametro", parametro);
     }
 
+    @Transacional
     @RoleAdmin
     @Path("/excluir/{id}")
     public void excluir(Long id) {
@@ -49,6 +54,7 @@ public class ParametroController extends TpController {
         result.redirectTo(ParametroController.class).listar();
     }
 
+    @NaoTransacional
     @RoleAdmin
     public void incluir() {
         Parametro parametro = new Parametro();

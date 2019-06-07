@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.cp.CpComplexo;
 import br.gov.jfrj.siga.cp.model.DpLotacaoSelecao;
@@ -33,6 +35,7 @@ public class DesignacaoController extends SrController {
 		super(request, result, CpDao.getInstance(), so, em, srValidator);
 	}
 
+	@NaoTransacional
 	@AssertAcesso(ADM_ADMINISTRAR)
 	@SuppressWarnings("unchecked")
 	@Path("/listar")
@@ -55,6 +58,7 @@ public class DesignacaoController extends SrController {
 		PessoaLotaFuncCargoSelecaoHelper.adicionarCamposSelecao(result);
 	}
 	 
+	@Transacional
 	@AssertAcesso(ADM_ADMINISTRAR)
 	@Path("/desativar")
 	public void desativar(Long id) throws Exception {
@@ -64,6 +68,7 @@ public class DesignacaoController extends SrController {
 		result.use(Results.http()).body(designacao.toJson());
 	}
 
+	@Transacional
 	@AssertAcesso(ADM_ADMINISTRAR)
 	@Path("/reativar")
 	public void reativar(Long id) throws Exception {
@@ -74,6 +79,7 @@ public class DesignacaoController extends SrController {
 		result.use(Results.http()).body(designacao.toJson());
 	}
 
+	@Transacional
 	@AssertAcesso(ADM_ADMINISTRAR)
 	@Path("/gravar")
 	public void gravar(SrConfiguracao designacao, List<SrItemConfiguracao> itemConfiguracaoSet, List<SrAcao> acoesSet) throws Exception {

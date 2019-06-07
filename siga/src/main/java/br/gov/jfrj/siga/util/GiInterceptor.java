@@ -40,7 +40,9 @@ public class GiInterceptor implements Interceptor {
 		ContextoPersistencia.setEntityManager(this.manager);
 
 		try {
+			System.out.println("GIInterceptor Url que abre conexao: " + request.getRequestURI() + " Classe: " + method.getClass().getName());
 			stack.next(method, instance);
+			System.out.println("GIInterceptor Url que fecha conexao: " + request.getRequestURI() + " Classe: " + method.getClass().getName());
 		} finally {
 			ContextoPersistencia.setEntityManager(null);
 		}

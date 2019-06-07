@@ -13,6 +13,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.validator.I18nMessage;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
@@ -53,6 +55,7 @@ public class RequisicaoController extends TpController {
         this.autorizacaoGI = autorizacaoGI;
     }
 
+    @NaoTransacional
     @Path("/listar")
     public void listar() {
 		EstadoRequisicao estReq = EstadoRequisicao.CANCELADA;
@@ -63,6 +66,7 @@ public class RequisicaoController extends TpController {
         result.include("estReq", estReq);
     }
 
+    @NaoTransacional
     @RoleAprovador
     @RoleAdmin
     @RoleAdminMissao
@@ -80,6 +84,7 @@ public class RequisicaoController extends TpController {
         result.include("estReq", estReq);
     }
 
+    @Transacional
     @RoleAdmin
     @RoleAdminMissao
     @Path("/salvarNovoComplexo")
@@ -97,11 +102,13 @@ public class RequisicaoController extends TpController {
         result.redirectTo(this).listarPAprovar();
     }
 
+    @NaoTransacional
     @Path("/listarFiltrado/{estadoRequisicao}")
     public void listarFiltrado(String estadoRequisicao) {
         result.forwardTo(this).listarFiltrado(estadoRequisicao, null);
     }
 
+    @NaoTransacional
     @Path("/listarFiltrado/{estadoRequisicao}/{estadoRequisicaoP}")
     public void listarFiltrado(String estadoRequisicao, String estadoRequisicaoP) {
         EstadoRequisicao estadoReq = EstadoRequisicao.valueOf(estadoRequisicao);
@@ -115,6 +122,7 @@ public class RequisicaoController extends TpController {
         result.use(Results.page()).of(RequisicaoController.class).listar();
     }
     
+    @NaoTransacional
     @Path("/listarAvancado")
     public void listarAvancado(Calendar dataInicio, Calendar dataFim, EstadoRequisicao estadoRequisicao) throws Exception {
 		EstadoRequisicao estReq = EstadoRequisicao.CANCELADA;
@@ -128,6 +136,7 @@ public class RequisicaoController extends TpController {
         result.use(Results.page()).of(RequisicaoController.class).listar();
     }
     
+    @NaoTransacional
     @Path("/listarAvancadoPAprovar")
     public void listarAvancadoPAprovar(Calendar dataInicio, Calendar dataFim, EstadoRequisicao estadoRequisicao) throws Exception {
 		EstadoRequisicao estReq = EstadoRequisicao.CANCELADA;
@@ -144,6 +153,7 @@ public class RequisicaoController extends TpController {
         result.use(Results.page()).of(RequisicaoController.class).listarPAprovar();
     }
 
+    @NaoTransacional
     @RoleAdmin
     @RoleAdminMissao
     @RoleAdminMissaoComplexo
@@ -159,6 +169,7 @@ public class RequisicaoController extends TpController {
         result.use(Results.page()).of(RequisicaoController.class).listarPAprovar();
     }
 
+    @Transacional
     @Path("/salvar")
     public void salvar(RequisicaoTransporte requisicaoTransporte, TipoDePassageiro[] tiposDePassageiros, boolean checkRetorno, boolean checkSemPassageiros) throws Exception {
         validar(requisicaoTransporte, checkSemPassageiros, tiposDePassageiros, checkRetorno);
@@ -323,7 +334,8 @@ public class RequisicaoController extends TpController {
  		result.include("opcoesDeTiposDePassageiro", tipos);
 	}
 
-    @Path("/salvarAndamentos")
+    @Transacional
+	@Path("/salvarAndamentos")
     public void salvarAndamentos(@Valid RequisicaoTransporte requisicaoTransporte, boolean checkRetorno, boolean checkSemPassageiros) throws Exception{
         redirecionarSeErroAoSalvar(requisicaoTransporte, checkRetorno, checkSemPassageiros);
         checarSolicitante(requisicaoTransporte.getSolicitante().getIdInicial(), requisicaoTransporte.getCpComplexo().getIdComplexo(), true);
@@ -373,6 +385,7 @@ public class RequisicaoController extends TpController {
      	result.include("mostrarDetalhes", mostrarOutra);
     }
 
+    @NaoTransacional
     @Path("/incluir")
     public void incluir() throws Exception {
         RequisicaoTransporte requisicaoTransporte = new RequisicaoTransporte();
@@ -389,6 +402,7 @@ public class RequisicaoController extends TpController {
         result.include(REQUISICAO_TRANSPORTE, requisicaoTransporte);
     }
 
+    @NaoTransacional
     @Path("/editar/{id}")
     public void editar(Long id) throws Exception {
         RequisicaoTransporte requisicaoTransporte = RequisicaoTransporte.AR.findById(id);
@@ -441,6 +455,7 @@ public class RequisicaoController extends TpController {
         }
     }
 
+    @NaoTransacional
     @Path("/ler/{id}")
     public void ler(Long id) throws Exception  {
         RequisicaoTransporte requisicaoTransporte = RequisicaoTransporte.AR.findById(id);
@@ -466,11 +481,13 @@ public class RequisicaoController extends TpController {
         result.include("checkSemPassageiros", checkSemPassageiros);
     }
 
+    @NaoTransacional
     @Path("/ler")
     public void ler() throws Exception {
         result.include("esconderBotoes", true);
     }
 
+    @NaoTransacional
     @Path("/buscarPelaSequence/{popUp}/{sequence*}")
     public void buscarPelaSequence(boolean popUp, String sequence) throws Exception  {
         RequisicaoTransporte requisicaoTransporte = recuperarPelaSigla(sequence, popUp);
@@ -502,6 +519,7 @@ public class RequisicaoController extends TpController {
         return requisicaoTransporte;
     }
 
+    @Transacional
     @Path("/excluir/{id}")
     public void excluir(Long id) throws Exception {
         RequisicaoTransporte requisicaoTransporte = RequisicaoTransporte.AR.findById(id);
@@ -577,6 +595,7 @@ public class RequisicaoController extends TpController {
 	}
 
 	/* Metodo AJAX */
+    @NaoTransacional
 	@Path("/getRequisicaoLinhasTotal")
     public void getRequisicaoLinhasTotal() {
 		result.use(Results.http()).body(Parametro.buscarConfigSistemaEmVigor("requisicao.linhas.total"));

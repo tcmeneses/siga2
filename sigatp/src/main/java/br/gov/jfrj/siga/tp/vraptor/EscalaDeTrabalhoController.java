@@ -13,6 +13,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.validator.I18nMessage;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.dp.dao.CpDao;
@@ -48,11 +50,13 @@ public class EscalaDeTrabalhoController extends TpController {
 		this.missaoController = missaoController;
 	}
 
+    @NaoTransacional
 	@Path("/listar")
 	public void listar() {
     	result.include(ESCALAS, EscalaDeTrabalho.buscarTodasVigentes());
     }
 
+    @NaoTransacional
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -75,7 +79,8 @@ public class EscalaDeTrabalhoController extends TpController {
     	result.use(Results.page()).of(EscalaDeTrabalhoController.class).editar(null);
 	}
 
-	@RoleAdmin
+    @NaoTransacional
+    @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
 	@Path("/editar/{id}")
@@ -89,7 +94,8 @@ public class EscalaDeTrabalhoController extends TpController {
     	result.include(DIA_SEMANA, diaSemana);
     }
 
-	@Path("/listarPorCondutor/{id}")
+    @NaoTransacional
+    @Path("/listarPorCondutor/{id}")
 	public void listarPorCondutor(Long id) throws Exception {
     	MenuMontador.instance(result).recuperarMenuCondutores(id, ItemMenu.ESCALASDETRABALHO);
         Condutor condutor = Condutor.AR.findById(id);
@@ -118,7 +124,8 @@ public class EscalaDeTrabalhoController extends TpController {
         result.include(DIA_SEMANA, diaSemana);
      }
 
-	@RoleAdmin
+	@Transacional
+    @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
 	@Path("/finalizar")
@@ -132,6 +139,7 @@ public class EscalaDeTrabalhoController extends TpController {
 		result.redirectTo(this).listarPorCondutor(escalaDeTrabalho.getCondutor().getId());
 	}
 
+	@Transacional
 	@SuppressWarnings("static-access")
 	@RoleAdmin
 	@RoleAdminMissao
@@ -248,6 +256,7 @@ public class EscalaDeTrabalhoController extends TpController {
 		return diasDeTrabalhoAntigo.equals(diasDeTrabalhoNovo);
 	}
 
+	@Transacional
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo

@@ -234,10 +234,10 @@ public class Excel {
 			Iterator<Row> rowIterator = mySheet.iterator(); 
 			String celula;
 			Integer linha = 0;
-			List<CpLocalidade> localidades = new ArrayList();
-			List<String> nomes = new ArrayList();
-			List<String> siglas = new ArrayList();
-			List<DpLotacao> lista = new ArrayList(); 
+			List<CpLocalidade> localidades = new ArrayList<CpLocalidade>();
+			List<String> nomes = new ArrayList<String>();
+			List<String> siglas = new ArrayList<String>();
+			List<DpLotacao> lista = new ArrayList<DpLotacao>(); 
 			CpLocalidade loc = new CpLocalidade();
 			Date data = new Date(System.currentTimeMillis());
 			
@@ -291,7 +291,7 @@ public class Excel {
 			if(problemas == null || "".equals(problemas.toString())) {
 				try {
 	            	for (DpLotacao dpLotacao : lista) {
-		            	CpDao.getInstance().iniciarTransacao();
+		//            	CpDao.getInstance().iniciarTransacao();
 		    			CpDao.getInstance().gravar(dpLotacao);
 		    			
 	    				if(dpLotacao.getIdLotacaoIni() == null && dpLotacao.getId() != null) {
@@ -300,9 +300,9 @@ public class Excel {
 	        				CpDao.getInstance().gravar(dpLotacao);
 	        			}
 					}
-	    			CpDao.getInstance().commitTransacao();			
+//	    			CpDao.getInstance().commitTransacao();			
 	    		} catch (final Exception e) {
-	    			CpDao.getInstance().rollbackTransacao();
+//	    			CpDao.getInstance().rollbackTransacao();
 	    			throw new AplicacaoException("Erro na gravação", 0, e);
 	    		}
 			}
@@ -366,8 +366,8 @@ public class Excel {
 			Iterator<Row> rowIterator = mySheet.iterator(); 
 			String celula;
 			Integer linha = 0;
-			List<String> nomes = new ArrayList();
-			List<DpFuncaoConfianca> lista = new ArrayList(); 
+			List<String> nomes = new ArrayList<String>();
+			List<DpFuncaoConfianca> lista = new ArrayList<DpFuncaoConfianca>(); 
 			Date data = new Date(System.currentTimeMillis());
 			
 			while (rowIterator.hasNext()) {
@@ -396,7 +396,7 @@ public class Excel {
 			if(problemas == null || "".equals(problemas.toString())) {
 				try {
 	            	for (DpFuncaoConfianca dpFuncaoConfianca : lista) {
-		            	CpDao.getInstance().iniciarTransacao();
+	//	            	CpDao.getInstance().iniciarTransacao();
 		    			CpDao.getInstance().gravar(dpFuncaoConfianca);
 		    			
 	    				if(dpFuncaoConfianca.getIdFuncaoIni() == null && dpFuncaoConfianca.getId() != null) {
@@ -405,9 +405,9 @@ public class Excel {
 	        				CpDao.getInstance().gravar(dpFuncaoConfianca);
 	        			}
 					}
-	    			CpDao.getInstance().commitTransacao();			
+//	    			CpDao.getInstance().commitTransacao();			
 	    		} catch (final Exception e) {
-	    			CpDao.getInstance().rollbackTransacao();
+//	    			CpDao.getInstance().rollbackTransacao();
 	    			throw new AplicacaoException("Erro na gravação", 0, e);
 	    		}
 			}
@@ -465,8 +465,8 @@ public class Excel {
 			Iterator<Row> rowIterator = mySheet.iterator(); 
 			String celula;
 			Integer linha = 0;
-			List<String> nomes = new ArrayList();
-			List<DpCargo> lista = new ArrayList(); 
+			List<String> nomes = new ArrayList<String>();
+			List<DpCargo> lista = new ArrayList<DpCargo>(); 
 			Date data = new Date(System.currentTimeMillis());
 			
 			while (rowIterator.hasNext()) {
@@ -495,7 +495,7 @@ public class Excel {
 			if(problemas == null || "".equals(problemas.toString())) {
 				try {
 	            	for (DpCargo dpCargo : lista) {
-		            	CpDao.getInstance().iniciarTransacao();
+		//            	CpDao.getInstance().iniciarTransacao();
 		    			CpDao.getInstance().gravar(dpCargo);
 		    			
 	    				if(dpCargo.getIdCargoIni() == null && dpCargo.getId() != null) {
@@ -504,9 +504,9 @@ public class Excel {
 	        				CpDao.getInstance().gravar(dpCargo);
 	        			}
 					}
-	    			CpDao.getInstance().commitTransacao();			
+//	    			CpDao.getInstance().commitTransacao();			
 	    		} catch (final Exception e) {
-	    			CpDao.getInstance().rollbackTransacao();
+//	    			CpDao.getInstance().rollbackTransacao();
 	    			throw new AplicacaoException("Erro na gravação", 0, e);
 	    		}
 			}
@@ -566,7 +566,7 @@ public class Excel {
 			String celula;
 			Integer linha = 0;
 //			List<String> nomes = new ArrayList();
-			List<DpPessoa> lista = new ArrayList(); 
+			List<DpPessoa> lista = new ArrayList<DpPessoa>(); 
 			Date data = new Date(System.currentTimeMillis());
 			DpCargo cargo = new DpCargo();
 			List<DpCargo> listaCargo = new ArrayList<DpCargo>();
@@ -775,7 +775,7 @@ public class Excel {
 			}
 			if(problemas == null || "".equals(problemas.toString())) {
 				try {
-					CpDao.getInstance().iniciarTransacao();
+	//				CpDao.getInstance().iniciarTransacao();
 	            	for (DpPessoa dpPessoa : lista) {
 		    			CpDao.getInstance().gravar(dpPessoa);
 
@@ -786,9 +786,9 @@ public class Excel {
 	        				CpDao.getInstance().gravar(dpPessoa);
 	        			}
 					}
-	    			CpDao.getInstance().commitTransacao();			
+//	    			CpDao.getInstance().commitTransacao();			
 	    		} catch (final Exception e) {
-	    			CpDao.getInstance().rollbackTransacao();
+//	    			CpDao.getInstance().rollbackTransacao();
 	    			throw new AplicacaoException("Erro na gravação", 0, e);
 	    		}
 			}

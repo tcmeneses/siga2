@@ -131,7 +131,7 @@ public class AcessoServicoRelatorio extends RelatorioTemplate {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public Collection processarDados() {
+	public Collection<String> processarDados() {
 		CpTipoConfiguracao tipo = CpDao.getInstance().consultar(
 				CpTipoConfiguracao.TIPO_CONFIG_UTILIZAR_SERVICO,
 				CpTipoConfiguracao.class, false);

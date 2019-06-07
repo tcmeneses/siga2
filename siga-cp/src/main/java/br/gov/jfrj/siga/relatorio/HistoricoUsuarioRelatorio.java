@@ -270,7 +270,7 @@ public class HistoricoUsuarioRelatorio extends RelatorioTemplate {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Collection processarDados() {
+	public Collection<String> processarDados() {
 		ArrayList<String> dados = new ArrayList<String>();
 		List<CpServico> servicos = CpDao.getInstance().listarServicos();
 		CpTipoConfiguracao tipo = CpDao.getInstance().consultar(

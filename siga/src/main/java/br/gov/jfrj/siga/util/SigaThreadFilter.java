@@ -20,6 +20,8 @@ public class SigaThreadFilter extends ThreadFilter {
 		EntityManager em = SigaStarter.emf.createEntityManager();
 		ContextoPersistencia.setEntityManager(em);
 
+		System.out.println("SIgaThreadFilter - Iniciando Transacao");
+		
 		em.getTransaction().begin();
 
 		try {
@@ -34,6 +36,8 @@ public class SigaThreadFilter extends ThreadFilter {
 			em.close();
 			ContextoPersistencia.setEntityManager(null);
 		}
+		
+		System.out.println("SIgaThreadFilter - Finalizando Transacao");
 	}
 
 	@Override

@@ -64,7 +64,7 @@ public class PermissaoUsuarioRelatorio extends RelatorioTemplate{
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public Collection processarDados() {
+	public Collection<String> processarDados() {
 		ArrayList<String> dados=new ArrayList<String>();
 		HashMap<CpServico, ConfiguracaoAcesso> achm = new HashMap<CpServico, ConfiguracaoAcesso>();
 		List<CpServico> l = dao().listarServicos();

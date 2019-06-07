@@ -310,7 +310,7 @@ public class ProcessImageTag extends TagSupport
 		Map children = parent.getChildren ();
 		if ( children != null && children.size () > 0 )
 		{
-			Collection childTokens = children.values ();
+			Collection<?> childTokens = children.values ();
 			for ( Iterator iterator = childTokens.iterator () ; iterator.hasNext () ; )
 			{
 				Token child = ( Token ) iterator.next ();

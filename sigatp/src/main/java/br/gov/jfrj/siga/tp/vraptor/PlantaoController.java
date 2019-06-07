@@ -14,6 +14,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.validator.I18nMessage;
 import br.com.caelum.vraptor.validator.ValidationMessage;
 import br.com.caelum.vraptor.view.Results;
@@ -42,6 +44,7 @@ public class PlantaoController extends TpController {
         super(request, result, TpDao.getInstance(), validator, so, em);
     }
 
+    @NaoTransacional
     @Path("/listarPorCondutor/{idCondutor}")
     public void listarPorCondutor(Long idCondutor) throws Exception {
         Condutor condutor = buscaCondutor(idCondutor);
@@ -53,6 +56,7 @@ public class PlantaoController extends TpController {
         result.include("condutor", condutor);
     }
 
+    @NaoTransacional
     @RoleAdmin
     @RoleAdminMissao
     @RoleAdminMissaoComplexo
@@ -70,6 +74,7 @@ public class PlantaoController extends TpController {
         result.include("idCond", idCondutor);
     }
 
+    @NaoTransacional
     @RoleAdmin
     @RoleAdminMissao
     @RoleAdminMissaoComplexo
@@ -78,6 +83,7 @@ public class PlantaoController extends TpController {
         result.forwardTo(PlantaoController.class).editar(idCondutor, 0L);
     }
 
+    @Transacional
     @RoleAdmin
     @RoleAdminMissao
     @RoleAdminMissaoComplexo
@@ -147,6 +153,7 @@ public class PlantaoController extends TpController {
         }
     }
 
+    @Transacional
     @RoleAdmin
     @RoleAdminMissao
     @RoleAdminMissaoComplexo

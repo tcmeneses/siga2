@@ -24,6 +24,7 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.interceptor.download.Download;
 import br.com.caelum.vraptor.interceptor.download.InputStreamDownload;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.cp.CpTipoConfiguracao;
 import br.gov.jfrj.siga.dp.dao.CpDao;
@@ -42,6 +43,7 @@ public class ExFormulariosReportController extends ExController {
 		super(request, response, context, result, dao, so, em);
 	}
 	
+	@NaoTransacional
 	@Get("app/expediente/rel/formularios")
 	public Download execute() throws Exception {
 		List<ExModelo> l = dao().listarExModelos();

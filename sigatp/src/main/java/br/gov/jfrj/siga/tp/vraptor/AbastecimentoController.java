@@ -12,6 +12,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.tp.auth.AutorizacaoGI;
 import br.gov.jfrj.siga.tp.auth.annotation.LogMotivo;
@@ -51,6 +53,7 @@ public class AbastecimentoController extends TpController {
         this.autorizacaoGI = autorizacaoGI;
     }
 
+    @NaoTransacional
     @Path("/listar")
     public void listar() throws Exception {
         List<Abastecimento> abastecimentos = Lists.newArrayList();
@@ -79,6 +82,7 @@ public class AbastecimentoController extends TpController {
         montarCombos();
     }
 
+    @NaoTransacional   
     @Path({"/listarPorVeiculo/{idVeiculo}", "/listarPorVeiculo"})
     public void listarPorVeiculo(Long idVeiculo) throws Exception {
         Veiculo veiculo = Veiculo.AR.findById(idVeiculo);
@@ -88,6 +92,7 @@ public class AbastecimentoController extends TpController {
         result.include("veiculo", veiculo);
     }
     
+    @NaoTransacional
     @RoleAgente
 	@RoleAdmin
 	@RoleAdminMissao
@@ -117,7 +122,8 @@ public class AbastecimentoController extends TpController {
 	 	result.include("fornecedores", listarTodos());
 	}
 
-    @RoleAdmin
+	@NaoTransacional
+	@RoleAdmin
     @RoleGabinete
     @RoleAdminFrota
     @RoleAdminMissao
@@ -140,6 +146,8 @@ public class AbastecimentoController extends TpController {
         return null != getRequest().getAttribute(ABASTECIMENTO) ? getRequest().getAttribute(ABASTECIMENTO) : new Abastecimento();
     }
 
+    
+    @Transacional
     @RoleAdmin
     @RoleAdminGabinete
     @RoleAdminMissao
@@ -176,6 +184,7 @@ public class AbastecimentoController extends TpController {
         }
     }
 
+    @NaoTransacional
     @RoleAdmin
     @RoleGabinete
     @RoleAdminFrota
@@ -198,6 +207,7 @@ public class AbastecimentoController extends TpController {
         result.include(TIPOS_COMBUSTIVEL_PARA_ABASTECIMENTO, TipoDeCombustivel.tiposParaAbastecimento());
     }
 
+    @Transacional
     @LogMotivo
     @RoleAdmin
     @RoleAdminGabinete

@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.pp.dao.PpDao;
 import br.gov.jfrj.siga.pp.models.Foruns;
@@ -23,11 +25,13 @@ public class PrincipalController extends PpController {
         super(request, result, PpDao.getInstance(), so, em);
     }
 
+    @NaoTransacional
     @Path("/app/principal")
     public void principal() throws Exception {
         result.redirectTo(this).home();
     }
     
+    @NaoTransacional
     @Path("/app/home")
     public void home() {
         String matriculaSessao = getCadastrante().getMatricula().toString();
@@ -55,6 +59,7 @@ public class PrincipalController extends PpController {
         }
     }
     
+    @NaoTransacional
     @Path("/app/creditos")
     public void creditos() {
         //Creditos

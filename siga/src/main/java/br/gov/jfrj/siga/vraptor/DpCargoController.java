@@ -19,6 +19,8 @@ import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.interceptor.download.Download;
 import br.com.caelum.vraptor.interceptor.download.InputStreamDownload;
 import br.com.caelum.vraptor.interceptor.multipart.UploadedFile;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Texto;
@@ -40,6 +42,7 @@ public class DpCargoController extends
 		super(request, result, dao, so, em);
 	}
 	
+	@NaoTransacional
 	@Get
 	@Post
 	@Path({"/app/cargo/buscar","/cargo/buscar.action"})
@@ -95,6 +98,7 @@ public class DpCargoController extends
 		return null;
 	}
 
+	@NaoTransacional
 	@Get
 	@Post
 	@Path({"/app/cargo/selecionar","/cargo/selecionar.action"})
@@ -110,6 +114,7 @@ public class DpCargoController extends
 		}
 	}
 	
+	@NaoTransacional
 	@Get("app/cargo/listar")
 	@Post("app/cargo/listar")
 	public void lista(Integer offset, Long idOrgaoUsu, String nome) throws Exception {
@@ -140,6 +145,7 @@ public class DpCargoController extends
 		result.include("currentPageNumber", calculaPaginaAtual(offset));
 	}
 	
+	@NaoTransacional
 	@Get("/app/cargo/editar")
 	public void edita(final Long id){
 		if (id != null) {
@@ -166,6 +172,7 @@ public class DpCargoController extends
 		result.include("id",id);
 	}
 	
+	@Transacional
 	@Post("/app/cargo/gravar")
 	public void editarGravar(final Long id, 
 							 final String nmCargo, 
@@ -212,21 +219,19 @@ public class DpCargoController extends
 		}
 		
 		try {
-			dao().iniciarTransacao();
 			dao().gravar(cargo);
 			if(cargo.getIdCargoIni() == null && cargo.getId() != null) {
 				cargo.setIdCargoIni(cargo.getId());
 				cargo.setIdeCargo(cargo.getId().toString());
 				dao().gravar(cargo);
 			}
-			dao().commitTransacao();			
 		} catch (final Exception e) {
-			dao().rollbackTransacao();
 			throw new AplicacaoException("Erro na gravação", 0, e);
 		}
 		this.result.redirectTo(this).lista(0, null, "");
 	}
-
+	
+	@NaoTransacional
 	@Get("/app/cargo/carregarExcel")
 	public void carregarExcel() {
 		if("ZZ".equals(getTitular().getOrgaoUsuario().getSigla())) {
@@ -238,6 +243,7 @@ public class DpCargoController extends
 		result.use(Results.page()).forwardTo("/WEB-INF/page/dpCargo/cargaCargo.jsp");
 	}
 	
+	@NaoTransacional
 	@Post("/app/cargo/carga")
 	public Download carga( final UploadedFile arquivo, Long idOrgaoUsu) throws Exception {
 		InputStream inputStream = null;

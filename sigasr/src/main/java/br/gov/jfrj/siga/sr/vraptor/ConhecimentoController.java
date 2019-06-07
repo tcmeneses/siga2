@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
 import br.gov.jfrj.siga.sr.annotation.AssertAcesso;
 import br.gov.jfrj.siga.sr.dao.SrDao;
 import br.gov.jfrj.siga.sr.model.SrAcao;
@@ -27,6 +28,7 @@ public class ConhecimentoController extends SrController {
 		super(request, result, SrDao.getInstance(), so, em, srValidator);
 	}
 
+	@NaoTransacional
 	@AssertAcesso(EDTCONH_CRIAR_CONHECIMENTOS)
 	@Path("/listar")
 	public void listar(boolean ajax, Long idItem, Long idAcao) throws Exception{

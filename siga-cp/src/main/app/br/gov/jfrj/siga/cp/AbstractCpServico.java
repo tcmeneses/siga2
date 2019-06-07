@@ -43,10 +43,10 @@ import br.gov.jfrj.siga.model.Objeto;
 @MappedSuperclass
 @NamedQueries({
 		@NamedQuery(name = "consultarPorSiglaCpServico", query = "select org from CpServico org "
-				+ "where upper(org.siglaServico) like upper(:siglaServico) "
+				+ "where upper(org.siglaServico) = upper(:siglaServico) "
 				+ "and ((:idServicoPai = 0 and org.cpServicoPai is null) or org.cpServicoPai.idServico = :idServicoPai)"),
 		@NamedQuery(name = "consultarPorSiglaStringCpServico", query = "select org from CpServico org "
-				+ "where upper(org.siglaServico) like upper(:siglaServico)") })
+				+ "where upper(org.siglaServico) = upper(:siglaServico)") })
 public abstract class AbstractCpServico extends Objeto implements Serializable {
 
 	@SequenceGenerator(name = "generator", sequenceName = "CORPORATIVO"

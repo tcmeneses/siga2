@@ -816,8 +816,8 @@ public class ExDocumentoDTO {
 		return podeExibir;
 	}
 
-	public ArrayList getListaNumViasAlternativo() {
-		ArrayList al = new ArrayList();
+	public ArrayList<Integer> getListaNumViasAlternativo() {
+		ArrayList<Integer> al = new ArrayList<Integer>();
 		for (int k = 1; k <= getDoc().getNumUltimaVia(); k++)
 			al.add(k);
 		al.add(0);

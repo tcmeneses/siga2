@@ -100,7 +100,7 @@
 		<url-pattern>/javascript/*</url-pattern>
 	</filter-mapping>
 
-	<filter>
+  	<filter>
 		<filter-name>SigaFilter</filter-name>
 		<filter-class>br.gov.jfrj.siga.util.SigaThreadFilter</filter-class>
 	</filter>

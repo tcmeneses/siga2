@@ -67,9 +67,7 @@ public class IntegracaoLdap {
 
 	private void limparSenhaSincDB(CpIdentidade id) throws AplicacaoException {
 		CpDao dao = CpDao.getInstance();
-//		dao.iniciarTransacao();
 		id.setDscSenhaIdentidadeCriptoSinc(null);
-//		dao.commitTransacao();
 	}
 	
 	public boolean integrarComLdap(CpOrgaoUsuario orgaoUsuario){

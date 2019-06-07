@@ -12,6 +12,8 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.SigaBaseProperties;
@@ -37,11 +39,13 @@ public class UsuarioController extends SigaController {
 		result.on(Exception.class).forwardTo(this).exception();
 	}
 	
+	@NaoTransacional
 	@Get({"/app/usuario/trocar_senha", "/public/app/usuario/trocar_senha"})
 	public void trocaSenha() {
 		result.include("baseTeste", Boolean.valueOf(System.getProperty("isBaseTest").trim()));
 	}
 
+	@Transacional
 	@Post({"/app/usuario/trocar_senha_gravar","/public/app/usuario/trocar_senha_gravar"})
 	public void gravarTrocaSenha(UsuarioAction usuario) throws Exception {
 		String senhaAtual = usuario.getSenhaAtual();
@@ -69,6 +73,7 @@ public class UsuarioController extends SigaController {
 		result.redirectTo("/app/principal");
 	}
 
+	@NaoTransacional
 	@Get({"/app/usuario/incluir_usuario","/public/app/usuario/incluir_usuario"})
 	public void incluirUsuario() {
 		result.include("baseTeste", Boolean.valueOf(System.getProperty("isBaseTest").trim()));
@@ -78,6 +83,7 @@ public class UsuarioController extends SigaController {
 		
 	}
 	
+	@Transacional
 	@Post({"/app/usuario/incluir_usuario_gravar","/public/app/usuario/incluir_usuario_gravar"})
 	public void gravarIncluirUsuario(UsuarioAction usuario) throws Exception {
 		String msgComplemento = "";
@@ -131,6 +137,7 @@ public class UsuarioController extends SigaController {
 		result.use(Results.page()).forwardTo("/WEB-INF/page/usuario/esqueciSenha.jsp");
 	}
 	
+	@NaoTransacional
 	@Get({"/app/usuario/esqueci_senha","/public/app/usuario/esqueci_senha"})
 	public void esqueciSenha() {
 		result.include("baseTeste", Boolean.valueOf(System.getProperty("isBaseTest").trim()));
@@ -138,6 +145,7 @@ public class UsuarioController extends SigaController {
 		result.include("proxima_acao", "esqueci_senha_gravar");
 	}
 	
+	@Transacional
 	@Post({"/app/usuario/esqueci_senha_gravar","/public/app/usuario/esqueci_senha_gravar"})
 	public void gravarEsqueciSenha(UsuarioAction usuario) throws Exception {
 		String msgAD = "";
@@ -190,6 +198,7 @@ public class UsuarioController extends SigaController {
 	}
 
 	
+	@NaoTransacional
 	@Get({"/app/usuario/integracao_ldap","/public/app/usuario/integracao_ldap"})
 	public void isIntegradoLdap(String matricula) throws AplicacaoException {
 		try{
@@ -219,6 +228,7 @@ public class UsuarioController extends SigaController {
 		return result;
 	}
 	
+	@NaoTransacional
 	@Get({"/app/usuario/check_email_valido","/public/app/usuario/check_email_valido"})
 	public void checkEmailValido(String matricula) throws AplicacaoException {
 		try{

@@ -82,13 +82,13 @@ public class CpBL {
 			idNova.setIdIdentidade(null);
 			idNova.setDtExpiracaoIdentidade(dtExpiracao);
 
-			dao().iniciarTransacao();
+//			dao().iniciarTransacao();
 			CpIdentidade id = (CpIdentidade) dao().gravarComHistorico(idNova,
 					ident, dt, identidadeCadastrante);
-			dao().commitTransacao();
+//			dao().commitTransacao();
 			return id;
 		} catch (Exception e) {
-			dao().rollbackTransacao();
+//			dao().rollbackTransacao();
 			throw new AplicacaoException(
 					"Não foi possível cancelar a identidade.", 9, e);
 		}
@@ -108,11 +108,11 @@ public class CpBL {
 			idNova.setIdIdentidade(null);
 			idNova.setDtCancelamentoIdentidade(dt);
 			idNova.setHisDtFim(dt);
-			dao().iniciarTransacao();
+//			dao().iniciarTransacao();
 			dao().gravarComHistorico(idNova, ident, dt, identidadeCadastrante);
-			dao().commitTransacao();
+//			dao().commitTransacao();
 		} catch (Exception e) {
-			dao().rollbackTransacao();
+//			dao().rollbackTransacao();
 			throw new AplicacaoException(
 					"Não foi possível cancelar a identidade.", 9, e);
 		}
@@ -149,13 +149,13 @@ public class CpBL {
 		conf.setCpTipoConfiguracao(tpConf);
 		conf.setHisDtIni(dt);
 
-		dao().iniciarTransacao();
+//		dao().iniciarTransacao();
 		if (confOld != null) {
 			confOld.setHisDtFim(dt);
 			dao().gravarComHistorico(confOld, identidadeCadastrante);
 		}
 		dao().gravarComHistorico(conf, identidadeCadastrante);
-		dao().commitTransacao();
+//		dao().commitTransacao();
 		comp.getConfiguracaoBL().limparCacheSeNecessario();
 	}
 
@@ -164,7 +164,7 @@ public class CpBL {
 			throws Exception {
 
 		try {
-			dao().iniciarTransacao();
+//			dao().iniciarTransacao();
 
 			CpTipoConfiguracao tpConf = dao().consultar(
 					CpTipoConfiguracao.TIPO_CONFIG_FAZER_LOGIN,
@@ -203,9 +203,9 @@ public class CpBL {
 					bloquearIdentidade(ident, identidadeCadastrante, true);
 			}
 			comp.getConfiguracaoBL().limparCacheSeNecessario();
-			dao().commitTransacao();
+//			dao().commitTransacao();
 		} catch (Exception e) {
-			dao().rollbackTransacao();
+//			dao().rollbackTransacao();
 			throw e;
 		}
 	}
@@ -309,9 +309,9 @@ public class CpBL {
 					idNova.setDscSenhaIdentidadeCripto(null);
 					idNova.setDscSenhaIdentidadeCriptoSinc(null);
 
-					dao().iniciarTransacao();
+//					dao().iniciarTransacao();
 					dao().gravarComHistorico(idNova, id, dt, idCadastrante);
-					dao().commitTransacao();
+//					dao().commitTransacao();
 					Correio.enviar(
 							pessoa.getEmailPessoaAtual(),
 							"Alteração de senha ",
@@ -327,7 +327,7 @@ public class CpBL {
 
 					return idNova;
 				} catch (final Exception e) {
-					dao().rollbackTransacao();
+	//				dao().rollbackTransacao();
 					throw new AplicacaoException(
 							"Ocorreu um erro durante a gravação", 0, e);
 				}
@@ -398,7 +398,7 @@ public class CpBL {
 								CpTipoIdentidade.class, false));
 						idNova.setHisDtIni(idNova.getDtCriacaoIdentidade());
 
-						dao().iniciarTransacao();
+//						dao().iniciarTransacao();
 						dao().gravarComHistorico(idNova, idCadastrante);
 						Correio.enviar(
 								pessoa.getEmailPessoaAtual(),
@@ -409,10 +409,10 @@ public class CpBL {
 										+ novaSenha
 										+ "\n\n Atenção: esta é uma "
 										+ "mensagem automática. Por favor não responda ");
-						dao().commitTransacao();
+//						dao().commitTransacao();
 						return idNova;
 					} catch (final Exception e) {
-						dao().rollbackTransacao();
+//						dao().rollbackTransacao();
 						throw new AplicacaoException(
 								"Ocorreu um erro durante a gravação no banco de dados ou no envio do email",
 								0, e);
@@ -523,12 +523,12 @@ public class CpBL {
 				idNova.setDscSenhaIdentidadeCripto(null);
 				idNova.setDscSenhaIdentidadeCriptoSinc(null);
 
-				dao().iniciarTransacao();
+//				dao().iniciarTransacao();
 				dao().gravarComHistorico(idNova, id, dt, idCadastrante);
-				dao().commitTransacao();
+//				dao().commitTransacao();
 				return idNova;
 			} catch (final Exception e) {
-				dao().rollbackTransacao();
+//				dao().rollbackTransacao();
 				throw new AplicacaoException(
 						"Ocorreu um erro durante a gravação", 0, e);
 			}
@@ -689,9 +689,9 @@ public class CpBL {
 				idNova.setDscSenhaIdentidadeCripto(null);
 				idNova.setDscSenhaIdentidadeCriptoSinc(null);
 
-				dao().iniciarTransacao();
+//				dao().iniciarTransacao();
 				dao().gravarComHistorico(idNova, id, dt, idCadastrante);
-				dao().commitTransacao();
+//				dao().commitTransacao();
 				Correio.enviar(
 						id.getDpPessoa().getEmailPessoaAtual(),
 						"Alteração de senha ",
@@ -710,7 +710,7 @@ public class CpBL {
 								+ "mensagem automática. Por favor, não responda. ");
 				return idNova;
 			} catch (final Exception e) {
-				dao().rollbackTransacao();
+	//			dao().rollbackTransacao();
 				throw new AplicacaoException(
 						"Ocorreu um erro durante a gravação", 0, e);
 			}
@@ -733,13 +733,13 @@ public class CpBL {
 			modNew.setIdMod(null);
 			modNew.setConteudoBlobString(conteudo);
 
-			dao().iniciarTransacao();
+//			dao().iniciarTransacao();
 			CpModelo modSaved = (CpModelo) dao().gravarComHistorico(modNew,
 					mod, dt, identidadeCadastrante);
-			dao().commitTransacao();
+//			dao().commitTransacao();
 			return modSaved;
 		} catch (Exception e) {
-			dao().rollbackTransacao();
+//			dao().rollbackTransacao();
 			throw new AplicacaoException("Não foi possível alterar o modelo.",
 					9, e);
 		}

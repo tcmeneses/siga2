@@ -18,6 +18,7 @@ public class ContextoPersistencia {
 	}
 
 	static public void flushTransaction() {
+		System.out.println("ContextoPersistencia : Committando Transação e flushing");
 		em().flush();
 		((Session) (em().getDelegate())).flush();
 		em().getTransaction().commit();

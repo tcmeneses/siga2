@@ -29,6 +29,8 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.ex.ExTipoDespacho;
@@ -44,6 +46,7 @@ public class ExTipoDespachoController extends ExController {
 		super(request, response, context, result, CpDao.getInstance(), so, em);
 	}
 
+	@NaoTransacional
 	@Get("app/despacho/tipodespacho/listar")
 	public void lista() {
 		assertAcesso(CAMINHO_ACESSO);
@@ -53,6 +56,7 @@ public class ExTipoDespachoController extends ExController {
 		result.include("tiposDespacho", tiposDespacho);
 	}
 
+	@NaoTransacional
 	@Get("app/despacho/tipodespacho/editar")
 	public ExTipoDespacho edita(final Long id) {
 		assertAcesso(CAMINHO_ACESSO);
@@ -66,23 +70,25 @@ public class ExTipoDespachoController extends ExController {
 		}
 	}
 
+	@Transacional
 	@Get("app/despacho/tipodespacho/apagar")
 	public void exclui(final Long id) {
 		assertAcesso(CAMINHO_ACESSO);
 		if (id != null) {
 			ExTipoDespacho tipo = dao().consultar(id, ExTipoDespacho.class, false);
 			try {
-				dao().iniciarTransacao();
+//				dao().iniciarTransacao();
 				dao().excluir(tipo);
-				dao().commitTransacao();
+//				dao().commitTransacao();
 				result.redirectTo(this).lista();
 			} catch (Exception e) {
-				dao().rollbackTransacao();
+//				dao().rollbackTransacao();
 				throw new AplicacaoException("Ocorreu um Erro durante a remoção.", 0, e);
 			}
 		}
 	}
 
+	@Transacional
 	@Post("app/despacho/tipodespacho/gravar")
 	public void gravar(final ExTipoDespacho exTipoDespacho) {
 		assertAcesso(CAMINHO_ACESSO);
@@ -92,12 +98,12 @@ public class ExTipoDespachoController extends ExController {
 		builder.setAtivo(exTipoDespacho.getFgAtivo());
 
 		try {
-			dao().iniciarTransacao();
+//			dao().iniciarTransacao();
 			dao().gravar(builder.construir(dao()));
-			dao().commitTransacao();
+//			dao().commitTransacao();
 			result.redirectTo(this).lista();
 		} catch (Exception e) {
-			dao().rollbackTransacao();
+//			dao().rollbackTransacao();
 			throw new AplicacaoException("Ocorreu um Erro durante a gravação", 0, e);
 		}
 

@@ -18,6 +18,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.validator.I18nMessage;
 import br.gov.jfrj.siga.model.ContextoPersistencia;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdmin;
@@ -46,6 +48,7 @@ public class PlantoesMensaisController extends TpController {
         super(request, result, TpDao.getInstance(), validator, so, em);
     }
 
+    @NaoTransacional
     @RoleAdmin
     @RoleAdminMissao
     @RoleAdminMissaoComplexo
@@ -61,6 +64,7 @@ public class PlantoesMensaisController extends TpController {
         result.include("dadosParaTitulo", dadosParaTitulo);
     }
 
+    @NaoTransacional
     @RoleAdmin
     @RoleAdminMissao
     @RoleAdminMissaoComplexo
@@ -91,6 +95,7 @@ public class PlantoesMensaisController extends TpController {
         return Mes.getMes(mesPorExtenso);
     }
 
+    @Transacional
     @RoleAdmin
     @RoleAdminMissao
     @RoleAdminMissaoComplexo
@@ -127,6 +132,7 @@ public class PlantoesMensaisController extends TpController {
         return false;
     }
 
+    @NaoTransacional
     @RoleAdmin
     @RoleAdminMissao
     @RoleAdminMissaoComplexo
@@ -161,6 +167,7 @@ public class PlantoesMensaisController extends TpController {
         return retorno;
     }
 
+    @NaoTransacional
     @RoleAdmin
     @RoleAdminMissao
     @RoleAdminMissaoComplexo
@@ -192,6 +199,7 @@ public class PlantoesMensaisController extends TpController {
         result.include("anoDefault", anoDefault);
     }
 
+    @NaoTransacional
     @RoleAdmin
     @RoleAdminMissao
     @RoleAdminMissaoComplexo
@@ -289,6 +297,7 @@ public class PlantoesMensaisController extends TpController {
         }
     }
 
+    @Transacional
     @RoleAdmin
     @RoleAdminMissao
     @RoleAdminMissaoComplexo

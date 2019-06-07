@@ -47,6 +47,8 @@ import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.interceptor.download.Download;
 import br.com.caelum.vraptor.interceptor.download.InputStreamDownload;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.SigaMessages;
@@ -85,6 +87,7 @@ public class ExMobilController extends
 		setItemPagina(50);
 	}
 
+	@Transacional
 	@Get("app/expediente/doc/marcar_tudo")
 	public void aMarcarTudo() {
 		assertAcesso("");
@@ -93,6 +96,7 @@ public class ExMobilController extends
 		result.redirectTo("/app/expediente/doc/finalizou_rotina");
 	}
 
+	@Transacional
 	@Get("app/expediente/doc/numerar_tudo")
 	public void aNumerarTudo() {
 		assertAcesso("");
@@ -105,6 +109,7 @@ public class ExMobilController extends
 		result.redirectTo("/app/expediente/doc/finalizou_rotina");
 	}
 
+	@Transacional
 	@Get("app/expediente/doc/marcar")
 	public void aMarcar() {
 		assertAcesso("");
@@ -121,11 +126,13 @@ public class ExMobilController extends
 		result.redirectTo("/app/expediente/doc/finalizou_rotina");
 	}
 
+	@NaoTransacional
 	@Get("app/expediente/doc/finalizou_rotina")
 	public void aFinalizouRotina() {
 //		System.out.println("Finalizou rotina");
 	}
 
+	@NaoTransacional
 	@Get("app/expediente/buscar")
 	public void aBuscar(final String sigla, final String popup, final String primeiraVez, final String propriedade, final Integer postback,
 			final int apenasRefresh, final Long ultMovIdEstadoDoc, final int ordem, final int visualizacao, final Integer ultMovTipoResp,
@@ -244,6 +251,7 @@ public class ExMobilController extends
 		return l;
 	}
 	
+	@NaoTransacional
 	@Post
 	@Path("app/expediente/doc/exportarCsv")
 	public Download exportarCsv(final String popup, final String primeiraVez, final String propriedade, final Integer postback, final int apenasRefresh,
@@ -258,6 +266,7 @@ public class ExMobilController extends
 			
 		getP().setOffset(paramoffset);
 		this.setPostback(postback);
+
 
 		final ExMobilBuilder builder = ExMobilBuilder.novaInstancia();
 
@@ -360,6 +369,7 @@ public class ExMobilController extends
 		return new InputStreamDownload(inputStream, "text/csv", "documentos.csv");	
 	}
 
+	@NaoTransacional
 	@Get("app/expediente/doc/listar")
 	public void aListar(final String popup, final String primeiraVez, final String propriedade, final Integer postback, final int apenasRefresh,
 			final Long ultMovIdEstadoDoc, final int ordem, final int visualizacao, final Integer ultMovTipoResp, final DpPessoaSelecao ultMovRespSel,
@@ -608,6 +618,7 @@ public class ExMobilController extends
 		return flt;
 	}
 
+	@NaoTransacional
 	@Get("app/expediente/doc/carregar_lista_formas")
 	public void aCarregarListaFormas(Long tipoForma, Long idFormaDoc) {
 		result.include("todasFormasDocPorTipoForma",
@@ -615,6 +626,7 @@ public class ExMobilController extends
 		result.include("idFormaDoc", idFormaDoc);
 	}
 
+	@NaoTransacional
 	@Get("app/expediente/doc/carregar_lista_modelos")
 	public void aCarregarListaModelos(final Long forma, final Long idMod) {
 		result.include("modelos", this.getModelos(forma));
@@ -692,6 +704,7 @@ public class ExMobilController extends
 						getLotaTitular(), false);
 	}
 
+	@NaoTransacional
 	@Get({"public/app/expediente/selecionar","app/expediente/selecionar","/expediente/selecionar.action"})
 	public void selecionar(final String sigla, final String matricula) throws Exception {
 		String resultado = super.aSelecionar(sigla);
@@ -780,6 +793,7 @@ public class ExMobilController extends
 		return sel;
 	}
 	
+	@NaoTransacional
 	@Get("app/ferramentas/doc/listar")
 	public void aFerramentasListarDocumentos() {
 		assertAcesso(SIGA_DOC_FE_LD);

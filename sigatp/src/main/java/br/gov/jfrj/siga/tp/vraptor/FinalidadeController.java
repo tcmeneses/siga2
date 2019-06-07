@@ -11,6 +11,8 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
+import br.com.caelum.vraptor.util.jpa.Transacional;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdmin;
@@ -32,6 +34,7 @@ public class FinalidadeController extends TpController {
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 
+    @NaoTransacional
 	@Path("/listar")
 	public void listar(String mensagem) {
     	MenuMontador.instance(result).recuperarMenuFinalidades(true);
@@ -45,6 +48,7 @@ public class FinalidadeController extends TpController {
 		result.redirectTo(this).listar(null);
 	}
 	
+    @NaoTransacional
 	@Path("/listarTodas")
 	public void listarTodas() {
     	MenuMontador.instance(result).recuperarMenuFinalidades(false);
@@ -53,7 +57,8 @@ public class FinalidadeController extends TpController {
     	result.include("finalidades", finalidades);
     }
 	
-	@RoleAdmin
+    @NaoTransacional
+    @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
 	@Path("/incluir")
@@ -61,7 +66,8 @@ public class FinalidadeController extends TpController {
 		result.forwardTo(this).editar(null);
 	}
 	
-	@RoleAdmin
+    @NaoTransacional
+    @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
 	@Path("/editar/{id}")
@@ -77,7 +83,8 @@ public class FinalidadeController extends TpController {
     	result.include("finalidade", finalidade);
     }
 	
-	@RoleAdmin
+	@Transacional
+    @RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
 	@Path("/salvar")
@@ -111,6 +118,7 @@ public class FinalidadeController extends TpController {
 		return null != finalidade.getId() && finalidade.getId() > 0;
 	}
 	
+	@Transacional
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo

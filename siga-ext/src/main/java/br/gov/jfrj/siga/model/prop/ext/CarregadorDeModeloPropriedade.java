@@ -51,7 +51,7 @@ public class CarregadorDeModeloPropriedade {
 	@SuppressWarnings("unchecked")
 	public static Properties obterTodas(ModeloPropriedade obj) throws Exception {
 		Properties geral = new Properties();
-		Class cls = obj.getClass();
+		Class<?> cls = obj.getClass();
 		String clsNme = cls.getName();
 		// retorna propriedades da cache, se tem lá
 		Properties prpCache = cache.get(clsNme);
@@ -194,7 +194,7 @@ public class CarregadorDeModeloPropriedade {
 	@SuppressWarnings("unchecked")
 	private static String getClassNameOf(Object obj) {
 		if (obj.getClass().getName().equals("java.lang.Class")) {
-			return ((Class) obj).getName();
+			return ((Class<?>) obj).getName();
 		} else {
 			return obj.getClass().getName();
 		}

@@ -17,6 +17,7 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.util.jpa.NaoTransacional;
 import br.gov.jfrj.siga.dp.DpLotacao;
 import br.gov.jfrj.siga.dp.DpPessoa;
 import br.gov.jfrj.siga.tp.auth.AutorizacaoGI;
@@ -106,6 +107,7 @@ public class ApplicationController extends TpController {
         this.servicoVeiculoController = servicoVeiculoController;
     }
 
+    @NaoTransacional
     @Path("/index")
     public void index() throws ApplicationControllerException {
         try {
@@ -130,6 +132,7 @@ public class ApplicationController extends TpController {
          */
     }
 
+    @NaoTransacional
     @Path("/selecionarPessoa")
     public void selecionarPessoa() {
         CondutorFiltro filtro = new CondutorFiltro();
@@ -138,6 +141,7 @@ public class ApplicationController extends TpController {
         result.include("filtro", filtro);
     }
 
+    @NaoTransacional
     @Path({ "/selecionarPessoa/{sigla}/{tipo}/{nome}", "/selecionarPessoa" })
     public void selecionarSiga(String sigla, String tipo, String nome) throws ApplicationControllerException {
         try {
@@ -147,6 +151,7 @@ public class ApplicationController extends TpController {
         }
     }
 
+    @NaoTransacional
     @Path({ "/buscarSiga/{sigla}/{tipo}/{nome}", "/buscarSiga" })
     public void buscarSiga(String sigla, String tipo, String nome) throws ApplicationControllerException {
         try {
@@ -156,6 +161,7 @@ public class ApplicationController extends TpController {
         }
     }
 
+    @NaoTransacional
     @Path("/exibirManualUsuario")
     public void exibirManualUsuario() {
         /**
@@ -163,6 +169,7 @@ public class ApplicationController extends TpController {
          */
     }
 
+    @NaoTransacional
     @Path("/exibirManualUsuarioDeGabinete")
     public void exibirManualUsuarioDeGabinete() {
         /**
@@ -170,6 +177,7 @@ public class ApplicationController extends TpController {
          */
     }
 
+    @NaoTransacional
     @Path("/gadget")
     public void gadget() {
         try {
