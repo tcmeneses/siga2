@@ -395,7 +395,7 @@ public class DpLotacaoController extends SigaSelecionavelControllerSupport<DpLot
 		result.use(Results.page()).forwardTo("/WEB-INF/page/dpLotacao/cargaLotacao.jsp");
 	}
 
-	@NaoTransacional
+	@Transacional
 	@Post("/app/lotacao/carga")
 	public Download carga( final UploadedFile arquivo, Long idOrgaoUsu) throws Exception {
 		InputStream inputStream = null;

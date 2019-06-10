@@ -114,7 +114,7 @@ public class Excel {
             if(problemas == null || "".equals(problemas.toString())) {
 	            try {
 	            	for (DpLotacao dpLotacao : listaLotacaoGravar) {
-		            	CpDao.getInstance().iniciarTransacao();
+		   //         	CpDao.getInstance().iniciarTransacao();
 		    			CpDao.getInstance().gravar(dpLotacao);
 		    			
 	    				if(dpLotacao.getIdLotacaoIni() == null && dpLotacao.getId() != null) {
@@ -123,9 +123,9 @@ public class Excel {
 	        				CpDao.getInstance().gravar(dpLotacao);
 	        			}
 					}
-	    			CpDao.getInstance().commitTransacao();			
+	    	//		CpDao.getInstance().commitTransacao();			
 	    		} catch (final Exception e) {
-	    			CpDao.getInstance().rollbackTransacao();
+	    	//		CpDao.getInstance().rollbackTransacao();
 	    			throw new AplicacaoException("Erro na gravação", 0, e);
 	    		}
             }

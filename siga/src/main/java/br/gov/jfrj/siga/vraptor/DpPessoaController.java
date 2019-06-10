@@ -543,7 +543,7 @@ public class DpPessoaController extends SigaSelecionavelControllerSupport<DpPess
 		result.use(Results.page()).forwardTo("/WEB-INF/page/dpPessoa/cargaPessoa.jsp");
 	}
 	
-	@NaoTransacional
+	@Transacional
 	@Post("/app/pessoa/carga")
 	public Download carga( final UploadedFile arquivo, Long idOrgaoUsu) throws Exception {
 		InputStream inputStream = null;

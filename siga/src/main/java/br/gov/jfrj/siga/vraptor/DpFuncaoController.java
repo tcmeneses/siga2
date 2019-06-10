@@ -239,7 +239,7 @@ public class DpFuncaoController extends SigaSelecionavelControllerSupport<DpFunc
 		result.use(Results.page()).forwardTo("/WEB-INF/page/dpFuncao/cargaFuncao.jsp");
 	}
 	
-	@NaoTransacional
+	@Transacional
 	@Post("/app/funcao/carga")
 	public Download carga( final UploadedFile arquivo, Long idOrgaoUsu) throws Exception {
 		InputStream inputStream = null;

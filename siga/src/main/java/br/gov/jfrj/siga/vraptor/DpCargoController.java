@@ -243,7 +243,7 @@ public class DpCargoController extends
 		result.use(Results.page()).forwardTo("/WEB-INF/page/dpCargo/cargaCargo.jsp");
 	}
 	
-	@NaoTransacional
+	@Transacional
 	@Post("/app/cargo/carga")
 	public Download carga( final UploadedFile arquivo, Long idOrgaoUsu) throws Exception {
 		InputStream inputStream = null;
