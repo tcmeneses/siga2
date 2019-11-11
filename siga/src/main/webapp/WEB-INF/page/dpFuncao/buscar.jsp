@@ -11,18 +11,32 @@
 
 <script type="text/javascript" language="Javascript1.1">
 function sbmt(offset) {
-	if (offset==null) {
-		offset=0;
+	if (offset == null) {
+		offset = 0;
 	}
-	frm.elements['offset'].value=offset;
+	frm.elements["paramoffset"].value = offset;
+	frm.elements["p.offset"].value = offset;
 	frm.submit();
 }
 </script>
 
+<c:choose>
+	<c:when test="${param.modal != true}">
+	    <!-- parteFuncao para fechar window -->
+	    <c:set var="parteFuncao" value="opener" />
+	</c:when>
+	<c:otherwise>
+	    <!-- parteFuncao para fechar modal -->
+	    <c:set var="parteFuncao" value="parent" />
+	</c:otherwise>	
+</c:choose>	
+
 <form name="frm" action="${request.contextPath}/app/funcao/buscar"  cssClass="form">
 	<input type="hidden" name="propriedade" value="${param.propriedade}" />
 	<input type="hidden" name="postback" value="1" />
-	<input type="hidden" name="offset" value="0" />
+	<input type="hidden" name="paramoffset" value="0" />
+	<input type="hidden" name="p.offset" value="0" />
+	<input type="hidden" name="modal" value="${param['modal']}" />	
 
 	<div class="container-fluid">
 		<div class="card bg-light mb-3" >
@@ -64,7 +78,7 @@ function sbmt(offset) {
 <br>
 
 <table  class="table table-sm table-striped">
-	<thead class="thead-dark">
+	<thead class="${thead_color}">
 		<tr class="header">
 			<th align="center">Sigla</th>
 			<th align="left">Nome</th>
@@ -74,7 +88,7 @@ function sbmt(offset) {
 		itens="${itens}" var="item">
 		<tr class="${evenorodd}">
 			<td width="10%" align="center"><a
-				href="javascript: opener.retorna_${propriedadeClean}('${item.id}','${item.sigla}','${item.descricao}');">${item.sigla}</a></td>
+				href="javascript: ${parteFuncao}.retorna_${propriedadeClean}('${item.id}','${item.sigla}','${item.descricao}');">${item.sigla}</a></td>
 			<td width="90%" align="left">${item.descricao}</td>
 		</tr>
 	</siga:paginador>

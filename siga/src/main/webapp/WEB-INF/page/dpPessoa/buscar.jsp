@@ -10,10 +10,11 @@
 
 <script type="text/javascript" language="Javascript1.1">
 function sbmt(offset) {
-	if (offset==null) {
-		offset=0;
+	if (offset == null) {
+		offset = 0;
 	}
-	frm.elements['offset'].value=offset;
+	frm.elements["paramoffset"].value = offset;
+	frm.elements["p.offset"].value = offset;
 	frm.submit();
 }
 </script>
@@ -28,8 +29,10 @@ function sbmt(offset) {
 			<form name="frm" action="${request.contextPath}/app/pessoa/buscar" class="form100" method="POST">
 				<input type="hidden" name="propriedade" value="${param.propriedade}" />
 				<input type="hidden" name="postback" value="1" />
-				<input type="hidden" name="offset" value="0" />
+				<input type="hidden" name="paramoffset" value="0" />
+				<input type="hidden" name="p.offset" value="0" />
 				<input type="hidden" name="buscarFechadas" value="${param['buscarFechadas']}" />
+				<input type="hidden" name="modal" value="${param['modal']}" />
 				<div class="row">
 					<div class="col-sm">
 						<div class="form-group">
@@ -47,6 +50,16 @@ function sbmt(offset) {
 								</c:when>
 								<c:otherwise>
 									<siga:selecao titulo="Lotação" urlAcao="buscar" propriedade="lotacao" modulo="siga"/>
+								</c:otherwise>	
+							</c:choose>	
+							<c:choose>
+								<c:when test="${param.modal != true}">
+								    <!-- parteFuncao para fechar window -->
+								    <c:set var="parteFuncao" value="opener" />
+								</c:when>
+								<c:otherwise>
+								    <!-- parteFuncao para fechar modal -->
+								    <c:set var="parteFuncao" value="parent" />
 								</c:otherwise>	
 							</c:choose>						
 						</div>
@@ -79,8 +92,8 @@ function sbmt(offset) {
 		</div>
 		<br>
 	
-		<table class="table table-sm table-striped">
-			<thead class="thead-dark">
+		<table class="table table-sm table-striped table-responsive">
+			<thead class="${thead_color}">
 				<tr>
 					<th align="center">Matrícula</th>
 					<th align="left">Nome</th>
@@ -89,11 +102,11 @@ function sbmt(offset) {
 					<th>Fim de Vigência</th>
 				</tr>
 			</thead>
-			<siga:paginador maxItens="10" maxIndices="${empty maxIndices ? 10 : maxIndices}" totalItens="${tamanho}"
+			<siga:paginador maxItens="10" maxIndices="10" totalItens="${tamanho}"
 				itens="${pessoas}" var="pessoa">
 				<tr class="${evenorodd}">
 					<td align="center"><a
-						href="javascript: opener.retorna_${propriedadeClean}('${pessoa.id}','${pessoa.sigla}','${pessoa.descricao}','${pessoa.funcaoConfianca}');">${pessoa.sigla}</a></td>
+						href="javascript: ${parteFuncao}.retorna_${propriedadeClean}('${pessoa.id}','${pessoa.sigla}','${pessoa.descricao}','${pessoa.funcaoConfianca}');">${pessoa.sigla}</a></td>
 					<td align="left">${pessoa.descricao}</td>
 					<td align="center">${pessoa.lotacao.sigla}</td>
 					<td align="center">${pessoa.funcaoConfianca.nomeFuncao}${buscarFechadas}</td>

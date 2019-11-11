@@ -5,17 +5,19 @@
 
 <script type="text/javascript" language="Javascript1.1">
 function sbmt(offset) {
-	if (offset==null) {
-		offset=0;
+	if (offset == null) {
+		offset = 0;
 	}
-	frm.elements['offset'].value=offset;
+	frm.elements["paramoffset"].value = offset;
+	frm.elements["p.offset"].value = offset;
 	frm.submit();
 }
 </script>
 <siga:pagina titulo="Lista Orgão Externo">
 <div class="container-fluid">
 	<form name="frm" action="listar" class="form" method="GET">
-	<input type="hidden" name="offset" value="0" />
+	<input type="hidden" name="paramoffset" value="0" />
+	<input type="hidden" name="p.offset" value="0" />
 
 	<div class="card bg-light mb-3" >
 		<div class="card-header">
@@ -23,7 +25,7 @@ function sbmt(offset) {
 		</div>
 		<div class="card-body">	
 			<table border="0" class="table table-sm table-striped">
-				<thead class="thead-dark">
+				<thead class="${thead_color}">
 					<tr>
 						<th align="left">Nome</th>
 						<th align="center">Sigla</th>

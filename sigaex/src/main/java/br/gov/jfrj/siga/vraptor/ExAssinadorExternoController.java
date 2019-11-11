@@ -119,44 +119,47 @@ public class ExAssinadorExternoController extends ExController {
 			String permalink = urlapi.split("sigaex/public/app/")[0] + "siga/permalink/";
 
 			Long cpf = Long.valueOf(sCpf);
-			DpPessoa pes = dao().consultarPorCpf(cpf);
-			if (pes == null)
+			List<DpPessoa> pessoas = dao().listarPorCpf(cpf);
+			if (pessoas == null)
 				throw new Exception("Nenhuma pessoa localizada com o CPF: " + sCpf);
 			List<ExAssinadorExternoListItem> list = new ArrayList<ExAssinadorExternoListItem>();
-			boolean apenasComSolicitacaoDeAssinatura = !Ex.getInstance().getConf().podePorConfiguracao(pes, CpTipoConfiguracao.TIPO_CONFIG_PODE_ASSINAR_SEM_SOLICITACAO);
-			List<ExAssinavelDoc> assinaveis = Ex.getInstance().getBL().obterAssinaveis(pes, pes.getLotacao(), apenasComSolicitacaoDeAssinatura);
-			for (ExAssinavelDoc ass : assinaveis) {
-				if (ass.isPodeAssinar()) {
-					String solicitantesDeAssinatura = ass.getDoc().getSolicitantesDeAssinaturaCompleto();
-					if (solicitantesDeAssinatura != null)
-						solicitantesDeAssinatura = solicitantesDeAssinatura.replace("Revisado por", "Assinatura solicitada por");
-					ExAssinadorExternoListItem aei = new ExAssinadorExternoListItem();
-					aei.setId(makeId(ass.getDoc().getCodigoCompacto()));
-					aei.setSecret(docSecret(ass.getDoc()));
-					aei.setCode(ass.getDoc().getCodigo());
-					aei.setDescr(ass.getDoc().getDescrDocumento() + (solicitantesDeAssinatura.length() != 0 ? " (" + solicitantesDeAssinatura + ")" : ""));
-					aei.setKind(ass.getDoc().getTipoDescr());
-					aei.setOrigin("Siga-Doc");
-					aei.setUrlView(permalink + ass.getDoc().getReferencia());
-					aei.setUrlHash("sigadoc/doc/" + aei.getId() + "/hash");
-					aei.setUrlSave("sigadoc/doc/" + aei.getId() + "/sign");
-					list.add(aei);
+			for (DpPessoa pes : pessoas) {
+				boolean apenasComSolicitacaoDeAssinatura = !Ex.getInstance().getConf().podePorConfiguracao(pes, CpTipoConfiguracao.TIPO_CONFIG_PODE_ASSINAR_SEM_SOLICITACAO);
+				List<ExAssinavelDoc> assinaveis = Ex.getInstance().getBL().obterAssinaveis(pes, pes.getLotacao(), apenasComSolicitacaoDeAssinatura);
+				for (ExAssinavelDoc ass : assinaveis) {
+					if (ass.isPodeAssinar()) {
+						String solicitantesDeAssinatura = ass.getDoc().getSolicitantesDeAssinaturaCompleto();
+						if (solicitantesDeAssinatura != null)
+							solicitantesDeAssinatura = solicitantesDeAssinatura.replace("Revisado por", "Assinatura solicitada por");
+						ExAssinadorExternoListItem aei = new ExAssinadorExternoListItem();
+						aei.setId(makeId(ass.getDoc().getCodigoCompacto()));
+						aei.setSecret(docSecret(ass.getDoc()));
+						aei.setCode(ass.getDoc().getCodigo());
+						aei.setDescr(ass.getDoc().getDescrDocumento() + (solicitantesDeAssinatura.length() != 0 ? " (" + solicitantesDeAssinatura + ")" : ""));
+						aei.setKind(ass.getDoc().getTipoDescr());
+						aei.setOrigin("Siga-Doc");
+						aei.setUrlView(permalink + ass.getDoc().getReferencia());
+						aei.setUrlHash("sigadoc/doc/" + aei.getId() + "/hash");
+						aei.setUrlSave("sigadoc/doc/" + aei.getId() + "/sign");
+						list.add(aei);
+					}
+					if (ass.getMovs() == null)
+						continue;
+					for (ExAssinavelMov assmov : ass.getMovs()) {
+						ExAssinadorExternoListItem aei = new ExAssinadorExternoListItem();
+						aei.setId(makeId(assmov.getMov().getReferencia()));
+						aei.setSecret(movSecret(assmov.getMov()));
+						aei.setCode(assmov.getMov().getReferencia());
+						aei.setDescr(assmov.getMov().getObs());
+						aei.setKind(assmov.getMov().getTipoDescr());
+						aei.setOrigin("Siga-Doc");
+						aei.setUrlView(permalink + assmov.getMov().getReferencia().replace(":", "/"));
+						aei.setUrlHash("sigadoc/doc/" + aei.getId() + "/hash");
+						aei.setUrlSave("sigadoc/doc/" + aei.getId() + "/sign");
+						list.add(aei);
+					}
 				}
-				if (ass.getMovs() == null)
-					continue;
-				for (ExAssinavelMov assmov : ass.getMovs()) {
-					ExAssinadorExternoListItem aei = new ExAssinadorExternoListItem();
-					aei.setId(makeId(assmov.getMov().getReferencia()));
-					aei.setSecret(movSecret(assmov.getMov()));
-					aei.setCode(assmov.getMov().getReferencia());
-					aei.setDescr(assmov.getMov().getObs());
-					aei.setKind(assmov.getMov().getTipoDescr());
-					aei.setOrigin("Siga-Doc");
-					aei.setUrlView(permalink + assmov.getMov().getReferencia().replace(":", "/"));
-					aei.setUrlHash("sigadoc/doc/" + aei.getId() + "/hash");
-					aei.setUrlSave("sigadoc/doc/" + aei.getId() + "/sign");
-					list.add(aei);
-				}
+
 			}
 
 			ExAssinadorExternoList resp = new ExAssinadorExternoList();
@@ -176,9 +179,9 @@ public class ExAssinadorExternoController extends ExController {
 			assertPassword();
 			PdfData pdfd = getPdf(id);
 			result.use(Results.http()).addHeader("Content-Type", "application/pdf")
-				.addHeader("Content-Length", Integer.toString(pdfd.pdf.length))
-				.addHeader("Doc-Secret", pdfd.secret)
-				.body(new ByteArrayInputStream(pdfd.pdf)).setStatusCode(200);
+			.addHeader("Content-Length", Integer.toString(pdfd.pdf.length))
+			.addHeader("Doc-Secret", pdfd.secret)
+			.body(new ByteArrayInputStream(pdfd.pdf)).setStatusCode(200);
 		} catch (Exception e) {
 			jsonError(e);
 		}
@@ -252,13 +255,13 @@ public class ExAssinadorExternoController extends ExController {
 			jsonError(e);
 		}
 	}
-	
+
 	@Put("/public/app/assinador-externo/doc/{id}/sign")
 	public void assinadorExternoSave(String id) throws Exception {
 		try {
 			assertPassword();
-			
-			
+
+
 		} catch (Exception e) {
 			jsonError(e);
 		}
@@ -322,7 +325,7 @@ public class ExAssinadorExternoController extends ExController {
 			boolean apenasComSolicitacaoDeAssinatura = !Ex.getInstance().getConf().podePorConfiguracao(cadastrante, CpTipoConfiguracao.TIPO_CONFIG_PODE_ASSINAR_SEM_SOLICITACAO);
 			if (apenasComSolicitacaoDeAssinatura && !mob.doc().isAssinaturaSolicitada())
 				throw new Exception("Documento requer solicitação de assinatura. Provavelmente, o documento foi editado após a solicitação.");
-			
+
 			String msg = null;
 
 			DpLotacao lotaCadastrante = cadastrante != null ? cadastrante.getLotacao() : null;
@@ -442,7 +445,7 @@ public class ExAssinadorExternoController extends ExController {
 			if (!(mov.getExTipoMovimentacao().getId()
 					.equals(ExTipoMovimentacao.TIPO_MOVIMENTACAO_CONFERENCIA_COPIA_DOCUMENTO)
 					|| mov.getExTipoMovimentacao().getId()
-							.equals(ExTipoMovimentacao.TIPO_MOVIMENTACAO_ASSINATURA_DIGITAL_DOCUMENTO))) {
+					.equals(ExTipoMovimentacao.TIPO_MOVIMENTACAO_ASSINATURA_DIGITAL_DOCUMENTO))) {
 				throw new Exception("Não é assinatura digital");
 			}
 			SignRefGetResponse resp = new SignRefGetResponse();

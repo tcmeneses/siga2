@@ -1,8 +1,10 @@
 package br.gov.jfrj.siga.vraptor;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.auth0.jwt.JWTSigner;
+import org.apache.http.HttpHost;
 import com.auth0.jwt.JWTVerifier;
 import com.lowagie.text.pdf.codec.Base64;
 import com.mashape.unirest.http.HttpResponse;
@@ -28,15 +31,19 @@ import br.com.caelum.vraptor.observer.download.Download;
 import br.com.caelum.vraptor.observer.download.InputStreamDownload;
 import br.gov.jfrj.siga.Service;
 import br.gov.jfrj.siga.base.AplicacaoException;
+import br.gov.jfrj.siga.base.SigaBaseProperties;
 import br.gov.jfrj.siga.bluc.service.BlucService;
 import br.gov.jfrj.siga.bluc.service.HashRequest;
 import br.gov.jfrj.siga.bluc.service.HashResponse;
+import br.gov.jfrj.siga.dp.DpLotacao;
+import br.gov.jfrj.siga.dp.DpPessoa;
 import br.gov.jfrj.siga.ex.ExArquivo;
 import br.gov.jfrj.siga.ex.ExDocumento;
 import br.gov.jfrj.siga.ex.ExMobil;
 import br.gov.jfrj.siga.ex.ExMovimentacao;
 import br.gov.jfrj.siga.ex.ExTipoMovimentacao;
 import br.gov.jfrj.siga.ex.bl.Ex;
+import br.gov.jfrj.siga.ex.util.TipoMobilComparatorInverso;
 import br.gov.jfrj.siga.ex.vo.ExDocumentoVO;
 import br.gov.jfrj.siga.hibernate.ExDao;
 
@@ -84,6 +91,10 @@ public class ExAutenticacaoController extends ExController {
 		String recaptchaSiteKey = getRecaptchaSiteKey();
 		String recaptchaSitePassword = getRecaptchaSitePassword();
 		result.include("recaptchaSiteKey", recaptchaSiteKey);
+		result.include("n", n);
+		
+		final String HTTP_PROXY_HOST = System.getProperty("http.proxyHost");
+		final String HTTP_PROXY_PORT = System.getProperty("http.proxyPort");
 
 		if (n == null || n.trim().length() == 0) {
 			setDefaultResults();
@@ -95,6 +106,10 @@ public class ExAutenticacaoController extends ExController {
 
 		boolean success = false;
 		if (gRecaptchaResponse != null) {
+			if (!"".equals(HTTP_PROXY_HOST) && !"".equals(HTTP_PROXY_PORT)){
+				Unirest.setProxy(new HttpHost(HTTP_PROXY_HOST, Integer.parseInt(HTTP_PROXY_PORT)));
+			}
+
 			HttpResponse<JsonNode> result = Unirest
 					.post("https://www.google.com/recaptcha/api/siteverify")
 					.header("accept", "application/json")
@@ -153,7 +168,7 @@ public class ExAutenticacaoController extends ExController {
 		}
 
 		setDefaultResults();
-		result.include("n", n);
+		
 		result.include("assinaturas", assinaturas);
 		result.include("mov", mov);
 		result.include("mostrarBotaoAssinarExterno", mostrarBotaoAssinarExterno);
@@ -251,7 +266,7 @@ public class ExAutenticacaoController extends ExController {
 			return;
 		}
 		String n = verifyJwtToken(jwt).get("n").toString();
-
+		
 		ExArquivo arq = Ex.getInstance().getBL().buscarPorNumeroAssinatura(n);
 		Set<ExMovimentacao> assinaturas = arq.getAssinaturasDigitais();
 
@@ -277,10 +292,26 @@ public class ExAutenticacaoController extends ExController {
 					mob = doc.getPrimeiraVia();
 				}
 			}
-
+			List<ExMovimentacao> lista = new ArrayList<ExMovimentacao>();
+			lista.addAll(doc.getAutenticacoesComSenha());
+			
+			DpPessoa p = new DpPessoa();    
+			DpLotacao l = new DpLotacao();
+			
+			p = doc.getSubscritor();
+			l = doc.getLotaSubscritor();
+			
+			if(p == null && !lista.isEmpty()) {
+				p = lista.get(0).getSubscritor();
+			}
+			
+			if(l == null && !lista.isEmpty()) {
+				l = lista.get(0).getLotaSubscritor();
+			}
+			
 			final ExDocumentoVO docVO = new ExDocumentoVO(doc, mob,
-					getCadastrante(), doc.getSubscritor(),
-					doc.getLotaSubscritor(), true, false);
+					getCadastrante(), p,
+					l, true, false);
 
 			docVO.exibe();
 

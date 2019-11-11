@@ -4,7 +4,9 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -201,8 +203,7 @@ public class SubstituicaoController extends SigaController {
 					  ) throws Exception {
 		
 		
-		Long lotacaoIniPai;
-		Long lotacaoIniAvo;
+		Long lotacaoPai, lotacaoAvo = null, lotacaoIniPai, lotacaoIniAvo = null;	
 
 		DpSubstituicao subst = new DpSubstituicao();
 		
@@ -234,13 +235,18 @@ public class SubstituicaoController extends SigaController {
 				
 				subst.setLotaTitular(dao().consultar(this.lotaTitularSel.getId(), DpLotacao.class, false));
 				lotacaoIniPai = subst.getLotaTitular().getIdLotacaoIniPai();
-				lotacaoIniAvo = subst.getLotaTitular().getLotacaoPai().getIdLotacaoIniPai();
-				
+				lotacaoPai = subst.getLotaTitular().getIdLotacaoPai();
+				if(lotacaoPai != null)
+					lotacaoAvo = subst.getLotaTitular().getLotacaoPai().getIdLotacaoPai();
+				if(lotacaoIniPai != null)
+					lotacaoIniAvo = subst.getLotaTitular().getLotacaoPai().getIdLotacaoIniPai();
 				
 				if (!subst.getLotaTitular().getIdLotacao().equals(getCadastrante().getIdLotacao()) 
 						&& !podeCadastrarQualquerSubstituicao()) 
-					if ((lotacaoIniPai == null) || !(lotacaoIniPai.equals(getCadastrante().getIdLotacaoIni())) &&
-						(lotacaoIniAvo == null) || !(lotacaoIniAvo.equals(getCadastrante().getIdLotacaoIni()))) 
+					if (!(!(lotacaoIniPai == null) && (lotacaoIniPai.equals(getCadastrante().getIdLotacaoIni())) ||
+						  !(lotacaoIniAvo == null) && (lotacaoIniAvo.equals(getCadastrante().getIdLotacaoIni())) || 
+						  !(lotacaoPai == null) && (lotacaoPai.equals(getCadastrante().getIdLotacao())) ||
+						  !(lotacaoAvo == null) && (lotacaoAvo.equals(getCadastrante().getIdLotacao()))))
 						throw new AplicacaoException("Lotação titular não permitida. Apenas usuários da própria lotação ou lotados até 2 lotações superiores na hierarquia podem defini-la como titular.");
 				
 			}
@@ -285,14 +291,16 @@ public class SubstituicaoController extends SigaController {
 				
 			} else if (getIntervaloDeDiasEntreDatas(subst.getDtIniSubst(), subst.getDtFimSubst()) < 0) {
 				throw new AplicacaoException("Não é possível informar uma data final anterior a data inicial.");
-			} else if (getIntervaloDeDiasEntreDatas(subst.getDtIniSubst(), subst.getDtFimSubst()) > 120) {
-				throw new AplicacaoException("Período informado : " + getIntervaloDeDiasEntreDatas(subst.getDtIniSubst(), subst.getDtFimSubst()) + " dias. Não é possível cadastrar um período de substituição maior que 120 dias.");
-			}
-			else {
-				if(subst.getDtFimSubst() != null && !Data.dataDentroSeculo21(subst.getDtFimSubst()))
-					throw new AplicacaoException("Data final inválida, deve estar entre o ano 2000 e ano 2100");	
-			} 
+			} else {
+				Calendar c = Calendar.getInstance();
+				c.setTime(subst.getDtIniSubst());
+				c.add(Calendar.YEAR, 2);  
 				
+				if (c.getTime().compareTo(subst.getDtFimSubst()) < 0)  {
+					throw new AplicacaoException("Não é possível cadastrar período de substituição maior que 2 anos.");
+			} else if (subst.getDtFimSubst() != null && !Data.dataDentroSeculo21(subst.getDtFimSubst()))
+					throw new AplicacaoException("Data final inválida, deve estar entre o ano 2000 e ano 2100");
+			}				 
 	
 
 			subst.setDtIniRegistro(new Date());
@@ -311,27 +319,27 @@ public class SubstituicaoController extends SigaController {
 
 			subst = dao().gravar(subst);
 			
-			Set<DpPessoa> pessoasParaEnviarEmail;
+			Set<DpPessoa> pessoasParaEnviarEmail = new HashSet<DpPessoa>();
 			
 			String textoEmail = "Informamos que a matrícula: "  + getCadastrante().getSesbPessoa() + getCadastrante().getMatricula()
 			        + " - " + getCadastrante().getNomePessoa()  
 					+ " cadastrou uma substituição da ";
-			
 					
+						
 					if (tipoSubstituto == 1) {
 						textoEmail = textoEmail + " matrícula: " + subst.getSubstituto().getSesbPessoa() + subst.getSubstituto().getMatricula() + " - " + subst.getSubstituto().getNomePessoa();
-						pessoasParaEnviarEmail = subst.getSubstituto().getLotacao().getDpPessoaLotadosSet();
+						pessoasParaEnviarEmail.add(subst.getSubstituto());
 						
 					} else {
 						textoEmail = textoEmail + " lotação: " + subst.getLotaSubstituto().getSigla() + " - " + subst.getLotaSubstituto().getNomeLotacao();
-						pessoasParaEnviarEmail = subst.getLotaSubstituto().getDpPessoaLotadosSet();
+						pessoasParaEnviarEmail.addAll(subst.getLotaSubstituto().getDpPessoaLotadosSet());
 					}
 					
 					textoEmail = textoEmail + " para";
 					
 					if (tipoTitular ==1) {
 						textoEmail = textoEmail + " matricula: " + subst.getTitular().getSesbPessoa() + subst.getTitular().getMatricula() + " - " + subst.getTitular().getNomePessoa();;
-						pessoasParaEnviarEmail.addAll(subst.getTitular().getLotacao().getDpPessoaLotadosSet());
+						pessoasParaEnviarEmail.add(subst.getTitular());
 					} else {
 						textoEmail = textoEmail + " lotação: " + subst.getLotaTitular().getSigla() + " - " + subst.getLotaTitular().getNomeLotacao();
 						pessoasParaEnviarEmail.addAll(subst.getLotaTitular().getDpPessoaLotadosSet());
@@ -341,7 +349,6 @@ public class SubstituicaoController extends SigaController {
 					+ "\n\n Atenção: esta é uma "
 					+ "mensagem automática. Por favor, não responda.";
 					
-	//		String assunto = "Cadastro de Substituição - TESTE DE IMPLEMENTAçÃO DE ENVIOD E EMAIL - FAVOR DESCONSIDERA";
 			String assunto = "Cadastro de Substituição";
 					
 			List<String> listaDeEmails= new ArrayList<String>();
@@ -376,7 +383,7 @@ public class SubstituicaoController extends SigaController {
 		if (referer != null)
 			result.redirectTo(referer);
 		else
-			result.redirectTo(PrincipalController.class).principal(false, null);
+			result.redirectTo(PrincipalController.class).principal(false, false);
 	}	
 	
 	private void gravarFinalizar() {
@@ -429,7 +436,7 @@ public class SubstituicaoController extends SigaController {
 		if (referer != null)
 			result.redirectTo(referer);
 		else
-			result.redirectTo(PrincipalController.class).principal(false, null);
+			result.redirectTo(PrincipalController.class).principal(false,false);
 	}	
 	
 	public void exclui(Long id) throws Exception {
@@ -452,7 +459,7 @@ public class SubstituicaoController extends SigaController {
 				if (referer != null)
 					result.redirectTo(referer);
 				else
-					result.redirectTo(PrincipalController.class).principal(false, null);
+					result.redirectTo(PrincipalController.class).principal(false,false);
 			} else
 				throw new AplicacaoException("Usuário não tem permissão para excluir esta substituição");	
 		} else

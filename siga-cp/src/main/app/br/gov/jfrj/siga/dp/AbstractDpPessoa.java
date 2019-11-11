@@ -68,6 +68,24 @@ import br.gov.jfrj.siga.sinc.lib.Desconsiderar;
 				+ "	and (:situacaoFuncionalPessoa = null or pes.situacaoFuncionalPessoa = :situacaoFuncionalPessoa)"
 				+ "   	and pes.dataFimPessoa = null"
 				+ "   	order by pes.nomePessoa"),
+		@NamedQuery(name = "consultarPorFiltroDpPessoaSemIdentidade", query = "from DpPessoa pes "
+				+ "  where (upper(pes.nomePessoaAI) like upper('%' || :nome || '%'))"
+				+ " and (pes.cpfPessoa = :cpf or :cpf = 0)"
+				+ " and pes.orgaoUsuario.idOrgaoUsu = :idOrgaoUsu"
+				+ "	and (pes.lotacao.idLotacao = :lotacao or :lotacao = 0)"
+				+ " and pes.dataFimPessoa = null"
+				+ " and pes.id not in (select pes1.idPessoa from CpIdentidade i inner join i.dpPessoa pes1 where (upper(pes1.nomePessoaAI) like upper('%' || :nome || '%')) "
+				+ 			" and (pes1.cpfPessoa = :cpf or :cpf = 0) and pes1.orgaoUsuario.idOrgaoUsu = :idOrgaoUsu and (pes1.lotacao.idLotacao = :lotacao or :lotacao = 0) and pes1.dataFimPessoa = null)"
+				+ "   	order by pes.cpfPessoa"),
+		@NamedQuery(name = "consultarQuantidadeDpPessoaSemIdentidade", query = "select count(pes) from DpPessoa pes "
+				+ "  where (upper(pes.nomePessoaAI) like upper('%' || :nome || '%'))"
+				+ " and (pes.cpfPessoa = :cpf or :cpf = 0)"
+				+ " and pes.orgaoUsuario.idOrgaoUsu = :idOrgaoUsu"
+				+ "	and (pes.lotacao.idLotacao = :lotacao or :lotacao = 0)"
+				+ " and pes.dataFimPessoa = null"
+				+ " and pes.id not in (select pes1.idPessoa from CpIdentidade i inner join i.dpPessoa pes1 where (upper(pes1.nomePessoaAI) like upper('%' || :nome || '%')) "
+				+ 			" and (pes1.cpfPessoa = :cpf or :cpf = 0) and pes1.orgaoUsuario.idOrgaoUsu = :idOrgaoUsu and (pes1.lotacao.idLotacao = :lotacao or :lotacao = 0) and pes1.dataFimPessoa = null)"
+				+ "   	order by pes.nomePessoa"),
 		@NamedQuery(name = "consultarQuantidadeDpPessoa", query = "select count(pes) from DpPessoa pes "
 				+ "  where ((upper(pes.nomePessoaAI) like upper('%' || :nome || '%')) or ((pes.sesbPessoa || pes.matricula) like upper('%' || :nome || '%'))) "
 				+ "  	and (:idOrgaoUsu = null or :idOrgaoUsu = 0L or pes.orgaoUsuario.idOrgaoUsu = :idOrgaoUsu)"
@@ -75,6 +93,7 @@ import br.gov.jfrj.siga.sinc.lib.Desconsiderar;
 				+ "	and (:lotacao = null or :lotacao = 0L or pes.lotacao.idLotacao = :lotacao)"
 				+ " and (:cargo = null or :cargo = 0L or pes.cargo.idCargo = :cargo) "
 		      	+ " and (:funcao = null or :funcao = 0L or pes.funcaoConfianca.idFuncao = :funcao) "
+				+ " and (pes.id <> :id or :id = 0)"
 				+ "	and (:situacaoFuncionalPessoa = null or :situacaoFuncionalPessoa = '' or pes.situacaoFuncionalPessoa = :situacaoFuncionalPessoa)"
 				+ "   	and pes.dataFimPessoa = null"
 				+ "   	order by pes.nomePessoa"),
@@ -87,7 +106,7 @@ import br.gov.jfrj.siga.sinc.lib.Desconsiderar;
 				+ "  	and (:lotacao = null or :lotacao = 0L or pes.lotacao.idLotacao = :lotacao)"
 				+ " and (:cargo = null or :cargo = 0L or pes.cargo.idCargo = :cargo) "
 				+ " and (:funcao = null or :funcao = 0L or pes.funcaoConfianca.idFuncao = :funcao) "
-				+ "	group by pes.idPessoaIni) order by pes.nomePessoa"),
+				+ "	group by pes.idPessoaIni) order by upper(pes.nomePessoa)"),
 		@NamedQuery(name = "consultarQuantidadeDpPessoaInclusiveFechadas", query = "select count(distinct pes.idPessoaIni)"
 				+ "		from DpPessoa pes"
 				+ "		where ((upper(pes.nomePessoaAI) like upper('%' || :nome || '%')) or ((pes.sesbPessoa || pes.matricula) like upper('%' || :nome || '%')))"
@@ -114,8 +133,7 @@ import br.gov.jfrj.siga.sinc.lib.Desconsiderar;
 				+ "   and (u.dtCancelamentoIdentidade is null)"
 				+ "   and (u.dtExpiracaoIdentidade is null or u.dtExpiracaoIdentidade > current_date())"
 				+ "   and (pes.dataFimPessoa is null)"
-				+ "   and (pes.situacaoFuncionalPessoa in ('1', '2', '31'))"),
-
+				+ "   and (pes.situacaoFuncionalPessoa in ('1', '2', '31'))")
 })
 public abstract class AbstractDpPessoa extends DpResponsavel implements
 		Serializable {
