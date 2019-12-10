@@ -6,29 +6,30 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 
+import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Path;
-import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.Validator;
-import br.com.caelum.vraptor.validator.ValidationMessage;
+import br.com.caelum.vraptor.validator.SimpleMessage;
+import br.com.caelum.vraptor.validator.Validator;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
-import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.tp.exceptions.RelatorioConsumoMedioException;
 import br.gov.jfrj.siga.tp.model.Abastecimento;
 import br.gov.jfrj.siga.tp.model.EstadoMissao;
 import br.gov.jfrj.siga.tp.model.Missao;
 import br.gov.jfrj.siga.tp.model.RelatorioConsumoMedio;
+import br.gov.jfrj.siga.tp.model.TpDao;
 import br.gov.jfrj.siga.tp.model.Veiculo;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
 
-@Resource
+@Controller
 @Path("/app/relatorioConsumoMedio")
 public class RelatorioConsumoMedioController extends TpController {
 
@@ -38,8 +39,16 @@ public class RelatorioConsumoMedioController extends TpController {
     private static final String OPTION = "</option>";
     private static final String OPTION_VALUE = "<option value='";
 */
-    public RelatorioConsumoMedioController(HttpServletRequest request, Result result, CpDao dao, Validator validator, SigaObjects so, EntityManager em) {
-        super(request, result, dao, validator, so, em);
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public RelatorioConsumoMedioController() {
+		super();
+	}
+	
+	@Inject
+	public RelatorioConsumoMedioController(HttpServletRequest request, Result result,  Validator validator, SigaObjects so,  EntityManager em) {
+        super(request, result, TpDao.getInstance(), validator, so, em);
     }
 
     @Path("/consultar")
@@ -75,7 +84,7 @@ public class RelatorioConsumoMedioController extends TpController {
             boolean plural = StringUtils.countMatches(msgErroTratada, ",") > 1 ? true : false;
             msgErroTratada = msgErroTratada.substring(0, msgErroTratada.length() - 2);
             msgErroTratada += " deve" + (plural ? "m" : "") + " ser preenchido" + (plural ? "s" : "");
-            validator.add(new ValidationMessage(msgErroTratada, "RelatorioConsumoMedio"));
+            validator.add(new SimpleMessage("RelatorioConsumoMedio",msgErroTratada));
         }
         return msgErroTratada;
     }

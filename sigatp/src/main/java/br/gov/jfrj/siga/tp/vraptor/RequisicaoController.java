@@ -2,18 +2,20 @@ package br.gov.jfrj.siga.tp.vraptor;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Path;
-import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.validator.I18nMessage;
+import br.com.caelum.vraptor.validator.Validator;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.cp.CpComplexo;
@@ -37,7 +39,7 @@ import br.gov.jfrj.siga.tp.util.SigaTpException;
 import br.gov.jfrj.siga.tp.vraptor.i18n.MessagesBundle;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
 
-@Resource
+@Controller
 @Path("/app/requisicao")
 public class RequisicaoController extends TpController {
 
@@ -46,11 +48,20 @@ public class RequisicaoController extends TpController {
     private static final String CHECK_RETORNO = "checkRetorno";
     private static final String ESTADO_REQUISICAO = "estadoRequisicao";
     private static final String REQUISICAO_TRANSPORTE = "requisicaoTransporte";
+    
+    @Inject
     private AutorizacaoGI autorizacaoGI;
 
-    public RequisicaoController(HttpServletRequest request, Result result, Validator validator, SigaObjects so, EntityManager em, AutorizacaoGI autorizacaoGI) {
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public RequisicaoController() {
+		super();
+	}
+	
+	@Inject
+    public RequisicaoController(HttpServletRequest request, Result result, Validator validator, SigaObjects so,  EntityManager em) {
         super(request, result, TpDao.getInstance(), validator, so, em);
-        this.autorizacaoGI = autorizacaoGI;
     }
 
     @Path("/listar")
@@ -240,39 +251,28 @@ public class RequisicaoController extends TpController {
     private void carregarRequisicoesUltimosDiasInformadosPorEstados(EstadoRequisicao[] estadosRequisicao) {
         StringBuilder criterioBusca = new StringBuilder();
 		int totalDias = Integer.parseInt(Parametro.buscarValorEmVigor("total.dias.pesquisa", getTitular(), autorizacaoGI.getComplexoPadrao()));
-        criterioBusca.append("((dataHoraRetornoPrevisto is null and dataHoraSaidaPrevista >= ?) or (dataHoraRetornoPrevisto >= ?)) and cpOrgaoUsuario = ? ");
+        criterioBusca.append("((dataHoraRetornoPrevisto is null and dataHoraSaidaPrevista >= :ultimosdias) or (dataHoraRetornoPrevisto >= :ultimosdias)) and cpOrgaoUsuario = :cpOrgaoUsuario ");
         Calendar ultimosdias = Calendar.getInstance();
         ultimosdias.add(Calendar.DATE, -totalDias);
-        Object[] parametros = { ultimosdias, ultimosdias, getTitular().getOrgaoUsuario() };
+        HashMap<String, Object> parametros = new HashMap<String, Object>();
+        parametros.put("ultimosdias", ultimosdias);
+        parametros.put("cpOrgaoUsuario", getTitular().getOrgaoUsuario());
         recuperarRequisicoes(criterioBusca, parametros, estadosRequisicao);
     }
 
-    protected void recuperarRequisicoes(StringBuilder criterioBusca, Object[] parametros, EstadoRequisicao[] estadosRequisicao) {
+    protected void recuperarRequisicoes(StringBuilder criterioBusca, HashMap<String, Object> parametros, EstadoRequisicao[] estadosRequisicao) {
         if (!autorizacaoGI.ehAdministrador() && !autorizacaoGI.ehAdministradorMissao() && !autorizacaoGI.ehAdministradorMissaoPorComplexo() && !autorizacaoGI.ehAprovador()) {
-            criterioBusca.append(" and solicitante.idPessoaIni = ?");
-            Object[] parametrosFiltrado = new Object[parametros.length + 1];
-
-            for (int i = 0; i < parametros.length; i++) {
-                parametrosFiltrado[i] = parametros[i];
-            }
-
-            parametrosFiltrado[parametros.length] = getTitular().getIdInicial();
-            parametros = parametrosFiltrado;
+            criterioBusca.append(" and solicitante.idPessoaIni = :idPessoaIni");
+            parametros.put("idPessoaIni", getTitular().getIdInicial());
         } else {
             if (autorizacaoGI.ehAdministradorMissaoPorComplexo() || autorizacaoGI.ehAprovador()) {
-                criterioBusca.append(" and cpComplexo = ?");
-                Object[] parametrosFiltrado = new Object[parametros.length + 1];
-
-                for (int i = 0; i < parametros.length; i++) {
-                    parametrosFiltrado[i] = parametros[i];
-                }
+                criterioBusca.append(" and cpComplexo = :cpComplexo");
 
                 if (autorizacaoGI.ehAdministradorMissaoPorComplexo()) {
-                    parametrosFiltrado[parametros.length] = autorizacaoGI.getComplexoAdministrador();
+                    parametros.put("cpComplexo", autorizacaoGI.getComplexoAdministrador());
                 } else {
-                    parametrosFiltrado[parametros.length] = autorizacaoGI.getComplexoPadrao();
+                    parametros.put("cpComplexo", autorizacaoGI.getComplexoPadrao());
                 }
-                parametros = parametrosFiltrado;
             }
         }
         criterioBusca.append(" order by dataHoraSaidaPrevista desc");

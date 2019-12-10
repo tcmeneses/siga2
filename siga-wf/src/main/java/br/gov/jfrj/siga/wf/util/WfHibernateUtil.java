@@ -24,9 +24,9 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
-import org.hibernate.service.ServiceRegistryBuilder;
 import org.jboss.logging.Logger;
 
 import br.gov.jfrj.siga.base.AplicacaoException;
@@ -107,7 +107,7 @@ public class WfHibernateUtil {
 	public static void commitTransacao() throws AplicacaoException {
 		final Transaction tx = WfHibernateUtil.threadTransaction.get();
 		try {
-			if ((tx != null && !tx.wasCommitted() && !tx.wasRolledBack())) {
+			if ((tx != null && !tx.getRollbackOnly())) {
 				tx.commit();
 				WfHibernateUtil.threadTransaction.set(null);
 				// fechaSessao();
@@ -124,7 +124,8 @@ public class WfHibernateUtil {
 		final Transaction tx = WfHibernateUtil.threadTransaction.get();
 		try {
 			WfHibernateUtil.threadTransaction.set(null);
-			if ((tx != null && !tx.wasCommitted() && !tx.wasRolledBack())) {
+	/*		if ((tx != null && !tx.wasCommitted() && !tx.wasRolledBack())) { */
+			if ((tx != null && !tx.getRollbackOnly())) {
 				tx.rollback();
 			}
 		} finally {
@@ -266,8 +267,8 @@ public class WfHibernateUtil {
 
 		try {
 			conf = configuration;
-			serviceRegistry = new ServiceRegistryBuilder().applySettings(
-					configuration.getProperties()).buildServiceRegistry();
+			serviceRegistry = new StandardServiceRegistryBuilder().applySettings(
+					configuration.getProperties()).build();
 			sessionFactory = configuration.buildSessionFactory(serviceRegistry);
 		} catch (final Throwable ex) {
 

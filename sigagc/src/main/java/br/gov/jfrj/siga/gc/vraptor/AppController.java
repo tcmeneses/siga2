@@ -24,7 +24,7 @@ import org.apache.commons.lang.ArrayUtils;
 
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
-import br.com.caelum.vraptor.Resource;
+import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.interceptor.download.ByteArrayDownload;
 import br.com.caelum.vraptor.interceptor.download.Download;
@@ -70,7 +70,7 @@ import br.gov.jfrj.siga.vraptor.SigaObjects;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-@Resource
+@Controller
 public class AppController extends GcController {
 
 	private GcBL bl;

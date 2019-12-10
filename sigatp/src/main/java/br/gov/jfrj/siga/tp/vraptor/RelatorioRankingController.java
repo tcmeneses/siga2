@@ -7,19 +7,23 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+
+import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Path;
-import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.Validator;
-import br.com.caelum.vraptor.validator.ValidationMessage;
+import br.com.caelum.vraptor.validator.SimpleMessage;
+import br.com.caelum.vraptor.validator.Validator;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
 import br.gov.jfrj.siga.model.ContextoPersistencia;
-import br.gov.jfrj.siga.tp.auth.AutorizacaoGI;
 import br.gov.jfrj.siga.tp.model.Condutor;
 import br.gov.jfrj.siga.tp.model.FinalidadeRequisicao;
 import br.gov.jfrj.siga.tp.model.Missao;
@@ -35,11 +39,7 @@ import br.gov.jfrj.siga.tp.model.Veiculo;
 import br.gov.jfrj.siga.tp.util.FormatarDataHora;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-
-@Resource
+@Controller
 @Path("/app/relatorioRanking")
 public class RelatorioRankingController extends TpController {
     private static final String RELATORIO_RANKING = "relatorioRanking";
@@ -48,7 +48,15 @@ public class RelatorioRankingController extends TpController {
     private static final String END_23_59_59 = "23:59:59";
     private static final String START_00_00_00 = "00:00:00";
 
-    public RelatorioRankingController(HttpServletRequest request, Result result, Validator validator, SigaObjects so, EntityManager em, AutorizacaoGI autorizacaoGI) {
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public RelatorioRankingController() {
+		super();
+	}
+	
+	@Inject
+    public RelatorioRankingController(HttpServletRequest request, Result result, Validator validator, SigaObjects so,  EntityManager em) {
         super(request, result, TpDao.getInstance(), validator, so, em);
     }
 
@@ -117,7 +125,7 @@ public class RelatorioRankingController extends TpController {
 
         if (!"".equals(msgErro.toString())) {
             result.include(OPT_VALORES, gerarVetorNumeros());
-            validator.add(new ValidationMessage(msgErro.toString(), "relatorio"));
+            validator.add(new SimpleMessage("relatorio",msgErro.toString()));
             validator.onErrorUse(Results.page()).of(RelatorioRankingController.class).consultar();
         }
     }

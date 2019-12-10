@@ -6,21 +6,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Path;
-import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.validator.I18nMessage;
 import br.com.caelum.vraptor.validator.Message;
+import br.com.caelum.vraptor.validator.Validator;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.dp.DpPessoa;
-import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.tp.auth.AutorizacaoGI;
 import br.gov.jfrj.siga.tp.exceptions.RestControllerException;
 import br.gov.jfrj.siga.tp.model.Andamento;
@@ -32,17 +32,25 @@ import br.gov.jfrj.siga.tp.rest.RequisicaoTransporteRest;
 import br.gov.jfrj.siga.tp.vraptor.i18n.MessagesBundle;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
 
-@Resource
+@Controller
 @Path("/app/requisicaoRest")
 public class RequisicaoRestController extends TpController {
 
     private static final String REQUISICOES_REST_REQ_NULL_EXCEPTION = "requisicoesRest.reqNull.exception";
     private static final String REQUISICAO_REST = "requisicaoRest";
+    @Inject
     private AutorizacaoGI autorizacaoGI;
 
-    public RequisicaoRestController(HttpServletRequest request, Result result, CpDao dao, Validator validator, SigaObjects so, AutorizacaoGI autorizacaoGI,EntityManager em) {
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public RequisicaoRestController() {
+		super();
+	}
+	
+	@Inject
+    public RequisicaoRestController(HttpServletRequest request, Result result,  Validator validator, SigaObjects so,  EntityManager em) {
         super(request, result, TpDao.getInstance(), validator, so, em);
-        this.autorizacaoGI = autorizacaoGI;
     }
 
     @Path("/ver/{id}")
@@ -170,8 +178,7 @@ public class RequisicaoRestController extends TpController {
     private Map<String, String> transformarDadosRecebidos(String body) throws IOException {
         Map<String, String> map = new HashMap<String, String>();
         ObjectMapper mapper = new ObjectMapper();
-        map = mapper.readValue(body, new TypeReference<HashMap<String, String>>() {
-        });
+        map = mapper.readValue(body, new TypeReference<HashMap<String, String>>() {        });
         return map;
     }
 

@@ -3,13 +3,13 @@ package br.gov.jfrj.siga.vraptor.converter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.ResourceBundle;
+
+import javax.enterprise.context.RequestScoped;
 
 import br.com.caelum.vraptor.Convert;
-import br.com.caelum.vraptor.Converter;
-import br.com.caelum.vraptor.Validator;
-import br.com.caelum.vraptor.ioc.RequestScoped;
+import br.com.caelum.vraptor.converter.Converter;
 import br.com.caelum.vraptor.validator.I18nMessage;
+import br.com.caelum.vraptor.validator.Validator;
 
 @RequestScoped
 @Convert(Calendar.class)
@@ -26,7 +26,7 @@ public class GenericCalendarConverter implements Converter<Calendar> {
 	}
 
 	@Override
-	public Calendar convert(String value, Class<? extends Calendar> type, ResourceBundle bundle) {
+	public Calendar convert(String value, Class<? extends Calendar> type) {
 		if (dataPreenchida(value)) {
 			if (value.matches("\\d\\d:\\d\\d")) {
 				return converterQuandoApenasHorasMinutos(value);

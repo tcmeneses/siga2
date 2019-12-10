@@ -185,11 +185,11 @@ public class SigaCpSinc {
 			throw new Exception("Erro na gravação", e);
 		}
 		try {
-			CpDao.getInstance().iniciarTransacao();
+			CpDao.getInstance().em().getTransaction().begin();
 			OperadorComHistorico o = new OperadorComHistorico() {
 				public Sincronizavel gravar(Sincronizavel s) {
 					Sincronizavel o = CpDao.getInstance().gravar(s);
-					CpDao.getInstance().getSessao().flush();
+					CpDao.getInstance().em().flush();
 					return o;
 				}
 			};
@@ -243,19 +243,18 @@ public class SigaCpSinc {
 				log("");
 				log("");
 
-				CpDao.getInstance().rollbackTransacao();
+				CpDao.getInstance().em().getTransaction().rollback();
 			} else {
 
-				CpDao.getInstance().commitTransacao();
-				log("Transação confirmada");
-			}
+				CpDao.getInstance().em().getTransaction().commit();
+				log("Transação confirmada");			}
 		} catch (Exception e) {
-			CpDao.getInstance().rollbackTransacao();
+			CpDao.getInstance().em().getTransaction().rollback();
 			log("Transação abortada por erro: " + e.getMessage());
 			throw new Exception("Erro na gravação", e);
 		}
 
-		HibernateUtil.getSessao().flush();
+		CpDao.getInstance().em().flush();
 		log("Total de alterações: " + list.size());
 		// ((GenericoHibernateDao) dao).getSessao().flush();
 	}
@@ -483,7 +482,7 @@ public class SigaCpSinc {
 		properties.put("hibernate.jdbc.use_streams_for_binary", "true");
 
 		EntityManagerFactory emf = Persistence.createEntityManagerFactory(
-				"default-ex", properties);
+				"default-cp", properties);
 
 		EntityManager em = emf.createEntityManager();
 		ContextoPersistencia.setEntityManager(em);

@@ -6,10 +6,8 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
-
-
+import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Path;
-import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
 import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.model.ContextoPersistencia;
@@ -18,7 +16,7 @@ import br.gov.jfrj.siga.pp.models.Foruns;
 import br.gov.jfrj.siga.pp.models.UsuarioForum;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
 
-@Resource
+@Controller
 @Path("/app/usuarioForm")
 public class UsuarioFormController extends PpController {
 

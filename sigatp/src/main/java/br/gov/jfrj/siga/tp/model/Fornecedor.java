@@ -26,12 +26,12 @@ import br.gov.jfrj.siga.validation.Email;
 @Audited
 @Table(schema = "SIGATP")
 @Unique.List(value = { @Unique(message = "{fornecedor.cnpj.unique}", field = "cnpj"), @Unique(message = "{fornecedor.email.unique}", field = "eMail") })
-public class Fornecedor extends TpModel implements ConvertableEntity, Comparable<Fornecedor> {
+public class Fornecedor extends TpModel implements ConvertableEntity<Long>, Comparable<Fornecedor> {
 
 	public static ActiveRecord<Fornecedor> AR = new ActiveRecord<>(Fornecedor.class);
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hibernate_sequence_generator")
+	@GeneratedValue(generator = "hibernate_sequence_generator")
 	@SequenceGenerator(name = "hibernate_sequence_generator", sequenceName = "SIGATP.hibernate_sequence")
 	private Long id;
 
@@ -127,11 +127,13 @@ public class Fornecedor extends TpModel implements ConvertableEntity, Comparable
 		return fornecedores;
 	}
 
+	@Override
 	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	@Override
+	public void setId(Long id) {
 		this.id = id;
 	}
 

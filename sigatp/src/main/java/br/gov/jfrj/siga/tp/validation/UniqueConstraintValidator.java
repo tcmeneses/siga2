@@ -10,21 +10,19 @@ import java.util.Arrays;
 
 import javax.persistence.Column;
 import javax.persistence.Table;
-import javax.sql.DataSource;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import net.vidageek.mirror.dsl.Mirror;
-
 import org.hibernate.Session;
+import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
 import org.hibernate.internal.SessionFactoryImpl;
-import org.hibernate.service.jdbc.connections.internal.DatasourceConnectionProviderImpl;
 
 import br.gov.jfrj.siga.dp.DpPessoa;
 import br.gov.jfrj.siga.model.ContextoPersistencia;
 import br.gov.jfrj.siga.tp.model.TpModel;
 import br.gov.jfrj.siga.tp.validation.annotation.Unique;
 import br.gov.jfrj.siga.tp.validation.annotation.UpperCase;
+import net.vidageek.mirror.dsl.Mirror;
 
 /**
  * Validador de campo "unique" em entidades. A anotacao {@link Unique} deve ser inserida na entidade o campo a ser validado informado. Monta a consulta dinanicamente realizando um count para verificar
@@ -40,9 +38,6 @@ public class UniqueConstraintValidator implements ConstraintValidator<Unique, Tp
 	
 	private static Session session = null;
 	private static SessionFactoryImpl factory = null;
-	private static DatasourceConnectionProviderImpl provider = null;
-	private static DataSource dataSource = null;
-
 	private Unique unique;
 
 	@Override
@@ -156,20 +151,15 @@ public class UniqueConstraintValidator implements ConstraintValidator<Unique, Tp
 
 	private Connection getConnection() {
 
-		if(UniqueConstraintValidator.dataSource == null) {
+		if (UniqueConstraintValidator.session == null) {
 			UniqueConstraintValidator.session = ContextoPersistencia.em().unwrap(Session.class);
-			UniqueConstraintValidator.factory = (SessionFactoryImpl) session.getSessionFactory();
-			UniqueConstraintValidator.provider = (DatasourceConnectionProviderImpl)factory.getConnectionProvider();
-			UniqueConstraintValidator.dataSource = provider.getDataSource();
+				
 		}
 
 		try {
-			return dataSource.getConnection();
+			return session.getSessionFactory().getSessionFactoryOptions().getServiceRegistry().getService(ConnectionProvider.class).getConnection();
 		} catch (SQLException e) {
 			UniqueConstraintValidator.session = null;
-			UniqueConstraintValidator.factory = null;
-			UniqueConstraintValidator.provider = null;
-			UniqueConstraintValidator.dataSource = null;
 			throw new RuntimeException(e);
 		}
 	}

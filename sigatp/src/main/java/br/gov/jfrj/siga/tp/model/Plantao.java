@@ -27,12 +27,12 @@ import br.gov.jfrj.siga.tp.validation.annotation.Data;
 @Entity
 @Audited
 @Table(schema = "SIGATP")
-public class Plantao extends TpModel implements ConvertableEntity, Comparable<Plantao> {
+public class Plantao extends TpModel implements ConvertableEntity<Long>, Comparable<Plantao> {
 
     public static final ActiveRecord<Plantao> AR = new ActiveRecord<>(Plantao.class);
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hibernate_sequence_generator")
+    @GeneratedValue(generator = "hibernate_sequence_generator")
     @SequenceGenerator(name = "hibernate_sequence_generator", sequenceName = "SIGATP.hibernate_sequence")
     private Long id;
 
@@ -75,6 +75,7 @@ public class Plantao extends TpModel implements ConvertableEntity, Comparable<Pl
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }

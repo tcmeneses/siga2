@@ -3,14 +3,15 @@ package br.gov.jfrj.siga.tp.vraptor;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
+import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Path;
-import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.validator.I18nMessage;
+import br.com.caelum.vraptor.validator.Validator;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.dp.DpPessoa;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdmin;
@@ -27,12 +28,20 @@ import br.gov.jfrj.siga.tp.vraptor.i18n.MessagesBundle;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
 
 @Path("/app/andamento/")
-@Resource
+@Controller
 public class AndamentoController extends TpController {
 
     private static final String ANDAMENTO = "andamento";
 
-    public AndamentoController(HttpServletRequest request, Result result, Validator validator, SigaObjects so, EntityManager em) {
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public AndamentoController() {
+		super();
+	}
+	
+	@Inject
+    public AndamentoController(HttpServletRequest request, Result result, Validator validator, SigaObjects so,  EntityManager em) {
         super(request, result, TpDao.getInstance(), validator, so, em);
     }
 

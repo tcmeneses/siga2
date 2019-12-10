@@ -9,9 +9,8 @@ import br.com.caelum.iogi.parameters.Parameter;
 import br.com.caelum.iogi.parameters.Parameters;
 import br.com.caelum.iogi.parameters.ParametersHelper;
 import br.com.caelum.iogi.reflection.Target;
-import br.com.caelum.vraptor.Converter;
+import br.com.caelum.vraptor.converter.Converter;
 import br.com.caelum.vraptor.core.Converters;
-import br.com.caelum.vraptor.core.Localization;
 import br.gov.jfrj.siga.decorator.vraptor.exception.MissingEntityException;
 import br.gov.jfrj.siga.decorator.vraptor.exception.MissingIdAttributeException;
 import br.gov.jfrj.siga.model.ContextoPersistencia;
@@ -28,11 +27,9 @@ public class JpaEntityConversionContext {
 	private Parameters entityParameters;
 	private SingularAttribute<?, ?> entityIdSingularAttribute;
 	private Converters converters;
-	private Localization localization;
 
-	public JpaEntityConversionContext(Converters converters, Localization localization, Target<?> target, Parameters parameters) throws MissingIdAttributeException {
+	public JpaEntityConversionContext(Converters converters,  Target<?> target, Parameters parameters) throws MissingIdAttributeException {
 		this.converters = converters;
-		this.localization = localization;
 		this.entityClass = target.getClassType();
 		this.entityParameters = parameters.focusedOn(target);
 		this.entityIdSingularAttribute = findIdAtrribute();
@@ -88,7 +85,7 @@ public class JpaEntityConversionContext {
 		if (converter == null) {
 			throw new RuntimeException("Nenhum conversor encontrado para o tipo " + javaType);
 		}
-		return (Serializable) converter.convert(entityIdParameter.getValue(), javaType, localization.getBundle());
+		return (Serializable) converter.convert(entityIdParameter.getValue(), javaType);
 	}
 
 	public Parameters getEntityParameters() {

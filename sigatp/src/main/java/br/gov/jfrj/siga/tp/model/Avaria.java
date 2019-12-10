@@ -28,13 +28,13 @@ import com.google.gson.Gson;
 @Entity
 @Audited
 @Table(schema = "SIGATP")
-public class Avaria extends TpModel implements ConvertableEntity, Comparable<Avaria> {
+public class Avaria extends TpModel implements ConvertableEntity<Long>, Comparable<Avaria> {
 
 	private static final long serialVersionUID = 1L;
 	public static final ActiveRecord<Avaria> AR = new ActiveRecord<>(Avaria.class);
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hibernate_sequence_generator")
+	@GeneratedValue(generator = "hibernate_sequence_generator")
 	@SequenceGenerator(name = "hibernate_sequence_generator", sequenceName = "SIGATP.hibernate_sequence")
 	private Long id;
 
@@ -55,7 +55,7 @@ public class Avaria extends TpModel implements ConvertableEntity, Comparable<Ava
 
 	@NotNull
 	@Enumerated(EnumType.STRING)
-	public PerguntaSimNao podeCircular;
+	private PerguntaSimNao podeCircular;
 
 	public Avaria() {
 		this.id = new Long(0);
@@ -80,6 +80,7 @@ public class Avaria extends TpModel implements ConvertableEntity, Comparable<Ava
 		return this.id;
 	}
 
+	@Override
 	public void setId(Long id) {
 		this.id = id;
 	}

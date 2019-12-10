@@ -6,19 +6,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
 
+import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Path;
-import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.Validator;
-import br.com.caelum.vraptor.validator.ValidationMessage;
+import br.com.caelum.vraptor.validator.SimpleMessage;
+import br.com.caelum.vraptor.validator.Validator;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
 import br.gov.jfrj.siga.model.ContextoPersistencia;
-import br.gov.jfrj.siga.tp.auth.AutorizacaoGI;
 import br.gov.jfrj.siga.tp.model.RelatorioRanking;
 import br.gov.jfrj.siga.tp.model.RelatorioRanking.RankingVeiculoRequisicao;
 import br.gov.jfrj.siga.tp.model.RelatorioUsoVeiculos;
@@ -28,14 +28,22 @@ import br.gov.jfrj.siga.tp.model.Veiculo;
 import br.gov.jfrj.siga.tp.util.FormatarDataHora;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
 
-@Resource
+@Controller
 @Path("/app/relatorioUsoVeiculos")
 public class RelatorioUsoVeiculosController extends TpController {
     private static final String _NOME_VAR_RELAT_CONSULTA = "relatorioUsoVeiculos";
     private static final String _HORA_FIM_DIA = "23:59:59";
     private static final String _HORA_INICIO_DIA = "00:00:00";
 
-    public RelatorioUsoVeiculosController(HttpServletRequest request, Result result, Validator validator, SigaObjects so, EntityManager em, AutorizacaoGI autorizacaoGI) {
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public RelatorioUsoVeiculosController() {
+		super();
+	}
+	
+	@Inject
+    public RelatorioUsoVeiculosController(HttpServletRequest request, Result result, Validator validator, SigaObjects so,  EntityManager em) {
         super(request, result, TpDao.getInstance(), validator, so, em);
     }
 
@@ -66,7 +74,7 @@ public class RelatorioUsoVeiculosController extends TpController {
 
     private void validaDatas(RelatorioUsoVeiculos relat) {
         if (!relat.datasEstaoCorretas()) {
-        	validator.add(new ValidationMessage("Verifique se a data de in&iacute;cio e data de fim est&atilde;o preenchidas e se a data de in&iacute;cio n&atilde;o &eacute; maior que a data fim.", "relatorio"));
+        	validator.add(new SimpleMessage("relatorio","Verifique se a data de in&iacute;cio e data de fim est&atilde;o preenchidas e se a data de in&iacute;cio n&atilde;o &eacute; maior que a data fim."));
             validator.onErrorUse(Results.page()).of(RelatorioUsoVeiculosController.class).consultar();
         }
     }

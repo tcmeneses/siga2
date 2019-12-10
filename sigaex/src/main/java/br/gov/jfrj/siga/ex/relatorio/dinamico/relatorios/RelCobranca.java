@@ -13,9 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Query;
+
 import net.sf.jasperreports.engine.JRException;
 
-import org.hibernate.Query;
 
 import ar.com.fdvs.dj.domain.builders.DJBuilderException;
 import br.gov.jfrj.relatorio.dinamico.AbstractRelatorioBaseBuilder;
@@ -93,8 +94,8 @@ import br.gov.jfrj.siga.model.dao.HibernateUtil;
 				queryLotacao = " and doc.lotaCadastrante.idLotacao in (select l.idLotacao from DpLotacao as l where l.idLotacaoIni = :idLotacao) ";
 			}
 			
-			Query query = HibernateUtil
-					.getSessao()
+	
+			Query query = ExDao.getInstance().em()
 					.createQuery(
 							"select "
 							+ "doc.lotaCadastrante.siglaLotacao, "
@@ -116,30 +117,33 @@ import br.gov.jfrj.siga.model.dao.HibernateUtil;
 							+ "order by doc.lotaCadastrante.siglaLotacao, "
 							+ "doc.exModelo.nmMod, "
 							+ "mob.idMobil "
-							);
+							); 
+			
+		
 			
 			if (parametros.get("orgao") != null && parametros.get("orgao") != "") {
-				query.setLong("orgao", Long.valueOf((String) parametros.get("orgao")));
+				query.setParameter("orgao", Long.valueOf((String) parametros.get("orgao")));
 			}
 			
 			if (parametros.get("lotacao") != null && parametros.get("lotacao") != "") {
-				Query qryLota = HibernateUtil.getSessao().createQuery(
+				Query qryLota = ExDao.getInstance().em()
+						.createQuery(
 						"from DpLotacao lot where lot.idLotacao = " + parametros.get("lotacao"));
 							
 				Set<DpLotacao> lotacaoSet = new HashSet<DpLotacao>();
-				DpLotacao lotacao = (DpLotacao)qryLota.list().get(0);
+				DpLotacao lotacao = (DpLotacao)qryLota.getResultList().get(0);
 				lotacaoSet.add(lotacao);
 				
 				query.setParameter("idLotacao",
 						lotacao.getIdInicial());
-			}
+			}  
 
 			Date dtini = formatter.parse((String) parametros.get("dataInicial"));
-			query.setDate("dtini", dtini);
+			query.setParameter("dtini", dtini);
 			Date dtfim = formatter.parse((String) parametros.get("dataFinal"));
-			query.setDate("dtfim", dtfim);
+			query.setParameter("dtfim", dtfim);
 
-			Iterator it = query.list().iterator();
+			Iterator it = query.getResultList().iterator(); 
 
 			totalDocumentos = 0L;
 			totalPaginas = 0L;
@@ -197,6 +201,7 @@ import br.gov.jfrj.siga.model.dao.HibernateUtil;
 			}
 			
 			return d;
+
 		}
 
 	}

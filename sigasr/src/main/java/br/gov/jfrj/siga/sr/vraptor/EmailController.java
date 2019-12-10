@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import br.com.caelum.vraptor.Path;
-import br.com.caelum.vraptor.Resource;
+import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.view.HttpResult;
 import br.com.caelum.vraptor.view.Results;
@@ -19,7 +19,7 @@ import br.gov.jfrj.siga.sr.notifiers.CorreioHolder;
  *
  */
 @Deprecated
-@Resource
+@Controller
 @Path("app/email")
 public class EmailController {
 	

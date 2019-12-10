@@ -2,14 +2,15 @@ package br.gov.jfrj.siga.tp.vraptor;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Path;
-import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.validator.Validator;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdmin;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdminFrota;
@@ -22,12 +23,20 @@ import br.gov.jfrj.siga.tp.util.CustomJavaExtensions;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
 
 @SuppressWarnings("deprecation")
-@Resource
+@Controller
 @Path("/app/penalidade/")
 public class PenalidadeController extends TpController {
 	private static final String PENALIDADE_STR = "penalidade";
 
-    public PenalidadeController(HttpServletRequest request, Result result, Validator validator, SigaObjects so, EntityManager em) {
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public PenalidadeController() {
+		super();
+	}
+	
+	@Inject
+	public PenalidadeController(HttpServletRequest request, Result result, Validator validator, SigaObjects so,   EntityManager em) {
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 

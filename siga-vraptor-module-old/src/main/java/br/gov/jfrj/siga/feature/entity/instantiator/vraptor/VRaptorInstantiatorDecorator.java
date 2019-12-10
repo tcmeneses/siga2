@@ -2,6 +2,7 @@ package br.gov.jfrj.siga.feature.entity.instantiator.vraptor;
 
 import java.util.List;
 
+import javax.enterprise.context.RequestScoped;
 import javax.servlet.http.HttpServletRequest;
 
 import br.com.caelum.iogi.parameters.Parameters;
@@ -9,10 +10,7 @@ import br.com.caelum.iogi.reflection.Target;
 import br.com.caelum.iogi.spi.DependencyProvider;
 import br.com.caelum.iogi.spi.ParameterNamesProvider;
 import br.com.caelum.vraptor.core.Converters;
-import br.com.caelum.vraptor.core.Localization;
 import br.com.caelum.vraptor.http.iogi.VRaptorInstantiator;
-import br.com.caelum.vraptor.ioc.Component;
-import br.com.caelum.vraptor.ioc.RequestScoped;
 import br.com.caelum.vraptor.validator.Message;
 
 /**
@@ -21,7 +19,6 @@ import br.com.caelum.vraptor.validator.Message;
  * @author DB1
  * 
  */
-@Component
 @RequestScoped
 public class VRaptorInstantiatorDecorator extends VRaptorInstantiator {
 	/**
@@ -29,10 +26,10 @@ public class VRaptorInstantiatorDecorator extends VRaptorInstantiator {
 	 */
 	private JpaEntityParameterInstantiator jpaEntityParameterInstantiator;
 
-	public VRaptorInstantiatorDecorator(Converters converters, DependencyProvider provider, Localization localization, ParameterNamesProvider parameterNameProvider, HttpServletRequest request) {
-		super(converters, provider, localization, parameterNameProvider, request);
-		VRaptorInstantiator vRaptorInstantiator = new VRaptorInstantiator(converters, provider, localization, parameterNameProvider, request);
-		this.jpaEntityParameterInstantiator = new JpaEntityParameterInstantiator(vRaptorInstantiator, converters, localization);
+	public VRaptorInstantiatorDecorator(Converters converters, DependencyProvider provider, ParameterNamesProvider parameterNameProvider, HttpServletRequest request) {
+		super(converters, provider,  parameterNameProvider, request);
+		VRaptorInstantiator vRaptorInstantiator = new VRaptorInstantiator(converters, provider,  parameterNameProvider, request);
+		this.jpaEntityParameterInstantiator = new JpaEntityParameterInstantiator(vRaptorInstantiator, converters);
 	}
 
 	@Override

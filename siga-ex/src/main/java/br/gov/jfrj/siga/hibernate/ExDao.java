@@ -33,9 +33,11 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.jboss.logging.Logger;
@@ -164,9 +166,9 @@ public class ExDao extends CpDao {
 	
 	public Long obterNumeroGerado(final ExDocumento doc)
 			throws SQLException {
-		Query query = getSessao().getNamedQuery("obterNumeroGerado");
-		query.setLong("idDoc", doc.getIdDoc());
-		return (Long) query.uniqueResult();
+		Query query = em().createNamedQuery("obterNumeroGerado");
+		query.setParameter("idDoc", doc.getIdDoc());
+		return (Long) query.getSingleResult();
 	}
 
 	public List consultarPorFiltro(final ExMobilDaoFiltro flt) {
@@ -1230,16 +1232,30 @@ public class ExDao extends CpDao {
 		CpTipoMarcador marcador = consultar(CpTipoMarcador.TIPO_MARCADOR_GERAL,
 				CpTipoMarcador.class, false);
 		
+		CriteriaBuilder criteriaBuilder = em().getCriteriaBuilder();
+		CriteriaQuery<CpMarcador> criteriaQuery = criteriaBuilder.createQuery(CpMarcador.class);
+		Root<CpMarcador> cpMarcadorRoot = criteriaQuery.from(CpMarcador.class);
+		Predicate predicateAnd;
+		Predicate predicateEqualTipoMarcador  = criteriaBuilder.equal(cpMarcadorRoot.get("cpTipoMarcador"), marcador);
 		if(SigaBaseProperties.getString("siga.local") != null && "GOVSP".equals(SigaBaseProperties.getString("siga.local"))) {
-			return findByCriteria(CpMarcador.class,
+
+			Predicate predicateNotEqualTipoMarcador1  = criteriaBuilder.notEqual(cpMarcadorRoot.get("idMarcador"), CpMarcador.MARCADOR_COMO_REVISOR);
+			Predicate predicateNotEqualTipoMarcador2  = criteriaBuilder.notEqual(cpMarcadorRoot.get("idMarcador"), CpMarcador.MARCADOR_PRONTO_PARA_ASSINAR);
+			predicateAnd = criteriaBuilder.and(predicateEqualTipoMarcador,predicateNotEqualTipoMarcador1,predicateNotEqualTipoMarcador2);
+			/*			return findByCriteria(CpMarcador.class,
 					Restrictions.and(
 							Restrictions.eq("cpTipoMarcador", marcador),
 							Restrictions.ne("idMarcador", CpMarcador.MARCADOR_COMO_REVISOR), 
-							Restrictions.ne("idMarcador", CpMarcador.MARCADOR_PRONTO_PARA_ASSINAR)));
+							Restrictions.ne("idMarcador", CpMarcador.MARCADOR_PRONTO_PARA_ASSINAR))); */
 		} else {
-			return findByCriteria(CpMarcador.class,
-					Restrictions.eq("cpTipoMarcador", marcador));
+			predicateAnd = criteriaBuilder.and(predicateEqualTipoMarcador);
+
+	/*		return findByCriteria(CpMarcador.class,
+					Restrictions.eq("cpTipoMarcador", marcador)); */
 		}
+		
+		criteriaQuery.where(predicateAnd);
+		return em().createQuery(criteriaQuery).getResultList();
 	}
 
 	public List<ExTpDocPublicacao> listarExTiposDocPublicacao() {
@@ -1359,7 +1375,7 @@ public class ExDao extends CpDao {
 			DpLotacao lotaTitular) {
 
 		long tempoIni = System.nanoTime();
-		Query query = getSessao()
+		Query query = em()
 				.createQuery(
 						"select marca, marcador, mobil from ExMarca marca"
 								+ " inner join marca.cpMarcador marcador"
@@ -1370,11 +1386,11 @@ public class ExDao extends CpDao {
 								+ (titular != null ? " and (marca.dpPessoaIni = :titular)"
 										: " and (marca.dpLotacaoIni = :lotaTitular)"));
 		if (titular != null)
-			query.setLong("titular", titular.getIdPessoaIni());
+			query.setParameter("titular", titular.getIdPessoaIni());
 		else if (lotaTitular != null)
-			query.setLong("lotaTitular", lotaTitular.getIdLotacaoIni());
+			query.setParameter("lotaTitular", lotaTitular.getIdLotacaoIni());
 
-		List l = query.list();
+		List l = query.getResultList();
  		long tempoTotal = System.nanoTime() - tempoIni;
 		// System.out.println("consultarPorFiltroOtimizado: " + tempoTotal
 		// / 1000000 + " ms -> " + query + ", resultado: " + l);

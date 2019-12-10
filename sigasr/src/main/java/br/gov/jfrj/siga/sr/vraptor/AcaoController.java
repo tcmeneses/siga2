@@ -12,7 +12,7 @@ import org.jboss.logging.Logger;
 import org.jfree.util.Log;
 
 import br.com.caelum.vraptor.Path;
-import br.com.caelum.vraptor.Resource;
+import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.Service;
@@ -25,7 +25,7 @@ import br.gov.jfrj.siga.sr.model.TipoAcaoSelecao;
 import br.gov.jfrj.siga.sr.validator.SrValidator;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
 
-@Resource
+@Controller
 @Path("app/acao")
 public class AcaoController extends SrController {
 

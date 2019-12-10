@@ -7,7 +7,7 @@ import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
 import br.com.caelum.vraptor.Path;
-import br.com.caelum.vraptor.Resource;
+import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Result;
 import br.gov.jfrj.siga.sr.annotation.AssertAcesso;
 import br.gov.jfrj.siga.sr.dao.SrDao;
@@ -18,7 +18,7 @@ import br.gov.jfrj.siga.vraptor.SigaObjects;
 
 
 
-@Resource
+@Controller
 @Path("app/solicitacao/conhecimento")
 public class ConhecimentoController extends SrController {
 

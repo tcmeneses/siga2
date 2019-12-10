@@ -53,6 +53,12 @@ public class ActiveRecord<T extends Objeto> {
 		return new JPAQuery(createFindByQuery(query, params), bindParameters(q,
 				params));
 	}
+	
+	public JPAQuery find(String query, Map<String, Object> params) {
+		Query q = em().createQuery(createFindByQuery(query, params));
+		return new JPAQuery(createFindByQuery(query, params), bindParameters(q,
+				params));
+	}
 
 	public JPAQuery find() {
 		Query q = em().createQuery(createFindByQuery(null));

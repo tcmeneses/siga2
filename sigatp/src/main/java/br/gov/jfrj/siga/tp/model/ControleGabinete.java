@@ -26,14 +26,14 @@ import br.gov.jfrj.siga.tp.validation.annotation.Data;
 @Entity
 @Audited
 @Table(schema = "SIGATP")
-public class ControleGabinete extends TpModel implements ConvertableEntity {
+public class ControleGabinete extends TpModel implements ConvertableEntity<Long> {
 
     private static final long serialVersionUID = 5270396853989326489L;
     public static final ActiveRecord<ControleGabinete> AR = new ActiveRecord<>(ControleGabinete.class);
     private static final Logger LOGGER = LoggerFactory.getLogger(ControleGabinete.class);
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hibernate_sequence_generator")
+    @GeneratedValue(generator = "hibernate_sequence_generator")
     @SequenceGenerator(name = "hibernate_sequence_generator", sequenceName = "SIGATP.hibernate_sequence")
     private Long id;
 
@@ -85,6 +85,7 @@ public class ControleGabinete extends TpModel implements ConvertableEntity {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }

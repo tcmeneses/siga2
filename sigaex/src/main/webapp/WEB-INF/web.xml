@@ -16,8 +16,22 @@
 		<param-name>br.com.caelum.vraptor.packages</param-name>
 		<param-value>br.gov.jfrj.siga.vraptor</param-value>
 	</context-param>
+	
+	
+	<context-param>
+    	<param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
+    	<param-value>messages_TRF2</param-value>
+  	</context-param>
 
 	<jsp-config>
+			<taglib>
+			<taglib-uri>http://localhost/customtag</taglib-uri>
+			<taglib-location>/WEB-INF/tld/tags.tld</taglib-location>
+		</taglib>
+		<taglib>
+			<taglib-uri>http://localhost/functiontag</taglib-uri>
+			<taglib-location>/WEB-INF/tld/func.tld</taglib-location>
+		</taglib>
 		<jsp-property-group>
 			<url-pattern>*.jsp</url-pattern>
 			<page-encoding>UTF-8</page-encoding>

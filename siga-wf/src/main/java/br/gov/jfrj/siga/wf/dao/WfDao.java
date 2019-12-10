@@ -116,7 +116,8 @@ public class WfDao extends CpDao {
 
 	static public Configuration criarHibernateCfg(String datasource)
 			throws Exception {
-		Configuration cfg = CpDao.criarHibernateCfg(datasource);
+		Configuration cfg = new Configuration();
+		cfg.setProperty("hibernate.connection.datasource", datasource);
 
 		return WfDao.configurarHibernate(cfg);
 	}

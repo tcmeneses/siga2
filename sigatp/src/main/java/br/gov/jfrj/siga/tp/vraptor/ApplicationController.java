@@ -7,16 +7,22 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+
+import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Path;
-import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.validator.Validator;
 import br.gov.jfrj.siga.dp.DpLotacao;
 import br.gov.jfrj.siga.dp.DpPessoa;
 import br.gov.jfrj.siga.tp.auth.AutorizacaoGI;
@@ -32,12 +38,9 @@ import br.gov.jfrj.siga.tp.model.ServicoVeiculo;
 import br.gov.jfrj.siga.tp.model.TpDao;
 import br.gov.jfrj.siga.tp.util.CondutorFiltro;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
+import br.gov.jfrj.siga.vraptor.Transacional;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-
-@Resource
+@Controller
 @Path("/app/application")
 @SuppressWarnings("unused")
 public class ApplicationController extends TpController {
@@ -92,18 +95,19 @@ public class ApplicationController extends TpController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationController.class);
 
     private AutorizacaoGI autorizacaoGI;
-    private MissaoController missaoController;
-    private RequisicaoController requisicaoController;
-	private ServicoVeiculoController servicoVeiculoController;
 	protected int totalDiasARecuperar;
 
-    public ApplicationController(HttpServletRequest request, Result result, Validator validator, SigaObjects so, EntityManager em, AutorizacaoGI autorizacaoGI, MissaoController missaoController,
-            RequisicaoController requisicaoController, ServicoVeiculoController servicoVeiculoController) {
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public ApplicationController() {
+		super();
+	}
+	
+	@Inject	
+	public ApplicationController(HttpServletRequest request, Result result, Validator validator, SigaObjects so,  EntityManager em, AutorizacaoGI autorizacaoGI) {
         super(request, result, TpDao.getInstance(), validator, so, em);
         this.autorizacaoGI = autorizacaoGI;
-        this.missaoController = missaoController;
-        this.requisicaoController = requisicaoController;
-        this.servicoVeiculoController = servicoVeiculoController;
         this.totalDiasARecuperar = retornaDias();
     }
     
@@ -135,6 +139,7 @@ public class ApplicationController extends TpController {
          */
     }
 
+    @Transacional
     @Path("/selecionarPessoa")
     public void selecionarPessoa() {
         CondutorFiltro filtro = new CondutorFiltro();
@@ -143,6 +148,7 @@ public class ApplicationController extends TpController {
         result.include("filtro", filtro);
     }
 
+    @Transacional
     @Path({ "/selecionarPessoa/{sigla}/{tipo}/{nome}", "/selecionarPessoa" })
     public void selecionarSiga(String sigla, String tipo, String nome) throws ApplicationControllerException {
         try {
@@ -152,6 +158,7 @@ public class ApplicationController extends TpController {
         }
     }
 
+    @Transacional
     @Path({ "/buscarSiga/{sigla}/{tipo}/{nome}", "/buscarSiga" })
     public void buscarSiga(String sigla, String tipo, String nome) throws ApplicationControllerException {
         try {
@@ -161,6 +168,7 @@ public class ApplicationController extends TpController {
         }
     }
 
+    @Transacional
     @Path("/exibirManualUsuario")
     public void exibirManualUsuario() {
         /**
@@ -175,6 +183,7 @@ public class ApplicationController extends TpController {
          */
     }
 
+    @Transacional
     @Path("/gadget")
     public void gadget() {
         try {

@@ -5,7 +5,6 @@ import br.com.caelum.iogi.parameters.Parameters;
 import br.com.caelum.iogi.reflection.NewObject;
 import br.com.caelum.iogi.reflection.Target;
 import br.com.caelum.vraptor.core.Converters;
-import br.com.caelum.vraptor.core.Localization;
 import br.com.caelum.vraptor.http.iogi.VRaptorInstantiator;
 
 /**
@@ -18,9 +17,9 @@ public class JpaEntityParameterInstantiator extends AbstractJpaEntityInstantiato
 
 	private JpaEntityAttributeInstantiator jpaEntityAttributeInstantiator;
 
-	public JpaEntityParameterInstantiator(VRaptorInstantiator delegate, Converters converters, Localization localization) {
-		super(delegate, converters, localization);
-		this.jpaEntityAttributeInstantiator = new JpaEntityAttributeInstantiator(delegate, converters, localization);
+	public JpaEntityParameterInstantiator(VRaptorInstantiator delegate, Converters converters) {
+		super(delegate, converters);
+		this.jpaEntityAttributeInstantiator = new JpaEntityAttributeInstantiator(delegate, converters);
 	}
 
 	@Override

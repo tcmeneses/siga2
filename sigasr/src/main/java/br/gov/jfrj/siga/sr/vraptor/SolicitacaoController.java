@@ -21,9 +21,9 @@ import org.hibernate.LazyInitializationException;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
-import br.com.caelum.vraptor.Resource;
+import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.validator.Validator;
 import br.com.caelum.vraptor.interceptor.download.ByteArrayDownload;
 import br.com.caelum.vraptor.interceptor.download.Download;
 import br.com.caelum.vraptor.validator.ValidationMessage;
@@ -77,7 +77,7 @@ import com.google.gson.Gson;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
 
-@Resource
+@Controller
 public class SolicitacaoController extends SrController {
     private static final String TITULAR = "titular";
     private static final String ACOES_E_ATENDENTES = "acoesEAtendentes";

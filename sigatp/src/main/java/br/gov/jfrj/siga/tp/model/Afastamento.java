@@ -27,12 +27,12 @@ import br.gov.jfrj.siga.tp.validation.annotation.UpperCase;
 @Entity
 @Audited
 @Table(schema = "SIGATP")
-public class Afastamento extends TpModel implements ConvertableEntity {
+public class Afastamento extends TpModel implements ConvertableEntity<Long> {
 
     public static final ActiveRecord<Afastamento> AR = new ActiveRecord<>(Afastamento.class);
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hibernate_sequence_generator")
+    @GeneratedValue(generator = "hibernate_sequence_generator")
     @SequenceGenerator(name = "hibernate_sequence_generator", sequenceName = "SIGATP.hibernate_sequence")
     private Long id;
 
@@ -72,6 +72,7 @@ public class Afastamento extends TpModel implements ConvertableEntity {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }

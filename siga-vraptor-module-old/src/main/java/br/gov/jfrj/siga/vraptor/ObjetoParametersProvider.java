@@ -7,8 +7,8 @@ import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.ResourceBundle;
 
+import javax.enterprise.context.RequestScoped;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -17,17 +17,15 @@ import org.slf4j.LoggerFactory;
 import br.com.caelum.iogi.parameters.Parameter;
 import br.com.caelum.iogi.parameters.Parameters;
 import br.com.caelum.iogi.reflection.Target;
+import br.com.caelum.vraptor.controller.ControllerMethod;
 import br.com.caelum.vraptor.http.ParameterNameProvider;
 import br.com.caelum.vraptor.http.ParametersProvider;
 import br.com.caelum.vraptor.http.iogi.InstantiatorWithErrors;
 import br.com.caelum.vraptor.http.iogi.IogiParametersProvider;
 import br.com.caelum.vraptor.http.iogi.ObjetoInstantiator;
-import br.com.caelum.vraptor.ioc.Component;
-import br.com.caelum.vraptor.ioc.RequestScoped;
-import br.com.caelum.vraptor.resource.ResourceMethod;
 import br.com.caelum.vraptor.validator.Message;
 
-@Component
+
 @RequestScoped
 public class ObjetoParametersProvider implements ParametersProvider {
 	private static final Logger LOGGER = LoggerFactory
@@ -44,8 +42,8 @@ public class ObjetoParametersProvider implements ParametersProvider {
 		LOGGER.debug("ObjectifyParametersProvider is up");
 	}
 
-	public Object[] getParametersFor(ResourceMethod method,
-			List<Message> errors, ResourceBundle bundle) {
+	public Object[] getParametersFor(ControllerMethod method,
+			List<Message> errors) {
 		Parameters parameters = parseParameters(servletRequest);
 		List<Target<Object>> targets = createTargets(method);
 
@@ -74,20 +72,20 @@ public class ObjetoParametersProvider implements ParametersProvider {
 		return instantiator.instantiate(target, parameters, errors);
 	}
 
-	private List<Target<Object>> createTargets(ResourceMethod method) {
+	private List<Target<Object>> createTargets(ControllerMethod method) {
 		Method javaMethod = method.getMethod();
 		List<Target<Object>> targets = new ArrayList<Target<Object>>();
 
 		Type[] parameterTypes = javaMethod.getGenericParameterTypes();
-		String[] parameterNames = nameProvider.parameterNamesFor(javaMethod);
+		br.com.caelum.vraptor.http.Parameter[]parameterNames = nameProvider.parametersFor(javaMethod);
 		for (int i = 0; i < methodArity(javaMethod); i++) {
 			if (parameterTypes[i] instanceof TypeVariable) {
 				ParameterizedType superclass = (ParameterizedType) method
-						.getResource().getType().getGenericSuperclass();
+						.getController().getType().getGenericSuperclass();
 				parameterTypes[i] = superclass.getActualTypeArguments()[0];
 			}
 			Target<Object> newTarget = new Target<Object>(parameterTypes[i],
-					parameterNames[i]);
+					parameterNames[i].getName());
 			targets.add(newTarget);
 		}
 

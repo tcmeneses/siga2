@@ -47,7 +47,7 @@ import br.gov.jfrj.siga.validation.ValidarAnoData;
 @Audited
 @Table(schema = "SIGATP")
 @Unique(message = "{veiculo.placa.unique}", field = "placa")
-public class Veiculo extends TpModel implements ConvertableEntity, Comparable<Veiculo> {
+public class Veiculo extends TpModel implements ConvertableEntity<Long>, Comparable<Veiculo> {
 
 	private static final long serialVersionUID = -3602265045747814797L;
 	public static final ActiveRecord<Veiculo> AR = new ActiveRecord<>(Veiculo.class);
@@ -110,7 +110,7 @@ public class Veiculo extends TpModel implements ConvertableEntity, Comparable<Ve
 	private TipoDeCombustivel tipoDeCombustivel;
 
 	@ManyToOne
-	public Cor cor;
+	private Cor cor;
 
 	@UpperCase
 	private String motor;
@@ -391,6 +391,7 @@ public class Veiculo extends TpModel implements ConvertableEntity, Comparable<Ve
 		return id;
 	}
 
+	@Override
 	public void setId(Long id) {
 		this.id = id;
 	}

@@ -27,10 +27,10 @@ import br.gov.jfrj.siga.validation.ValidarAnoData;
 // @Table(name = "LOTACAO_VEICULO_2", schema="SIGAOR")
 @Audited
 @Table(schema = "SIGATP")
-public class LotacaoVeiculo extends TpModel implements ConvertableEntity {
+public class LotacaoVeiculo extends TpModel implements ConvertableEntity<Long> {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hibernate_sequence_generator")
+	@GeneratedValue(generator = "hibernate_sequence_generator")
 	@SequenceGenerator(name = "hibernate_sequence_generator", sequenceName = "SIGATP.hibernate_sequence")
 	private Long id;
 
@@ -101,6 +101,7 @@ public class LotacaoVeiculo extends TpModel implements ConvertableEntity {
 		return id;
 	}
 
+	@Override
 	public void setId(Long id) {
 		this.id = id;
 	}

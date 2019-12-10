@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.jasperreports.engine.JRException;
+import javax.persistence.Query;
 
-import org.hibernate.Query;
+import net.sf.jasperreports.engine.JRException;
 
 import ar.com.fdvs.dj.domain.builders.DJBuilderException;
 import br.gov.jfrj.relatorio.dinamico.AbstractRelatorioBaseBuilder;
@@ -234,7 +234,8 @@ public class RelDocumentosProduzidos extends RelatorioTemplate {
 			queryUsuario = "and mov.cadastrante.idPessoaIni in (select p.idPessoa from DpPessoa as p where p.idPessoaIni = :usuario) ";
 		}
 
-		Query query = HibernateUtil.getSessao().createQuery(
+		 Query query = ExDao.getInstance().em()
+				.createQuery(
 				"select " + addSelect
 						+ "from ExMovimentacao mov inner join mov.exMobil mob "
 						+ "inner join mob.exDocumento doc "
@@ -245,18 +246,19 @@ public class RelDocumentosProduzidos extends RelatorioTemplate {
 		query.setParameter("idTpMov", idTpMov);
 
 		if (parametros.get("orgao") != null && parametros.get("orgao") != "") {
-			query.setLong("orgao",
+			query.setParameter("orgao",
 					Long.valueOf((String) parametros.get("orgao")));
 		}
 
 		if (parametros.get("lotacao") != null
 				&& parametros.get("lotacao") != "") {
-			Query qryLota = HibernateUtil.getSessao().createQuery(
+			Query qryLota =  ExDao.getInstance().em()
+					.createQuery(
 					"from DpLotacao lot where lot.idLotacao = "
 							+ parametros.get("lotacao"));
 
 			Set<DpLotacao> lotacaoSet = new HashSet<DpLotacao>();
-			DpLotacao lotacao = (DpLotacao) qryLota.list().get(0);
+			DpLotacao lotacao = (DpLotacao) qryLota.getResultList().get(0);
 			lotacaoSet.add(lotacao);
 
 			query.setParameter("lotacao", lotacao.getIdInicial());
@@ -264,24 +266,25 @@ public class RelDocumentosProduzidos extends RelatorioTemplate {
 
 		if (parametros.get("usuario") != null
 				&& parametros.get("usuario") != "") {
-			Query qryPes = HibernateUtil.getSessao().createQuery(
+			Query qryPes =  ExDao.getInstance().em()
+					.createQuery(
 					"from DpPessoa pes where pes.idPessoa = "
 							+ parametros.get("usuario"));
 
 			Set<DpPessoa> pessoaSet = new HashSet<DpPessoa>();
-			DpPessoa pessoa = (DpPessoa) qryPes.list().get(0);
+			DpPessoa pessoa = (DpPessoa) qryPes.getResultList().get(0);
 			pessoaSet.add(pessoa);
 
 			query.setParameter("usuario", pessoa.getIdPessoaIni());
 		}
 
 		Date dtini = formatter.parse((String) parametros.get("dataInicial"));
-		query.setDate("dtini", dtini);
+		query.setParameter("dtini", dtini);
 		Date dtfim = formatter.parse((String) parametros.get("dataFinal"));
-		query.setDate("dtfim", dtfim);
+		query.setParameter("dtfim", dtfim);
 
-		Iterator it = query.list().iterator();
-		return it;
+		Iterator it = query.getResultList().iterator();
+		return it; 
 	}
 
 }

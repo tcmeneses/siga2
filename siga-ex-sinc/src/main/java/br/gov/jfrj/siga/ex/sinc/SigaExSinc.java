@@ -40,6 +40,9 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import javax.naming.NamingException;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
 import org.hibernate.cfg.Configuration;
 import org.kxml2.io.KXmlParser;
@@ -48,13 +51,17 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Texto;
+import br.gov.jfrj.siga.cp.bl.Cp;
 import br.gov.jfrj.siga.cp.bl.CpAmbienteEnumBL;
+import br.gov.jfrj.siga.cp.bl.CpPropriedadeBL;
+import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.ex.ExClassificacao;
 import br.gov.jfrj.siga.ex.ExFormaDocumento;
 import br.gov.jfrj.siga.ex.ExModelo;
 import br.gov.jfrj.siga.ex.ExNivelAcesso;
 import br.gov.jfrj.siga.ex.bl.Ex;
 import br.gov.jfrj.siga.hibernate.ExDao;
+import br.gov.jfrj.siga.model.ContextoPersistencia;
 import br.gov.jfrj.siga.model.dao.HibernateUtil;
 import br.gov.jfrj.siga.sinc.lib.Item;
 import br.gov.jfrj.siga.sinc.lib.OperadorComHistorico;
@@ -169,6 +176,39 @@ public class SigaExSinc {
 		this.servidor = oServidor.substring(oServidor.indexOf("-") + 1);
 		this.url = aUrl;
 	}
+	
+	public static void configurarEntityManager(CpAmbienteEnumBL ambiente)
+			throws Exception {
+		CpPropriedadeBL prop = Cp.getInstance().getProp();
+		prop.setPrefixo(ambiente.getSigla());
+
+		Map<String, String> properties = new HashMap<>();
+
+		properties.put("hibernate.connection.url", prop.urlConexao());
+		properties.put("hibernate.connection.username", prop.usuario());
+		properties.put("hibernate.connection.password", prop.senha());
+		properties.put("hibernate.connection.driver_class",
+				prop.driverConexao());
+		properties.put("c3p0.min_size", prop.c3poMinSize());
+		properties.put("c3p0.max_size", prop.c3poMaxSize());
+		properties.put("c3p0.timeout", prop.c3poTimeout());
+		properties.put("c3p0.max_statements", prop.c3poMaxStatements());
+
+		// persistenceMap.put("javax.persistence.jdbc.url", "<url>");
+		// persistenceMap.put("javax.persistence.jdbc.user", "<username>");
+		// persistenceMap.put("javax.persistence.jdbc.password", "<password>");
+		// persistenceMap.put("javax.persistence.jdbc.driver", "<driver>");
+		// <property name="jboss.entity.manager.jndi.name"
+		// value="java:/EntityManager/simpledb"/>
+
+		properties.put("hibernate.jdbc.use_streams_for_binary", "true");
+
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory(
+				"default-ex", properties);
+
+		EntityManager em = emf.createEntityManager();
+		ContextoPersistencia.setEntityManager(em);
+	}
 
 	public void run() throws Exception, NamingException, AplicacaoException {
 
@@ -176,15 +216,15 @@ public class SigaExSinc {
 
 		Configuration cfg;
 		if (servidor.equals("prod"))
-			cfg = ExDao.criarHibernateCfg(CpAmbienteEnumBL.PRODUCAO);
+			configurarEntityManager(CpAmbienteEnumBL.PRODUCAO);
 		else if (servidor.equals("homolo"))
-			cfg = ExDao.criarHibernateCfg(CpAmbienteEnumBL.HOMOLOGACAO);
+			configurarEntityManager(CpAmbienteEnumBL.HOMOLOGACAO);
 		else if (servidor.equals("treina"))
-			cfg = ExDao.criarHibernateCfg(CpAmbienteEnumBL.TREINAMENTO);
+			configurarEntityManager(CpAmbienteEnumBL.TREINAMENTO);
 		else if (servidor.equals("desenv"))
-			cfg = ExDao.criarHibernateCfg(CpAmbienteEnumBL.DESENVOLVIMENTO);
+			configurarEntityManager(CpAmbienteEnumBL.DESENVOLVIMENTO);
 		else
-			cfg = ExDao.criarHibernateCfg(CpAmbienteEnumBL.DESENVOLVIMENTO);
+			configurarEntityManager(CpAmbienteEnumBL.DESENVOLVIMENTO);
 
 		// Desabilitado para evitar o erro de compilação depois que foi feita a
 		// troca do Hibernate para o JPA
@@ -400,11 +440,11 @@ public class SigaExSinc {
 			throw new Exception("Erro na gravação", e);
 		}
 		try {
-			ExDao.getInstance().iniciarTransacao();
+			ExDao.getInstance().em().getTransaction().begin();
 			OperadorComHistorico o = new OperadorComHistorico() {
 				public Sincronizavel gravar(Sincronizavel s) {
 					Sincronizavel o = ExDao.getInstance().gravar(s);
-					ExDao.getInstance().getSessao().flush();
+					ExDao.getInstance().em().flush();
 					return o;
 				}
 			};
@@ -420,7 +460,7 @@ public class SigaExSinc {
 				log("As alterações não serão efetivadas! Executando rollback...");
 				log("");
 				log("");
-				ExDao.getInstance().rollbackTransacao();
+				ExDao.getInstance().em().getTransaction().rollback();
 			} else if (maxSinc > 0 && list.size() > maxSinc) {
 				log("");
 				log("");
@@ -431,19 +471,19 @@ public class SigaExSinc {
 				log("");
 				log("");
 
-				ExDao.getInstance().rollbackTransacao();
+				ExDao.getInstance().em().getTransaction().rollback();
 			} else {
 
-				ExDao.getInstance().commitTransacao();
+				ExDao.getInstance().em().getTransaction().commit();
 				log("Transação confirmada");
 			}
 		} catch (Exception e) {
-			ExDao.getInstance().rollbackTransacao();
+			ExDao.getInstance().em().getTransaction().rollback();
 			log("Transação abortada por erro: " + e.getMessage());
 			throw new Exception("Erro na gravação", e);
 		}
 
-		HibernateUtil.getSessao().flush();
+		ExDao.getInstance().em().flush();
 		log("Total de alterações: " + list.size());
 	}
 

@@ -3,15 +3,15 @@ package br.gov.jfrj.siga.tp.vraptor.validator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.validation.MessageInterpolator;
 import javax.validation.Validator;
 
-import br.com.caelum.vraptor.core.Localization;
-import br.com.caelum.vraptor.ioc.Component;
-import br.com.caelum.vraptor.ioc.RequestScoped;
-import br.com.caelum.vraptor.validator.DefaultBeanValidator;
 import br.com.caelum.vraptor.validator.I18nMessage;
 import br.com.caelum.vraptor.validator.Message;
 
@@ -22,14 +22,14 @@ import br.com.caelum.vraptor.validator.Message;
  *
  */
 @RequestScoped
-@Component
 public class ExtendedBeanValidation extends DefaultBeanValidator {
 
-	private Localization localization;
+	
+	@Inject
+	private ResourceBundle bundle;
 
-	public ExtendedBeanValidation(Localization localization, Validator validator, MessageInterpolator interpolator) {
-		super(localization, validator, interpolator);
-		this.localization = localization;
+	public ExtendedBeanValidation(Validator validator, MessageInterpolator interpolator) {
+		super(validator, interpolator);
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class ExtendedBeanValidation extends DefaultBeanValidator {
 
 		if (isBundleMessageKey(key)) {
 			I18nMessage i18nMessage = new I18nMessage(message.getCategory(), processKey(key));
-			i18nMessage.setBundle(localization.getBundle());
+			i18nMessage.setBundle(bundle);
 			return i18nMessage;
 		}
 		return message;

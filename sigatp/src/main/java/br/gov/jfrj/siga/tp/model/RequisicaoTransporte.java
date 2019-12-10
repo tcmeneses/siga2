@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import javax.persistence.CascadeType;
@@ -51,18 +53,21 @@ import br.gov.jfrj.siga.tp.vraptor.i18n.MessagesBundle;
 import br.gov.jfrj.siga.uteis.SiglaDocumentoType;
 import br.gov.jfrj.siga.vraptor.handler.Resources;
 
-@SuppressWarnings({ "serial", "deprecation" })
 @Entity
 @Audited
 @Table(name = "REQUISICAOTRANSPORTE", schema = "SIGATP")
-public class RequisicaoTransporte extends TpModel implements Comparable<RequisicaoTransporte>, ConvertableEntity {
-    private static final String IMG_LINKNOVAJANELAICON = "/sigatp/public/images/linknovajanelaicon.png";
+public class RequisicaoTransporte extends TpModel implements Comparable<RequisicaoTransporte>, ConvertableEntity<Long> {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private static final String IMG_LINKNOVAJANELAICON = "/sigatp/public/images/linknovajanelaicon.png";
     private static final String END_23_59_59 = "23:59:59";
     private static final String START_00_00_00 = "00:00:00";
     public static final ActiveRecord<RequisicaoTransporte> AR = new ActiveRecord<>(RequisicaoTransporte.class);
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hibernate_sequence_generator")
+    @GeneratedValue(generator = "hibernate_sequence_generator")
     @SequenceGenerator(name = "hibernate_sequence_generator", sequenceName = "SIGATP.hibernate_sequence")
     private Long id;
 
@@ -307,6 +312,7 @@ public class RequisicaoTransporte extends TpModel implements Comparable<Requisic
         this.idSolicitante = idSolicitante;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }
@@ -426,7 +432,11 @@ public class RequisicaoTransporte extends TpModel implements Comparable<Requisic
             throw new AplicacaoException(MessagesBundle.getMessage("requisicaoTransporte.siglaDocumento.exception", codigoRequisicao));
         }
         
-        List<RequisicaoTransporte> requisicoesTransporte = RequisicaoTransporte.AR.find("cpOrgaoUsuario = ? and numero = ? and YEAR(dataHora) = ?", cpOrgaoUsuario, numero, ano).fetch();
+		Map<String, Object> parametros = new HashMap<String,Object>();
+		parametros.put("cpOrgaoUsuario", cpOrgaoUsuario);
+		parametros.put("numero", numero);
+		parametros.put("ano", ano);
+        List<RequisicaoTransporte> requisicoesTransporte = RequisicaoTransporte.AR.find("cpOrgaoUsuario = :cpOrgaoUsuario and numero = :numero and YEAR(dataHora) = :ano", parametros).fetch();
 
         if (requisicoesTransporte.size() > 1) {
             throw new AplicacaoException(MessagesBundle.getMessage("requisicaoTransporte.codigoDuplicado.exception"));
@@ -463,7 +473,11 @@ public class RequisicaoTransporte extends TpModel implements Comparable<Requisic
 
     public EstadoRequisicao getUltimoEstadoNestaMissao(Long idMissao) {
         Missao missao = Missao.AR.findById(idMissao);
-        Andamento andamento = (Andamento) Andamento.AR.find("requisicaoTransporte = ? and missao = ? order by dataAndamento desc", this, missao).first();
+        
+		Map<String, Object> parametros = new HashMap<String,Object>();
+		parametros.put("requisicaoTransporte",this);
+		parametros.put("missao", missao);
+        Andamento andamento = (Andamento) Andamento.AR.find("requisicaoTransporte = :requisicaoTransporte and missao = :missao order by dataAndamento desc",parametros).first();
         return andamento.getEstadoRequisicao();
     }
 

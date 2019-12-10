@@ -3,13 +3,16 @@ package br.gov.jfrj.siga.tp.vraptor;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.common.base.Optional;
+
+import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Path;
-import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.Validator;
+import br.com.caelum.vraptor.validator.Validator;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.cp.model.DpLotacaoSelecao;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
@@ -28,9 +31,7 @@ import br.gov.jfrj.siga.tp.util.PerguntaSimNao;
 import br.gov.jfrj.siga.tp.util.Situacao;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
 
-import com.google.common.base.Optional;
-
-@Resource
+@Controller
 @Path("/app/veiculos/")
 public class VeiculoController extends TpController {
 
@@ -38,7 +39,15 @@ public class VeiculoController extends TpController {
 	private static final String LABEL_EDITAR = "views.cadastro.editar";
 	private static final String LABEL_INCLUIR = "views.cadastro.incluir";
 
-	public VeiculoController(HttpServletRequest request, Result result, Validator validator, SigaObjects so, EntityManager em) {
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public VeiculoController() {
+		super();
+	}
+	
+	@Inject
+	public VeiculoController(HttpServletRequest request, Result result, Validator validator, SigaObjects so,  EntityManager em) {
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 

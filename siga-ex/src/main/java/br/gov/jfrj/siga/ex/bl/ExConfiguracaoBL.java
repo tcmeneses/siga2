@@ -79,8 +79,7 @@ public class ExConfiguracaoBL extends CpConfiguracaoBL {
 	public boolean atendeExigencias(CpConfiguracao cfgFiltro,
 			Set<Integer> atributosDesconsiderados, CpConfiguracao cfg,
 			SortedSet<CpPerfil> perfis) {
-		if (!super.atendeExigencias(cfgFiltro, atributosDesconsiderados, cfg,
-				perfis))
+		if (!super.atendeExigencias(cfgFiltro, atributosDesconsiderados, cfg, perfis))
 			return false;
 
 		if (cfg instanceof ExConfiguracao

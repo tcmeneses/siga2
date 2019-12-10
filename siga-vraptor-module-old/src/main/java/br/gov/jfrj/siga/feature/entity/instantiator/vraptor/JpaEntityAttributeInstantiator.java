@@ -3,7 +3,6 @@ package br.gov.jfrj.siga.feature.entity.instantiator.vraptor;
 import br.com.caelum.iogi.Instantiator;
 import br.com.caelum.iogi.parameters.Parameters;
 import br.com.caelum.vraptor.core.Converters;
-import br.com.caelum.vraptor.core.Localization;
 import br.com.caelum.vraptor.http.iogi.VRaptorInstantiator;
 
 /**
@@ -14,8 +13,8 @@ import br.com.caelum.vraptor.http.iogi.VRaptorInstantiator;
  */
 public class JpaEntityAttributeInstantiator extends AbstractJpaEntityInstantiator {
 
-	public JpaEntityAttributeInstantiator(VRaptorInstantiator delegate, Converters converters, Localization localization) {
-		super(delegate, converters, localization);
+	public JpaEntityAttributeInstantiator(VRaptorInstantiator delegate, Converters converters) {
+		super(delegate, converters);
 	}
 
 	// TODO: Analisar como tratar quando for cadastro "cascade"

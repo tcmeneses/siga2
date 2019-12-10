@@ -16,7 +16,11 @@ public class SigaMessages {
 	public static String getMessage(String key) {
 		try {
 	    	if (bundle == null) {
-		    	bundle = getBundle();
+		    	if (SigaBaseProperties.getString("siga.local") == null) {
+		    		bundle = ResourceBundle.getBundle("messages_TRF2");
+		    	} else {
+		    		bundle = ResourceBundle.getBundle("messages_" + SigaBaseProperties.getString("siga.local"));
+		    	}
 	    	}
 		    String message = bundle.getString(key);
 			return message;

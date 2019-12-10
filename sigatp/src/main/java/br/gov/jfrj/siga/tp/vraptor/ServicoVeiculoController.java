@@ -6,14 +6,15 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
+import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Path;
-import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.Validator;
 import br.com.caelum.vraptor.validator.I18nMessage;
+import br.com.caelum.vraptor.validator.Validator;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
@@ -36,16 +37,25 @@ import br.gov.jfrj.siga.tp.model.Veiculo;
 import br.gov.jfrj.siga.tp.util.SigaTpException;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
 
-@Resource
+@Controller
 @Path("/app/servicoVeiculo")
 public class ServicoVeiculoController extends TpController {
 
     private static final String SERVICO_STR = "servico";
+    
+    @Inject
     private AutorizacaoGI autorizacaoGI;
 
-    public ServicoVeiculoController(HttpServletRequest request, Result result, Validator validator, SigaObjects so, AutorizacaoGI autorizacaoGI, EntityManager em) {
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public ServicoVeiculoController() {
+		super();
+	}
+		
+	@Inject
+    public ServicoVeiculoController(HttpServletRequest request, Result result, Validator validator, SigaObjects so,  EntityManager em) {
         super(request, result, TpDao.getInstance(), validator, so, em);
-        this.autorizacaoGI = autorizacaoGI;
     }
 
     @RoleAdmin

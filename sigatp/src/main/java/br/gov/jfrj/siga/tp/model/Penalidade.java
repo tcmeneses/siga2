@@ -18,12 +18,16 @@ import br.gov.jfrj.siga.model.ActiveRecord;
 import br.gov.jfrj.siga.tp.validation.annotation.Unique;
 import br.gov.jfrj.siga.tp.validation.annotation.UpperCase;
 
-@SuppressWarnings("serial")
 @Entity
 @Audited
 @Table(schema = "SIGATP")
 @Unique(message="{penalidade.codigoInfracao.unique}", field="codigoInfracao")
-public class Penalidade extends TpModel implements ConvertableEntity {
+public class Penalidade extends TpModel implements ConvertableEntity<Long> {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final long _ID_DA_PENALIDADE_OUTRA = -1;
 
 	public static final ActiveRecord<Penalidade> AR = new ActiveRecord<>(Penalidade.class);
@@ -85,7 +89,9 @@ public class Penalidade extends TpModel implements ConvertableEntity {
 	public Long getId() {
 		return id;
 	}
-
+	
+	
+	@Override
 	public void setId(Long id) {
 		this.id = id;
 	}

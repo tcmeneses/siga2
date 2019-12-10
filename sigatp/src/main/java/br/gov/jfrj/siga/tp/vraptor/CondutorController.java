@@ -3,24 +3,25 @@ package br.gov.jfrj.siga.tp.vraptor;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.tagext.ValidationMessage;
 import javax.validation.Valid;
 
 import org.apache.commons.codec.binary.Base64;
 
+import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Path;
-import br.com.caelum.vraptor.Resource;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.Validator;
-import br.com.caelum.vraptor.interceptor.multipart.UploadedFile;
+import br.com.caelum.vraptor.observer.upload.UploadedFile;
 import br.com.caelum.vraptor.validator.I18nMessage;
-import br.com.caelum.vraptor.validator.ValidationMessage;
+import br.com.caelum.vraptor.validator.Message;
+import br.com.caelum.vraptor.validator.Validator;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.dp.DpPessoa;
-import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdmin;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdminMissao;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdminMissaoComplexo;
@@ -33,13 +34,21 @@ import br.gov.jfrj.siga.tp.util.ArquivoUploadUtil;
 import br.gov.jfrj.siga.tp.util.FormatarTextoHtml;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
 
-@Resource
+@Controller
 @Path("/app/condutor")
 public class CondutorController extends TpController {
 	
 	private static final String CONDUTOR = "condutor";
 
-	public CondutorController(HttpServletRequest request, Result result, CpDao dao, Validator validator, SigaObjects so, EntityManager em) {
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public CondutorController() {
+		super();
+	}
+	
+	@Inject	
+	public CondutorController(HttpServletRequest request, Result result,  Validator validator, SigaObjects so,  EntityManager em) {
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 
@@ -131,12 +140,12 @@ public class CondutorController extends TpController {
 			if (FormatarTextoHtml.removerAcentuacao(ex.getCause().getCause().getMessage()).contains("restricao de integridade")) 
 				validator.add(new I18nMessage(CONDUTOR, "condutor.excluir.validation"));
 			else 
-				validator.add(new ValidationMessage(ex.getMessage(), CONDUTOR));
+				validator.add((Message) new ValidationMessage(ex.getMessage(), CONDUTOR));
 			
 			validator.onErrorForwardTo(CondutorController.class).listar();
 		} catch (Exception ex) {
 			tx.rollback();
-			validator.add(new ValidationMessage(ex.getMessage(), CONDUTOR));
+			validator.add((Message) new ValidationMessage(ex.getMessage(), CONDUTOR));
 			validator.onErrorForwardTo(CondutorController.class).listar();
 		}
 	}

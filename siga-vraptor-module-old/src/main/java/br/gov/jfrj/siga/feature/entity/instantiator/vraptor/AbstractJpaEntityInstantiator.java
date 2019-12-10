@@ -9,7 +9,6 @@ import br.com.caelum.iogi.parameters.Parameters;
 import br.com.caelum.iogi.reflection.NewObject;
 import br.com.caelum.iogi.reflection.Target;
 import br.com.caelum.vraptor.core.Converters;
-import br.com.caelum.vraptor.core.Localization;
 import br.com.caelum.vraptor.http.iogi.InstantiatorWithErrors;
 import br.com.caelum.vraptor.http.iogi.VRaptorInstantiator;
 import br.com.caelum.vraptor.validator.Message;
@@ -25,13 +24,11 @@ import br.gov.jfrj.siga.decorator.vraptor.exception.MissingIdAttributeException;
 public abstract class AbstractJpaEntityInstantiator implements InstantiatorWithErrors, Instantiator<Object> {
 
 	private Converters converters;
-	private Localization localization;
 	private VRaptorInstantiator delegate;
 
-	public AbstractJpaEntityInstantiator(VRaptorInstantiator delegate, Converters converters, Localization localization) {
+	public AbstractJpaEntityInstantiator(VRaptorInstantiator delegate, Converters converters) {
 		this.delegate = delegate;
 		this.converters = converters;
-		this.localization = localization;
 	}
 
 	@Override
@@ -43,7 +40,7 @@ public abstract class AbstractJpaEntityInstantiator implements InstantiatorWithE
 	public Object instantiate(Target<?> target, Parameters parameters) {
 		if (isAbleToInstantiate(target)) {
 			try {
-				JpaEntityConversionContext context = new JpaEntityConversionContext(converters, localization, target, parameters);
+				JpaEntityConversionContext context = new JpaEntityConversionContext(converters, target, parameters);
 				return new NewObject(getAttributesIntantiator(), context.getEntityParameters(), context.load()).valueWithPropertiesSet();
 			} catch (MissingIdAttributeException | MissingEntityException e) {
 				return returnWhenMissing(parameters.focusedOn(target), target.getClassType());
