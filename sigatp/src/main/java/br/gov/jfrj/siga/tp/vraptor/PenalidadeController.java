@@ -5,7 +5,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Path;
@@ -21,6 +20,7 @@ import br.gov.jfrj.siga.tp.model.Penalidade;
 import br.gov.jfrj.siga.tp.model.TpDao;
 import br.gov.jfrj.siga.tp.util.CustomJavaExtensions;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
+import br.gov.jfrj.siga.vraptor.Transacional;
 
 @SuppressWarnings("deprecation")
 @Controller
@@ -57,6 +57,7 @@ public class PenalidadeController extends TpController {
     @RoleAdmin
     @RoleAdminFrota
 	@Path("/excluir/{id}")
+    @Transacional
 	public void excluir(Long id) {
         Penalidade penalidade = Penalidade.buscar(id);
 
@@ -76,7 +77,9 @@ public class PenalidadeController extends TpController {
     @RoleAdmin
     @RoleAdminFrota
 	@Path("/salvar")
-	public void salvar(@Valid Penalidade penalidade) {
+    @Transacional
+	public void salvar(Penalidade penalidade) throws Exception {
+    	validator.validate(penalidade);
     	if(validator.hasErrors()) {
 			result.include(PENALIDADE_STR,penalidade);
 

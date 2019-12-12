@@ -38,6 +38,7 @@ import br.gov.jfrj.siga.tp.model.TpDao;
 import br.gov.jfrj.siga.tp.util.SigaTpException;
 import br.gov.jfrj.siga.tp.vraptor.i18n.MessagesBundle;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
+import br.gov.jfrj.siga.vraptor.Transacional;
 
 @Controller
 @Path("/app/requisicao")
@@ -93,6 +94,7 @@ public class RequisicaoController extends TpController {
 
     @RoleAdmin
     @RoleAdminMissao
+    @Transacional
     @Path("/salvarNovoComplexo")
     public void salvarNovoComplexo(Long[] req, CpComplexo novoComplexo) {
         if (req == null) {
@@ -170,6 +172,7 @@ public class RequisicaoController extends TpController {
         result.use(Results.page()).of(RequisicaoController.class).listarPAprovar();
     }
 
+    @Transacional
     @Path("/salvar")
     public void salvar(RequisicaoTransporte requisicaoTransporte, TipoDePassageiro[] tiposDePassageiros, boolean checkRetorno, boolean checkSemPassageiros) throws Exception {
         validar(requisicaoTransporte, checkSemPassageiros, tiposDePassageiros, checkRetorno);
@@ -323,7 +326,8 @@ public class RequisicaoController extends TpController {
  		result.include("opcoesDeTiposDePassageiro", tipos);
 	}
 
-    @Path("/salvarAndamentos")
+    @Transacional
+	@Path("/salvarAndamentos")
     public void salvarAndamentos(@Valid RequisicaoTransporte requisicaoTransporte, boolean checkRetorno, boolean checkSemPassageiros) throws Exception{
         redirecionarSeErroAoSalvar(requisicaoTransporte, checkRetorno, checkSemPassageiros);
         checarSolicitante(requisicaoTransporte.getSolicitante().getIdInicial(), requisicaoTransporte.getCpComplexo().getIdComplexo(), true);
@@ -502,6 +506,7 @@ public class RequisicaoController extends TpController {
         return requisicaoTransporte;
     }
 
+    @Transacional
     @Path("/excluir/{id}")
     public void excluir(Long id) throws Exception {
         RequisicaoTransporte requisicaoTransporte = RequisicaoTransporte.AR.findById(id);
@@ -528,7 +533,9 @@ public class RequisicaoController extends TpController {
 
     private DpPessoa recuperaPessoa(Long idSolicitante) {
         DpPessoa dpPessoa = DpPessoa.AR.findById(idSolicitante);
-        return DpPessoa.AR.find("idPessoaIni = ? and dataFimPessoa = null", dpPessoa.getIdInicial()).first();
+        HashMap<String, Object> parametros = new HashMap<String, Object>();
+        parametros.put("idPessoaIni",  dpPessoa.getIdInicial());
+        return DpPessoa.AR.find("idPessoaIni = :idPessoaIni and dataFimPessoa = null", parametros).first();
     }
 
     private void tratarExcecoes(Exception e) {
@@ -567,7 +574,10 @@ public class RequisicaoController extends TpController {
 		
 		boolean finalizadaSemAtender;
 		try {
-			Andamento andamentoEmComum = (Andamento) Andamento.AR.find("requisicaoTransporte = ? and missao = ? order by dataAndamento desc", requisicaoAConsultar, missaoAConsultar).first();
+	        HashMap<String, Object> parametros = new HashMap<String, Object>();
+	        parametros.put("requisicaoTransporte", requisicaoAConsultar);
+	        parametros.put("missao", missaoAConsultar);
+			Andamento andamentoEmComum = (Andamento) Andamento.AR.find("requisicaoTransporte = :requisicaoTransporte and missao = :missao order by dataAndamento desc", parametros).first();
 			finalizadaSemAtender = andamentoEmComum.getEstadoRequisicao().equals(EstadoRequisicao.NAOATENDIDA);
 		} catch (Exception e) {
 			finalizadaSemAtender = true;

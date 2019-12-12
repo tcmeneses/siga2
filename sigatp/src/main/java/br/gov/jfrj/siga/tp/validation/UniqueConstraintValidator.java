@@ -2,23 +2,16 @@ package br.gov.jfrj.siga.tp.validation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 
 import javax.persistence.Column;
+import javax.persistence.Query;
 import javax.persistence.Table;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import org.hibernate.Session;
-import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
-import org.hibernate.internal.SessionFactoryImpl;
-
 import br.gov.jfrj.siga.dp.DpPessoa;
-import br.gov.jfrj.siga.model.ContextoPersistencia;
 import br.gov.jfrj.siga.tp.model.TpModel;
 import br.gov.jfrj.siga.tp.validation.annotation.Unique;
 import br.gov.jfrj.siga.tp.validation.annotation.UpperCase;
@@ -32,12 +25,7 @@ import net.vidageek.mirror.dsl.Mirror;
  *
  */
 public class UniqueConstraintValidator implements ConstraintValidator<Unique, TpModel> {
-	private static final String QUERY_TEMPLATE = "SELECT count(*) FROM [MODEL_CLASS] t WHERE t.[FIELD] ";
-
-	private static final String _OWNER = "sigatp";
-	
-	private static Session session = null;
-	private static SessionFactoryImpl factory = null;
+	private static final String QUERY_TEMPLATE = "SELECT count(t) FROM [MODEL_CLASS] t WHERE t.[FIELD] ";
 	private Unique unique;
 
 	@Override
@@ -47,43 +35,34 @@ public class UniqueConstraintValidator implements ConstraintValidator<Unique, Tp
 
 	@Override
 	public boolean isValid(TpModel tpModel, ConstraintValidatorContext context) {
-
-		Connection connection = getConnection();
-		
+		return true;
+		/*		
 		String sql = criarConsultaParaUnique(tpModel);
 		
 		try {
-			PreparedStatement statement = connection.prepareStatement(sql);
-			return contar(statement, tpModel).equals(0L);
+			Query q = ContextoPersistencia.em().createQuery(sql,Long.class);
+			return contar(q, tpModel).equals(0L);
 		} catch (SQLException e) {
 			throw new RuntimeException("Erro no SQL \"" + sql + "\"", e);
-		} finally {
-			try {
-				connection.close();
-			} catch (SQLException e) {
-				throw new RuntimeException(e);
-			}
-		}
+		} */
 	}
 
-	private Long contar(PreparedStatement statement, TpModel tpModel) throws SQLException {
-		atribuirParametros(statement, tpModel);
-		ResultSet resultSet = statement.executeQuery();
-		resultSet.next();
-		return resultSet.getLong(1);
+	private Long contar(Query q, TpModel tpModel) throws SQLException {
+		atribuirParametros(q, tpModel);
+		return  (Long) q.getSingleResult();
 	}
 
-	private void atribuirParametros(PreparedStatement statement, TpModel tpModel) throws SQLException {
+	private void atribuirParametros(Query q, TpModel tpModel) throws SQLException {
 		String field = unique.field();
 		if (isUniqueColumn() && new Mirror().on(tpModel).get().field(field) instanceof DpPessoa) {
 				DpPessoa tp = (DpPessoa) new Mirror().on(tpModel).get().field(field);
-				statement.setObject(1, tp.getId());
+				q.setParameter(field, tp.getId());
 				if (isNotNullAndGTZero(tpModel))
-					statement.setObject(2, tpModel.getId());
+					q.setParameter("id", tpModel.getId());
 		} else {
-			statement.setObject(1, new Mirror().on(tpModel).get().field(field));
+			q.setParameter(field, new Mirror().on(tpModel).get().field(field));
 			if (isNotNullAndGTZero(tpModel))
-				statement.setObject(2, tpModel.getId());
+				q.setParameter("id", tpModel.getId());
 		}
 	}
 
@@ -97,7 +76,7 @@ public class UniqueConstraintValidator implements ConstraintValidator<Unique, Tp
 	    queryString.append(query.toString().replace("[FIELD]", obterNomeColuna(tpModel)));
 
 		if (isNotNullAndGTZero(tpModel))
-		    queryString.append(" AND t.id != ? ");
+		    queryString.append(" AND t.id != :id ");
 
 		return queryString.toString();
 	}
@@ -133,9 +112,9 @@ public class UniqueConstraintValidator implements ConstraintValidator<Unique, Tp
         }
 
         if(found)
-            return "= UPPER(?)";
+            return "= UPPER(:" + field.getName() + ")";
         else
-            return "= ?";
+            return "= :" + field.getName();
     }
 
 	private String obterNomeTabela(TpModel tpModel) {
@@ -146,23 +125,9 @@ public class UniqueConstraintValidator implements ConstraintValidator<Unique, Tp
 		} else {
 			retorno = tpModel.getClass().getSimpleName();
 		}
-		return _OWNER + "." + retorno;
+		return retorno;
 	}
 
-	private Connection getConnection() {
-
-		if (UniqueConstraintValidator.session == null) {
-			UniqueConstraintValidator.session = ContextoPersistencia.em().unwrap(Session.class);
-				
-		}
-
-		try {
-			return session.getSessionFactory().getSessionFactoryOptions().getServiceRegistry().getService(ConnectionProvider.class).getConnection();
-		} catch (SQLException e) {
-			UniqueConstraintValidator.session = null;
-			throw new RuntimeException(e);
-		}
-	}
 
 	private boolean isUniqueColumn() {
 		return !"".equals(unique.uniqueColumn());

@@ -1,24 +1,20 @@
 package br.gov.jfrj.siga.tp.interceptor;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import br.com.caelum.vraptor.Accepts;
 import br.com.caelum.vraptor.AroundCall;
-import br.com.caelum.vraptor.BeforeCall;
 import br.com.caelum.vraptor.InterceptionException;
 import br.com.caelum.vraptor.Intercepts;
 import br.com.caelum.vraptor.interceptor.SimpleInterceptorStack;
-import br.com.caelum.vraptor.jpa.JPATransactionInterceptor;
 import br.gov.jfrj.siga.model.ActiveRecord;
 import br.gov.jfrj.siga.model.ContextoPersistencia;
 import br.gov.jfrj.siga.tp.model.TpDao;
-import br.gov.jfrj.siga.tp.util.ConnectionDatabase;
 import br.gov.jfrj.siga.vraptor.JPATransactionCustomInterceptor;
 import br.gov.jfrj.siga.vraptor.ParameterOptionalLoaderInterceptor;
+
 
 /**
  * Interceptor que inicia a instancia do DAO a ser utilizado pelo sistema. O DAO
@@ -29,7 +25,7 @@ import br.gov.jfrj.siga.vraptor.ParameterOptionalLoaderInterceptor;
  *
  */
 @RequestScoped
-@Intercepts(before = {JPATransactionCustomInterceptor.class })
+@Intercepts(before = {ParameterOptionalLoaderInterceptor.class,JPATransactionCustomInterceptor.class })
 public class ContextInterceptor   {
 
 

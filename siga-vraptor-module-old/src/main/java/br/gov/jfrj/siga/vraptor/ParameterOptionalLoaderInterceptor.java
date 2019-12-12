@@ -25,6 +25,8 @@ import static java.util.Arrays.asList;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.metamodel.IdentifiableType;
 import javax.persistence.metamodel.SingularAttribute;
@@ -44,9 +46,9 @@ import br.com.caelum.vraptor.core.InterceptorStack;
 import br.com.caelum.vraptor.http.Parameter;
 import br.com.caelum.vraptor.http.ParameterNameProvider;
 import br.com.caelum.vraptor.interceptor.Interceptor;
-import br.com.caelum.vraptor.view.FlashScope;
+import br.com.caelum.vraptor.view.FlashScope;	
 
-/**
+/**	
  * Interceptor that loads given entity from the database.
  *
  * @author Lucas Cavalcanti
@@ -55,7 +57,8 @@ import br.com.caelum.vraptor.view.FlashScope;
  * @since 3.3.2
  *
  */
-@Intercepts
+@RequestScoped
+@Intercepts(before=JPATransactionCustomInterceptor.class)
 public class ParameterOptionalLoaderInterceptor implements Interceptor {
 
 	private final EntityManager em;
@@ -65,6 +68,22 @@ public class ParameterOptionalLoaderInterceptor implements Interceptor {
 	private final Converters converters;
 	private final FlashScope flash;
 
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public ParameterOptionalLoaderInterceptor() {
+		super();
+		em = null;
+		request = null;
+		result = null;
+		provider = null;
+		converters = null;		
+		flash = null;
+		
+		
+	}
+	
+	@Inject
 	public ParameterOptionalLoaderInterceptor(EntityManager em,
 			HttpServletRequest request, ParameterNameProvider provider,
 			Result result, Converters converters, 

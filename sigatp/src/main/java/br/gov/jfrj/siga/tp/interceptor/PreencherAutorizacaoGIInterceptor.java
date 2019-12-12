@@ -23,13 +23,29 @@ import br.gov.jfrj.siga.tp.auth.Autorizacoes;
 @Intercepts(after = { ContextInterceptor.class })
 public class PreencherAutorizacaoGIInterceptor  {
 
-	@Inject
+
 	private AutorizacaoGI autorizacaoGI;
 	
-	@Inject
+
 	private Result result;
 
 
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public PreencherAutorizacaoGIInterceptor() {
+		super();
+		autorizacaoGI = null;
+		result = null;
+
+	}
+	
+	@Inject
+	public PreencherAutorizacaoGIInterceptor(AutorizacaoGI autorizacaoGI, Result result) {
+		this.autorizacaoGI = autorizacaoGI;
+		this.result = result;
+	}
+	
 	@AroundCall
 	public void intercept(SimpleInterceptorStack stack)  {
 		try {

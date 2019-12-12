@@ -8,7 +8,6 @@ import br.com.caelum.vraptor.InterceptionException;
 import br.com.caelum.vraptor.Intercepts;
 import br.com.caelum.vraptor.controller.ControllerMethod;
 import br.com.caelum.vraptor.interceptor.SimpleInterceptorStack;
-import br.com.caelum.vraptor.jpa.JPATransactionInterceptor;
 import br.gov.jfrj.siga.tp.auth.AutorizacaoGI;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdmin;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdminFrota;
@@ -18,6 +17,7 @@ import br.gov.jfrj.siga.tp.auth.annotation.RoleAdminMissaoComplexo;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAgente;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAprovador;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleGabinete;
+import br.gov.jfrj.siga.vraptor.JPATransactionCustomInterceptor;
 
 /**
  * Interceptor responsavel por verificar se o usuario tem permissao para acessar determinada URL (metodo) do controller. 
@@ -29,14 +29,27 @@ import br.gov.jfrj.siga.tp.auth.annotation.RoleGabinete;
  *
  */
 @RequestScoped
-@Intercepts(after = { PreencherAutorizacaoGIInterceptor.class }, before = {MotivoLogInterceptor.class, JPATransactionInterceptor.class})
+@Intercepts(after = { PreencherAutorizacaoGIInterceptor.class }, before = {MotivoLogInterceptor.class, JPATransactionCustomInterceptor.class})
 public class AutorizacaoAcessoInterceptor  {
 
-	@Inject
 	private AutorizacaoGI autorizacaoGI;
+	
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public AutorizacaoAcessoInterceptor() {
+		super();
+		autorizacaoGI = null;
+
+	}
+	
+	@Inject
+	public AutorizacaoAcessoInterceptor(AutorizacaoGI autorizacaoGI) {
+		this.autorizacaoGI = autorizacaoGI;
+	}
 
 	@AroundCall
-	public void intercept(SimpleInterceptorStack stack, ControllerMethod method, Object resourceInstance)  {
+	public void intercept(SimpleInterceptorStack stack, ControllerMethod method)  {
 		try {
 			DadosValidacaoAutorizacao dados = new DadosValidacaoAutorizacao(method);
 

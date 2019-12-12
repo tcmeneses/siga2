@@ -1,5 +1,7 @@
 package br.gov.jfrj.siga.tp.model;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -72,13 +74,16 @@ public class Penalidade extends TpModel implements ConvertableEntity<Long> {
 	}
 
 	public static List<Penalidade> listarTodos(CpOrgaoUsuario orgaoUsuario) {
-		return Penalidade.AR.find("cpOrgaoOrigem = ? and id <> ?", orgaoUsuario, _ID_DA_PENALIDADE_OUTRA).fetch();
+		HashMap<String,Object> parametros = new HashMap<String,Object>();
+		parametros.put("cpOrgaoOrigem", orgaoUsuario);
+		parametros.put("id", _ID_DA_PENALIDADE_OUTRA);		
+		return Penalidade.AR.find("cpOrgaoOrigem = :cpOrgaoOrigem and id <> :id", orgaoUsuario, _ID_DA_PENALIDADE_OUTRA).fetch();
 	}
 
 	public static Penalidade buscar(Long idBuscar) {
 		Penalidade retorno = null;
 		try {
-			retorno = Penalidade.AR.find("id = ?", idBuscar).first();
+			retorno = Penalidade.AR.find("id = :id", Collections.singletonMap("id", idBuscar)).first();
 		} catch (Exception e) {
 			return null;
 		}

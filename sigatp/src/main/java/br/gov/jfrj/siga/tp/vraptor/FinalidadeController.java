@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Path;
@@ -19,6 +20,7 @@ import br.gov.jfrj.siga.tp.auth.annotation.RoleAdminMissaoComplexo;
 import br.gov.jfrj.siga.tp.model.FinalidadeRequisicao;
 import br.gov.jfrj.siga.tp.model.TpDao;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
+import br.gov.jfrj.siga.vraptor.Transacional;
 
 @Controller
 @Path("/app/finalidade")
@@ -88,10 +90,11 @@ public class FinalidadeController extends TpController {
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
+	@Transacional
 	@Path("/salvar")
-	public void salvar(final FinalidadeRequisicao finalidade) throws Exception {
+	public void salvar(@Valid FinalidadeRequisicao finalidade) throws Exception {
 		
-		validator.validate(finalidade);
+		//validator.validate(finalidade);
 		
 		FinalidadeRequisicao finalidadeBuscada = buscar(finalidade.getId());
 		finalidadeBuscada.setDescricao(finalidade.getDescricao());

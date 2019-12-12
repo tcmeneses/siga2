@@ -1,6 +1,8 @@
 package br.gov.jfrj.siga.tp.vraptor;
 
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -26,6 +28,7 @@ import br.gov.jfrj.siga.tp.model.RequisicaoTransporte;
 import br.gov.jfrj.siga.tp.model.TpDao;
 import br.gov.jfrj.siga.tp.vraptor.i18n.MessagesBundle;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
+import br.gov.jfrj.siga.vraptor.Transacional;
 
 @Path("/app/andamento/")
 @Controller
@@ -48,7 +51,7 @@ public class AndamentoController extends TpController {
     @Path("listarPorRequisicao/{idRequisicao}/{popUp}")
     public void listarPorRequisicao(Long idRequisicao, boolean popUp) throws AndamentoControllerException {
         RequisicaoTransporte requisicaoTransporte = RequisicaoTransporte.AR.findById(idRequisicao);
-        List<Andamento> andamentos = Andamento.AR.find("requisicaoTransporte = ? order by id desc", requisicaoTransporte).fetch();
+        List<Andamento> andamentos = Andamento.AR.find("requisicaoTransporte = :requisicaoTransporte order by id desc", Collections.singletonMap("requisicaoTransporte",requisicaoTransporte)).fetch();
         MenuMontador.instance(result).recuperarMenuRequisicoes(idRequisicao, popUp, popUp);
         result.include("andamentos", andamentos);
         result.include("requisicaoTransporte", requisicaoTransporte);
@@ -59,6 +62,7 @@ public class AndamentoController extends TpController {
     @RoleAdminFrota
     @RoleAdminMissao
     @RoleAprovador
+    @Transacional
     @Path("salvar")
     public void salvar(Andamento andamento) throws AndamentoControllerException {
         try {
