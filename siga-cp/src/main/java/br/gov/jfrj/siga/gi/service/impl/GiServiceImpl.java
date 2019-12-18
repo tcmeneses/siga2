@@ -18,7 +18,8 @@
  ******************************************************************************/
 package br.gov.jfrj.siga.gi.service.impl;
 
-import java.security.NoSuchAlgorithmException;
+import br.gov.jfrj.siga.gi.integracao.IntegracaoLdapViaWebService;
+
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -31,12 +32,16 @@ import org.codehaus.jettison.json.JSONObject;
 import br.gov.jfrj.siga.acesso.ConfiguracaoAcesso;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.GeraMessageDigest;
+import br.gov.jfrj.siga.base.SigaBaseProperties;
 import br.gov.jfrj.siga.base.Texto;
 import br.gov.jfrj.siga.cp.CpIdentidade;
 import br.gov.jfrj.siga.cp.CpServico;
 import br.gov.jfrj.siga.cp.bl.Cp;
+import br.gov.jfrj.siga.cp.util.SigaUtil;
+import br.gov.jfrj.siga.cp.util.TokenException;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
 import br.gov.jfrj.siga.dp.DpCargo;
+import br.gov.jfrj.siga.cp.bl.CpPropriedadeBL;
 import br.gov.jfrj.siga.dp.DpFuncaoConfianca;
 import br.gov.jfrj.siga.dp.DpLotacao;
 import br.gov.jfrj.siga.dp.DpPessoa;
@@ -55,36 +60,78 @@ import br.gov.jfrj.siga.gi.service.GiService;
  */
 @WebService(serviceName = "GiService", endpointInterface = "br.gov.jfrj.siga.gi.service.GiService", targetNamespace = "http://impl.service.gi.siga.jfrj.gov.br/")
 public class GiServiceImpl implements GiService {
+	
+    private boolean autenticaViaBanco(CpIdentidade identidade, String senha) {
+    	// caso o campo senha esteja vazio ou nulo, retorna false. 
+    	// Não autentica usuários com senha em branco.
+    	if(identidade.getDscSenhaIdentidade() == null || identidade.getDscSenhaIdentidade().equals("")) 
+    		return false;
+    	
+    	try {
+    		final String hashAtual = GeraMessageDigest.executaHash(senha.getBytes(), "MD5");
+    		if (identidade != null && identidade.getDscSenhaIdentidade().equals(hashAtual)) return true;
+		} catch (Exception e) {
+			return false;
+		}
+    	return false;
+    }
+    
+    private boolean autenticaViaLdap(String matricula, String senha) {
+    	try {
+			return IntegracaoLdapViaWebService.getInstancia().autenticarUsuario(matricula, senha);
+		} catch (Exception e) {
+			return false;
+		}
+    }
+    
+    public String buscarModoAutenticacao(String login) {
+    	CpIdentidade id = null;
+		CpDao dao = CpDao.getInstance();
+		id = dao.consultaIdentidadeCadastrante(login, true);
+		return buscarModoAutenticacao(id);
+    }
 
+    private String buscarModoAutenticacao(CpIdentidade id) {
+    	String orgao = id.getCpOrgaoUsuario().getSiglaOrgaoUsu();
+    	String retorno = _MODO_AUTENTICACAO_DEFAULT;
+    	CpPropriedadeBL props = new CpPropriedadeBL();
+    	try {
+			String modo = props.getModoAutenticacao(orgao);
+			if(modo != null) 
+				retorno = modo;
+		} catch (Exception e) {
+		}
+    	return retorno;
+    }
+    
     @Override
-	public String login(String matricula, String senha) {
+    public String login(String matricula, String senha) {
 		String resultado = "";
+
+		CpIdentidade id = null;
+		CpDao dao = CpDao.getInstance();
+		id = dao.consultaIdentidadeCadastrante(matricula, true);
+		String modoAut = buscarModoAutenticacao(id);
+
 		try {
-			final String hashAtual = GeraMessageDigest.executaHash(
-					senha.getBytes(), "MD5");
-			CpDao dao = CpDao.getInstance();
-
-			DpPessoaDaoFiltro flt = new DpPessoaDaoFiltro();
-			flt.setSigla(matricula);
-
-		//	DpPessoa p = (DpPessoa) dao.consultarPorSigla(flt);
-			CpIdentidade id = null;
-			id = dao.consultaIdentidadeCadastrante(matricula, true);
-			if (id != null && id.getDscSenhaIdentidade().equals(hashAtual)) {
-				resultado = parseLoginResult(id);
+			if(modoAut.equals(_MODO_AUTENTICACAO_BANCO)) {
+				if (autenticaViaBanco(id, senha)) {
+					resultado = parseLoginResult(id);
+				}
+			} else if(modoAut.equals(_MODO_AUTENTICACAO_LDAP)) {
+				if(autenticaViaLdap(matricula, senha)) {
+					resultado = parseLoginResult(id);
+				}
 			}
 
 		} catch (AplicacaoException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return resultado;
 	}
 
-    @Override
+	@Override
 	public String dadosUsuario(String matricula) {
 		String resultado = "";
 		try {
@@ -100,14 +147,18 @@ public class GiServiceImpl implements GiService {
 		}
 		return resultado;
 	}
-    
-    @Override
-	public String perfilAcessoPorCpf(String cpf) {
+
+	@Override
+	public String perfilAcessoPorCpf(String cpf, String token) {
+		
 		String resultado = "";
 		try {
-			if( Pattern.matches( "\\d+", cpf) && cpf.length() == 11) {
+			if("true".equals(SigaBaseProperties.getString("siga.ws.seguranca.token.jwt")))
+				SigaUtil.getInstance().validarToken(token);
+				
+			if (Pattern.matches("\\d+", cpf) && cpf.length() == 11) {
 				List<CpIdentidade> lista = new CpDao().consultaIdentidadesCadastrante(cpf, Boolean.TRUE);
-				if(!lista.isEmpty()) {
+				if (!lista.isEmpty()) {
 					resultado = parseAcessosResult(lista);
 				} else {
 					resultado = "Não foi possível buscar acessos. Acessos não localizados.";
@@ -118,52 +169,62 @@ public class GiServiceImpl implements GiService {
 
 		} catch (AplicacaoException e) {
 			e.printStackTrace();
-		}
+		} catch (TokenException e) {			
+			resultado = e.getMessage(); 
+		} 
 		return resultado;
 	}
-    
+
 	private String parseAcessosResult(List<CpIdentidade> lista) {
 		JSONArray acessos = new JSONArray();
 
 		try {
 			if (!lista.isEmpty()) {
-		        for (CpIdentidade identidade : lista) {
-		    		JSONObject pessoa = new JSONObject();
-		    		JSONObject lotacao = new JSONObject();
-		    		JSONObject cargo = new JSONObject();
-		    		JSONObject funcao = new JSONObject();
-		    		
-		        	//Pessoa
-		        	DpPessoa p = identidade.getPessoaAtual();
-		        	pessoa.put("siglaPessoa", p.getSiglaCompleta());
-		        	pessoa.put("nomePessoa", p.getNomePessoa());
-		        	
-		        	//Lotacao Pessoa
-		        	DpLotacao l = p.getLotacao();
-		        	lotacao.put("idLotacao", l.getId());
-		        	lotacao.put("nomeLotacao", l.getNomeLotacao());
-		        	lotacao.put("siglaLotacao", l.getSigla());
-		        	
-		        	//Cargo Pessoa
+				for (CpIdentidade identidade : lista) {
+					JSONObject pessoa = new JSONObject();
+					JSONObject orgao = new JSONObject();
+					JSONObject lotacao = new JSONObject();
+					JSONObject cargo = new JSONObject();
+					JSONObject funcao = new JSONObject();
+
+					// Pessoa
+					DpPessoa p = identidade.getPessoaAtual();
+					pessoa.put("siglaPessoa", p.getSiglaCompleta());
+					pessoa.put("nomePessoa", p.getNomePessoa());
+					
+					// Orgao Pessoa
+					CpOrgaoUsuario o = p.getOrgaoUsuario();
+					orgao.put("idOrgao", o.getId());
+					orgao.put("nomeOrgao", o.getNmOrgaoAI());
+					orgao.put("siglaOrgao", o.getSigla());
+
+					// Lotacao Pessoa
+					DpLotacao l = p.getLotacao();
+					lotacao.put("idLotacao", l.getId());
+					lotacao.put("nomeLotacao", l.getNomeLotacao());
+					lotacao.put("siglaLotacao", l.getSigla());
+
+					// Cargo Pessoa
 					DpCargo c = p.getCargo();
-					if (c!=null){
+					if (c != null) {
 						cargo.put("idCargo", c.getId());
 						cargo.put("nomeCargo", c.getNomeCargo());
 					}
-					//Função Pessoa
+					// Função Pessoa
 					DpFuncaoConfianca f = p.getFuncaoConfianca();
-					if (f !=null){
+					if (f != null) {
 						funcao.put("idFuncaoConfianca", f.getId());
 						funcao.put("nomeFuncaoConfianca", f.getNomeFuncao());
 					}
-					
+
+					pessoa.put("orgao", orgao);
 					pessoa.put("lotacao", lotacao);
 					pessoa.put("cargo", cargo);
 					pessoa.put("funcaoConfianca", funcao);
-					
+
 					acessos.put(pessoa);
-					
-		        }
+
+				}
 			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -174,7 +235,7 @@ public class GiServiceImpl implements GiService {
 		} catch (Exception e) {
 			return "";
 		}
-		
+
 	}
 
 	private String parseLoginResult(CpIdentidade id) {
@@ -208,7 +269,7 @@ public class GiServiceImpl implements GiService {
 					.getCpTipoLotacao().getSiglaTpLotacao() : "null");
 
 			DpCargo c = p.getCargo();
-			if (c!=null){
+			if (c != null) {
 				cargo.put("idCargo", c.getId());
 				cargo.put("idExternaCargo", c.getIdExterna());
 				cargo.put("nomeCargo", c.getNomeCargo());
@@ -216,12 +277,12 @@ public class GiServiceImpl implements GiService {
 			}
 
 			DpFuncaoConfianca f = p.getFuncaoConfianca();
-			if (f !=null){
-					funcao.put("idFuncaoConfianca", f.getId());
-					funcao.put("idExternaFuncaoConfianca", f.getIdeFuncao());
-					funcao.put("nomeFuncaoConfianca", f.getNomeFuncao());
-					funcao.put("siglaFuncaoConfianca", f.getSigla());
-					funcao.put("idPaiFuncaoConfianca", f.getIdFuncaoPai());
+			if (f != null) {
+				funcao.put("idFuncaoConfianca", f.getId());
+				funcao.put("idExternaFuncaoConfianca", f.getIdeFuncao());
+				funcao.put("nomeFuncaoConfianca", f.getNomeFuncao());
+				funcao.put("siglaFuncaoConfianca", f.getSigla());
+				funcao.put("idPaiFuncaoConfianca", f.getIdFuncaoPai());
 			}
 
 			pessoa.put("lotacao", lotacao);
@@ -258,7 +319,8 @@ public class GiServiceImpl implements GiService {
 				lot = (DpLotacao) dao.consultarPorSigla(fltLot);
 			}
 
-			boolean pode = Cp.getInstance().getConf().podeUtilizarServicoPorConfiguracao(p, lot, servico);
+			boolean pode = Cp.getInstance().getConf()
+					.podeUtilizarServicoPorConfiguracao(p, lot, servico);
 
 			CpServico srv = dao.consultarCpServicoPorChave(servico);
 
@@ -319,7 +381,7 @@ public class GiServiceImpl implements GiService {
 		}
 		return resultado;
 	}
-	
+
 	@Override
 	public String esqueciSenha(String cpf, String email) {
 		String resultado = "";
@@ -332,88 +394,133 @@ public class GiServiceImpl implements GiService {
 	}
 
 	@Override
-	public String criarUsuario(String orgaoUsu,String lotacao, String cargo, String funcao,String nmPessoa, String dtNascimento, String cpf, String email) {
-		
+	public String criarUsuario(String cadastranteStr, String orgaoUsu,
+			String lotacao, String cargo, String funcao, String nmPessoa,
+			String dtNascimento, String cpf, String email) {
+
 		String resultado = "";
 		try {
-			
-			if(orgaoUsu == null || "".equals(orgaoUsu.trim()))
+
+			if (orgaoUsu == null || "".equals(orgaoUsu.trim()))
 				throw new AplicacaoException("Órgão não informado");
-			
-			if(cargo == null || "".equals(cargo.trim()))
+
+			if (cargo == null || "".equals(cargo.trim()))
 				throw new AplicacaoException("Cargo não informado");
-			
-			if(lotacao == null || "".equals(lotacao.trim()))
+
+			if (lotacao == null || "".equals(lotacao.trim()))
 				throw new AplicacaoException("Unidade não informada");
-			
-			if(nmPessoa == null || "".equals(nmPessoa.trim()))
+
+			if (nmPessoa == null || "".equals(nmPessoa.trim()))
 				throw new AplicacaoException("Nome não informado");
-			
-			if(cpf == null || "".equals(cpf.trim())) 
+
+			if (cpf == null || "".equals(cpf.trim()))
 				throw new AplicacaoException("CPF não informado");
-			
-			if(email == null || "".equals(email.trim())) 
+
+			if (email == null || "".equals(email.trim()))
 				throw new AplicacaoException("E-mail não informado");
-			
-			if(nmPessoa != null && !nmPessoa.matches("[a-zA-ZáâãéêíóôõúçÁÂÃÉÊÍÓÔÕÚÇ'' ]+")) 
-				throw new AplicacaoException("Nome com caracteres não permitidos");
-			
+
+			if (nmPessoa != null
+					&& !nmPessoa.matches("[a-zA-ZáâãéêíóôõúçÁÂÃÉÊÍÓÔÕÚÇ'' ]+"))
+				throw new AplicacaoException(
+						"Nome com caracteres não permitidos");
+
 			Long idOrgaoUsu = null;
 			Long idCargoUsu = null;
 			Long idLotacaoUsu = null;
 			Long idFuncaoUsu = null;
 
-			//Obtém Id Órgão
+			// Obtém Id Órgão
 			CpOrgaoUsuario orgaoUsuario = new CpOrgaoUsuario();
 			orgaoUsuario.setNmOrgaoUsu(Texto.removeAcento(orgaoUsu));
 			orgaoUsuario = CpDao.getInstance().consultarPorNome(orgaoUsuario);
-			if (orgaoUsuario == null){
+			if (orgaoUsuario == null) {
 				throw new AplicacaoException("Órgão não localizado");
 			} else {
 				idOrgaoUsu = orgaoUsuario.getIdOrgaoUsu();
-			}		
-			
-			//Obtém Cargo
+			}
+
+			// Obtém Cargo
 			DpCargo cargoUsuario = new DpCargo();
 			cargoUsuario.setNomeCargo(Texto.removeAcento(cargo));
 			cargoUsuario.setOrgaoUsuario(orgaoUsuario);
-			cargoUsuario = CpDao.getInstance().consultarPorNomeOrgao(cargoUsuario);
-			if (cargoUsuario == null){
+			cargoUsuario = CpDao.getInstance().consultarPorNomeOrgao(
+					cargoUsuario);
+			if (cargoUsuario == null) {
 				throw new AplicacaoException("Cargo não localizado");
 			} else {
 				idCargoUsu = cargoUsuario.getId();
 			}
-			
-			//Obtém Unidade
+
+			// Obtém Unidade
 			DpLotacao lotacaoUsuario = new DpLotacao();
 			lotacaoUsuario.setNomeLotacao(Texto.removeAcento(lotacao));
 			lotacaoUsuario.setOrgaoUsuario(orgaoUsuario);
-			lotacaoUsuario = CpDao.getInstance().consultarPorNomeOrgao(lotacaoUsuario);	
-			if (lotacaoUsuario == null){
+			lotacaoUsuario = CpDao.getInstance().consultarPorNomeOrgao(
+					lotacaoUsuario);
+			if (lotacaoUsuario == null) {
 				throw new AplicacaoException("Unidade não localizada");
 			} else {
 				idLotacaoUsu = lotacaoUsuario.getId();
 			}
-			
-			
-			//Obtém Função
-			if(funcao != null && !"".equals(funcao.trim())) {
+
+			// Obtém Função
+			if (funcao != null && !"".equals(funcao.trim())) {
 				DpFuncaoConfianca funcaoConfianca = new DpFuncaoConfianca();
 				funcaoConfianca.setNomeFuncao(Texto.removeAcento(funcao));
 				funcaoConfianca.setOrgaoUsuario(orgaoUsuario);
-				funcaoConfianca = CpDao.getInstance().consultarPorNomeOrgao(funcaoConfianca);
-				if (funcaoConfianca == null){
+				funcaoConfianca = CpDao.getInstance().consultarPorNomeOrgao(
+						funcaoConfianca);
+				if (funcaoConfianca == null) {
 					throw new AplicacaoException("Função não localizada");
 				} else {
 					idFuncaoUsu = funcaoConfianca.getId();
-				}	
+				}
 			}
-		
-			resultado = Cp.getInstance().getBL().criarUsuario(null, idOrgaoUsu, idCargoUsu, idFuncaoUsu, idLotacaoUsu, nmPessoa, dtNascimento, cpf, email);
+
+			resultado = Cp
+					.getInstance()
+					.getBL()
+					.criarUsuario(cadastranteStr, null, idOrgaoUsu, idCargoUsu,
+							idFuncaoUsu, idLotacaoUsu, nmPessoa, dtNascimento,
+							cpf, email);
 
 		} catch (Exception e) {
 			return e.getMessage();
 		}
 		return resultado;
 	}
+
+	@Override
+	public String inativarUsuario(final Long idUsuario) {
+		return Cp
+				.getInstance()
+				.getBL()
+				.inativarUsuario(idUsuario);
+	}
+
+	/**
+	 * 1 - Autenticar: logar no Sistema
+	 * 2 - Autorizar: verificar na tabela CP_Configuração se o usuário tem autorização
+	 * 3 - Gerar token
+	 */
+	@Override
+	public  String gerarToken(String matricula, String senha) throws Exception{
+		CpIdentidade cpIdentidade = new CpIdentidade();
+		String token = "";
+
+		cpIdentidade = SigaUtil.getInstance().autenticar(matricula, senha);
+		if(cpIdentidade == null)			
+			throw new TokenException("Senha ou matricula invalido !"); 
+		
+		Boolean permissaoWS =  SigaUtil.getInstance().verificaSePessoTemPermissaoWS(cpIdentidade.getDpPessoa());
+		if(!permissaoWS)
+			throw new TokenException("Usuário sem permissão de acesso ao Web Service.");
+		
+		token = SigaUtil.getInstance().gerarToken(matricula);
+		if("".equals(token))			
+			throw new TokenException("Erro ao gerar TOKEN.");
+						
+		return token;
+	}
+	
 }

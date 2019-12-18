@@ -78,11 +78,16 @@ import br.gov.jfrj.siga.dp.DpFuncaoConfianca;
 import br.gov.jfrj.siga.dp.DpLotacao;
 import br.gov.jfrj.siga.dp.DpPessoa;
 import br.gov.jfrj.siga.dp.DpSubstituicao;
+import br.gov.jfrj.siga.dp.DpVisualizacao;
 import br.gov.jfrj.siga.model.CarimboDeTempo;
 import br.gov.jfrj.siga.model.ContextoPersistencia;
 import br.gov.jfrj.siga.model.Selecionavel;
 import br.gov.jfrj.siga.model.dao.DaoFiltro;
+import br.gov.jfrj.siga.model.dao.HibernateUtil;
 import br.gov.jfrj.siga.model.dao.ModeloDao;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.config.CacheConfiguration;
 
 public class CpDao extends ModeloDao {
 
@@ -348,6 +353,38 @@ public class CpDao extends ModeloDao {
 			query.setHint("org.hibernate.cacheRegion", CACHE_QUERY_HOURS);
 
 			final List<CpOrgaoUsuario> l = query.getResultList();
+			return l;
+		} catch (final NullPointerException e) {
+			return null;
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<CpOrgaoUsuario> consultarPorFiltroComContrato(
+			final CpOrgaoUsuarioDaoFiltro o, final int offset,
+			final int itemPagina) {
+		try {
+			Query query = HibernateUtil
+					.getSessao()
+					.createQuery("select org, (select dtContrato from CpContrato contrato "
+							+ " where contrato.idOrgaoUsu = org.idOrgaoUsu) from CpOrgaoUsuario org "
+							+ " where (upper(org.nmOrgaoUsu) like upper('%' || :nome || '%'))"
+							+ "	order by org.nmOrgaoUsu");
+			if (offset > 0) {
+				query.setFirstResult(offset);
+			}
+			if (itemPagina > 0) {
+				query.setMaxResults(itemPagina);
+			}
+			String s = o.getNome();
+			if (s != null)
+				s = s.replace(' ', '%');
+			query.setString("nome", s);
+
+			query.setCacheable(true);
+			query.setCacheRegion(CACHE_QUERY_HOURS);
+
+			final List<CpOrgaoUsuario> l = query.list();
 			return l;
 		} catch (final NullPointerException e) {
 			return null;
@@ -923,6 +960,14 @@ public class CpDao extends ModeloDao {
 		final DpPessoa pes = (DpPessoa) qry.getSingleResult();
 		return pes;
 	}
+	
+	public int consultarQtdePorEmailIgualCpfDiferente(final String email, final long cpf) {
+		final Query qry = getSessao().getNamedQuery("consultarPorEmailIgualCpfDiferente");
+		qry.setString("emailPessoa", email);
+		qry.setLong("cpf", cpf);
+		final int l = ((Long) qry.uniqueResult()).intValue();
+		return l;
+	}
 
 	@SuppressWarnings("unchecked")
 	public DpPessoa consultarPorSigla(final DpPessoa o) {
@@ -1234,6 +1279,50 @@ public class CpDao extends ModeloDao {
 			return null;
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<DpPessoa> consultarPessoaComOrgaoFuncaoCargo(final DpPessoa pes) {
+		try {
+			final Query query;
+
+			query = getSessao().getNamedQuery(
+						"consultarPessoaComOrgaoFuncaoCargo");
+
+			query.setString("nome",
+					pes.getNomePessoa().toUpperCase().replace(' ', '%'));
+
+			if(pes.getCpfPessoa() != null && !"".equals(pes.getCpfPessoa())) {
+				query.setLong("cpf", Long.valueOf(pes.getCpfPessoa()));
+			} else {
+				query.setLong("cpf", 0);
+			}
+			
+			if (pes.getOrgaoUsuario() != null)
+				query.setLong("idOrgaoUsu", pes.getOrgaoUsuario().getId());
+			else
+				query.setLong("idOrgaoUsu", 0);
+
+			if (pes.getLotacao() != null)
+				query.setLong("lotacao", pes.getLotacao().getId());
+			else
+				query.setLong("lotacao", 0);
+
+			if (pes.getCargo() != null)
+				query.setLong("cargo", pes.getCargo().getId());
+			else
+				query.setLong("cargo", 0);
+			
+			if (pes.getFuncaoConfianca() != null)
+				query.setLong("funcao", pes.getFuncaoConfianca().getId());
+			else
+				query.setLong("funcao", 0);
+
+			final List<DpPessoa> l = query.list();
+			return l;
+		} catch (final NullPointerException e) {
+			return null;
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	public List<DpPessoa> consultarPorOrgaoUsuDpPessoaInclusiveFechadas(
@@ -1350,6 +1439,40 @@ public class CpDao extends ModeloDao {
 			// query.setHint("org.hibernate.cacheable", true);
 			// query.setHint("org.hibernate.cacheRegion", CACHE_QUERY_SUBSTITUICAO);
 			return query.getResultList();
+		} catch (final IllegalArgumentException e) {
+			throw e;
+		} catch (final Exception e) {
+			return null;
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<DpVisualizacao> consultarVisualizacoesPermitidas(
+			final DpVisualizacao exemplo) throws SQLException {
+		try {
+			Query query = null;
+			query = getSessao().getNamedQuery(
+					"consultarVisualizacoesPermitidas");
+			query.setLong("idDelegadoIni", exemplo.getDelegado()
+					.getIdPessoaIni());
+			query.setCacheable(true);
+			query.setCacheRegion(CACHE_QUERY_SUBSTITUICAO);
+			return query.list();
+		} catch (final IllegalArgumentException e) {
+			throw e;
+		} catch (final Exception e) {
+			return null;
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<DpVisualizacao> consultarOrdemData(final DpVisualizacao exemplo)
+			throws SQLException {
+		try {
+			Query query = null;
+			query = getSessao().getNamedQuery("consultarOrdem");
+			query.setLong("idTitularIni", exemplo.getTitular().getIdPessoaIni());
+			return query.list();
 		} catch (final IllegalArgumentException e) {
 			throw e;
 		} catch (final Exception e) {
@@ -1792,7 +1915,15 @@ public class CpDao extends ModeloDao {
 //		if (entidade instanceof DpSubstituicao) {
 //			sfCpDao.evict(DpSubstituicao.class);
 //			sfCpDao.evictQueries(CACHE_QUERY_SUBSTITUICAO);
-//		}
+		} else if (entidade instanceof DpVisualizacao) {
+			sfCpDao.evict(DpVisualizacao.class);
+			sfCpDao.evictQueries(CACHE_QUERY_SUBSTITUICAO);
+			
+		}
+		if (entidade instanceof CpIdentidade) {
+			sfCpDao.evict(CpIdentidade.class);
+			sfCpDao.evictQueries(CACHE_QUERY_SUBSTITUICAO);
+		}
 	}
 
 	public DpPessoa getPessoaFromSigla(String sigla) {
@@ -2257,7 +2388,93 @@ public class CpDao extends ModeloDao {
 		qry.setHint("org.hibernate.cacheRegion", CACHE_QUERY_CONFIGURACAO);
 		return qry.getResultList();
 	}
+	public List<CpOrgaoUsuario> consultarOrgaosMarcadosComo (final Long orgaoUsuId,
+			final Long lotacaoId, final Long usuarioId, Date dataInicial, Date dataFinal, Long idMarcador) {
+		String queryOrgao = "";
+		if (orgaoUsuId != null) {
+			queryOrgao = "and doc.orgaoUsuario.idOrgaoUsu = :orgao ";
+		}
+		String queryLotacao = "";
+		if (lotacaoId != null) {
+			queryLotacao = "and doc.lotaCadastrante.idLotacao in (select l.idLotacao from DpLotacao as l where l.idLotacaoIni = :idLotacao) ";
+		}
+		String queryUsuario = "";
+		if (usuarioId != null) {
+			queryUsuario = "and mov.cadastrante.idPessoaIni in (select p.idPessoa from DpPessoa as p where p.idPessoaIni = :idUsuario) ";
+		}
+		String queryTemp = 
+				"select distinct "
+					+ "(select orgaoUsu from CpOrgaoUsuario orgaoUsu where "
+					+ "		(orgaoUsu1 is null or orgaoUsu.idOrgaoUsu = orgaoUsu1.idOrgaoUsu) "	
+					+ "		and (orgaoUsu2 is null or orgaoUsu.idOrgaoUsu = orgaoUsu2.idOrgaoUsu)) "
+					+ "from ExMarca mar " 
+					+ "inner join mar.exMobil mob " 
+					+ "inner join mob.exDocumento doc "
+					+ "inner join mar.cpMarcador as marcador "
+					+ "left join mar.dpLotacaoIni.orgaoUsuario orgaoUsu1 "
+					+ "left join mar.dpPessoaIni.orgaoUsuario orgaoUsu2 "
+					+ "where doc.dtDoc >= :dtini and doc.dtDoc < :dtfim "
+					+ "		and doc.dtFinalizacao is not null "
+					+ queryOrgao
+					+ queryLotacao
+					+ queryUsuario
+					+ "and marcador.idMarcador = :idMarcador " 
+					+ "and (dt_ini_marca is null or dt_ini_marca < sysdate) " 
+					+ "and (dt_fim_marca is null or dt_fim_marca > sysdate) " 
+				;
+		
+		Query query = getSessao().createQuery(queryTemp);
+				
+		query.setLong("idMarcador", idMarcador);
 
+		if (orgaoUsuId != null) {
+			query.setLong("orgao", orgaoUsuId);
+		}
+		if (lotacaoId != null) {
+			query.setParameter("idLotacao", lotacaoId);
+		}
+		if (usuarioId != null) {
+			query.setParameter("idUsuario", usuarioId);
+		}
+		query.setDate("dtini", dataInicial);
+		Date dtfimMaisUm = new Date( dataFinal.getTime() + 86400000L );
+		query.setDate("dtfim", dtfimMaisUm);
+		
+		List<CpOrgaoUsuario> l = query.list();
+		
+		if(l.size() == 0) {
+			return null;
+		}
+		return l;
+	}
+	
+	public Integer quantidadeDocumentos(DpPessoa pes) {
+		try {
+			SQLQuery sql = (SQLQuery) getSessao().getNamedQuery(
+					"quantidadeDocumentos");
+
+			sql.setLong("idPessoaIni", pes.getIdPessoaIni());
+			List result = sql.list();
+			final int l = ((BigDecimal) sql.uniqueResult()).intValue();
+            return l;
+		} catch (final NullPointerException e) {
+			return null;
+		}
+	}
+	
+	public Integer consultarQtdeDocCriadosPossePorDpLotacao(Long idLotacao) {
+		try {
+			SQLQuery sql = (SQLQuery) getSessao().getNamedQuery(
+					"consultarQtdeDocCriadosPossePorDpLotacao");
+
+			sql.setLong("idLotacao", idLotacao);
+			List result = sql.list();
+			final int l = ((BigDecimal) sql.uniqueResult()).intValue();
+            return l;
+		} catch (final NullPointerException e) {
+			return null;
+		}
+	}
 	public List<CpConfiguracao> consultarCpConfiguracoesPorTipoLotacao(long idTpLotacao) {
 		final Query qry = em().createNamedQuery(
 				"consultarCpConfiguracoesPorTipoLotacao");

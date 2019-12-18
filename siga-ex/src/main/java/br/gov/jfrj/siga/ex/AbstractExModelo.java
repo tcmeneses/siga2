@@ -118,6 +118,9 @@ public abstract class AbstractExModelo extends HistoricoAuditavelSuporte
 		this.hisAtivo = getHisAtivo();
 	}
 
+	@Column(name = "IS_COMPOSTO", length = 1)
+	private java.lang.Integer isComposto;
+
 	// private Set classificacaoSet;
 
 	/**
@@ -235,6 +238,15 @@ public abstract class AbstractExModelo extends HistoricoAuditavelSuporte
 	}
 
 	/**
+	 * Return the value of the IS_COMPOSTO column.
+	 * 
+	 * @return java.lang.Integer
+	 */
+	public java.lang.Integer getIsComposto() {
+		return isComposto;
+	}
+
+	/**
 	 * Implementation of the hashCode method conforming to the Bloch pattern
 	 * with the exception of array properties (these are very unlikely primary
 	 * key types).
@@ -309,6 +321,15 @@ public abstract class AbstractExModelo extends HistoricoAuditavelSuporte
 	 */
 	public void setNmMod(final java.lang.String nmMod) {
 		this.nmMod = nmMod;
+	}
+
+	/**
+	 * Set the value of the IS_COMPOSTO column.
+	 * 
+	 * @param isComposto
+	 */
+	public void setIsComposto(final java.lang.Integer isComposto) {
+		this.isComposto = isComposto;
 	}
 
 	public ExNivelAcesso getExNivelAcesso() {

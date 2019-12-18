@@ -23,11 +23,13 @@ import br.gov.jfrj.siga.cp.CpIdentidade;
 import br.gov.jfrj.siga.cp.CpTipoIdentidade;
 import br.gov.jfrj.siga.cp.bl.Cp;
 import br.gov.jfrj.siga.cp.util.MatriculaUtils;
+import br.gov.jfrj.siga.cp.bl.CpPropriedadeBL;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
 import br.gov.jfrj.siga.dp.DpPessoa;
 import br.gov.jfrj.siga.dp.dao.CpDao;
+import br.gov.jfrj.siga.gi.integracao.IntegracaoLdapViaWebService;
+import br.gov.jfrj.siga.gi.service.GiService;
 import br.gov.jfrj.siga.integracao.ldap.IntegracaoLdap;
-import br.gov.jfrj.siga.integracao.ldap.IntegracaoLdapViaWebService;
 
 @Controller
 public class UsuarioController extends SigaController {
@@ -51,7 +53,7 @@ public class UsuarioController extends SigaController {
 	public void trocaSenha() {
 		result.include("baseTeste", Boolean.valueOf(System.getProperty("isBaseTest").trim()));
 	}
-
+	
 	@Post({"/app/usuario/trocar_senha_gravar","/public/app/usuario/trocar_senha_gravar"})
 	public void gravarTrocaSenha(UsuarioAction usuario) throws Exception {
 		String senhaAtual = usuario.getSenhaAtual();
@@ -78,7 +80,6 @@ public class UsuarioController extends SigaController {
 					getIdentidadeCadastrante());
 			if ("on".equals(usuario.getTrocarSenhaRede())) {
 				try{
-					//IntegracaoLdap.getInstancia().atualizarSenhaLdap(idNova,senhaNova);
 					IntegracaoLdapViaWebService.getInstancia().trocarSenha(nomeUsuario, senhaNova);
 				} catch(Exception e){
 					throw new Exception("Não foi possível alterar a senha de rede e e-mail. "
@@ -93,7 +94,7 @@ public class UsuarioController extends SigaController {
 		result.include("titulo", "Troca de Senha");
 		result.redirectTo("/app/principal");
 	}
-
+	
 	@Get({"/app/usuario/incluir_usuario","/public/app/usuario/incluir_usuario"})
 	public void incluirUsuario() {
 		if (!SigaMessages.isSigaSP()) {
@@ -170,30 +171,61 @@ public class UsuarioController extends SigaController {
 	
 	@Post({"/app/usuario/esqueci_senha_gravar","/public/app/usuario/esqueci_senha_gravar"})
 	public void gravarEsqueciSenha(UsuarioAction usuario) throws Exception {
+		// caso LDAP, orientar troca pelo Windows / central
+		final CpIdentidade id = dao().consultaIdentidadeCadastrante(usuario.getMatricula(), true);
+		if (id == null)
+			throw new AplicacaoException("O usuário não está cadastrado.");
+		boolean autenticaPeloBanco = buscarModoAutenticacao(id.getCpOrgaoUsuario().getSiglaOrgaoUsu()).equals(GiService._MODO_AUTENTICACAO_BANCO);
+		if(!autenticaPeloBanco)
+			throw new AplicacaoException("O usuário deve modificar sua senha usando a interface do Windows " + 
+										"(acionando as teclas Ctrl, Alt e Del / Delete, opção 'Alterar uma senha')" +
+										", ou entrando em contato com a Central de Atendimento.");
+		
 		String msgAD = "";
+		String cpfNumerico = null;
+		String cpfNumerico1 = null;
+		String cpfNumerico2 = null;
 		boolean senhaTrocadaAD = false;
+		if (usuario.getCpf() != null && !"".equals(usuario.getCpf())) {
+			cpfNumerico = usuario.getCpf().replace(".", "").replace("-", "");
+		}
+		if (usuario.getCpf1() != null && !"".equals(usuario.getCpf())) {
+			cpfNumerico1 = usuario.getCpf1().replace(".", "").replace("-", "");
+		}
+		if (usuario.getCpf2() != null && !"".equals(usuario.getCpf())) {
+			cpfNumerico2 = usuario.getCpf2().replace(".", "").replace("-", "");
+		}
 		
 		switch (usuario.getMetodo()) {
 		case 1:
 //			verificarMetodoIntegracaoAD(usuario.getMatricula());
 			
 			if(SigaBaseProperties.getString("siga.local") != null && "GOVSP".equals(SigaBaseProperties.getString("siga.local"))) {
-				Cp.getInstance().getBL().alterarSenha(usuario.getCpf(), null, usuario.getMatricula());
+				String msg = Cp.getInstance().getBL().alterarSenha(cpfNumerico, null, usuario.getMatricula());
+				if (msg != "OK") {
+					result.include("mensagemCabec", msg);
+					result.include("msgCabecClass", "alert-danger");
+					result.include("valCpf", usuario.getCpf());
+					result.include("titulo", "Esqueci Minha Senha");
+					result.use(Results.page()).forwardTo("/WEB-INF/page/usuario/esqueciSenha.jsp");
+					return;
+				}
 			} else {
 				String[] senhaGerada = new String[1];
 				Cp.getInstance().getBL().alterarSenhaDeIdentidade(usuario.getMatricula(),
-						usuario.getCpf(), getIdentidadeCadastrante(),senhaGerada);
+						cpfNumerico, getIdentidadeCadastrante(),senhaGerada);
 			}
 			break;
 		case 2:
-			if (!Cp.getInstance().getBL().podeAlterarSenha(usuario.getAuxiliar1(), usuario.getCpf1(),
-					usuario.getSenha1(), usuario.getAuxiliar2(), usuario.getCpf2(), usuario.getSenha2(),
-					usuario.getMatricula(), usuario.getCpf(), usuario.getSenhaNova())){
+			if (!Cp.getInstance().getBL().podeAlterarSenha(usuario.getAuxiliar1(), cpfNumerico1,
+					usuario.getSenha1(), usuario.getAuxiliar2(), cpfNumerico2, usuario.getSenha2(),
+					usuario.getMatricula(), cpfNumerico, usuario.getSenhaNova())){
 				String mensagem = "Não foi possível alterar a senha!<br/>" +
 						"1) As pessoas informadas não podem ser as mesmas;<br/>" +
 						"2) Verifique se as matrículas e senhas foram informadas corretamente;<br/>" +
 						"3) Verifique se as pessoas são da mesma lotação ou da lotação imediatamente superior em relação à matrícula que terá a senha alterada;<br/>";
-				result.include("mensagem", mensagem);
+				result.include("mensagemCabec", mensagem);
+				result.include("msgCabecClass", "alert-danger");
 				result.redirectTo("/app/usuario/esqueci_senha");
 				return;
 			}
@@ -205,7 +237,8 @@ public class UsuarioController extends SigaController {
 			break;
 
 		default:
-			result.include("mensagem", "Método inválido!");
+			result.include("mensagemCabec", "Método inválido!");
+			result.include("msgCabecClass", "alert-danger");
 			result.redirectTo("/app/usuario/esqueci_senha");
 			return;
 		}
@@ -225,6 +258,18 @@ public class UsuarioController extends SigaController {
 	}
 
 	
+    private String buscarModoAutenticacao(String orgao) {
+    	String retorno = GiService._MODO_AUTENTICACAO_DEFAULT;
+    	CpPropriedadeBL props = new CpPropriedadeBL();
+    	try {
+			String modo = props.getModoAutenticacao(orgao);
+			if(modo != null) 
+				retorno = modo;
+		} catch (Exception e) {
+		}
+    	return retorno;
+    }
+    
 	@Get({"/app/usuario/integracao_ldap","/public/app/usuario/integracao_ldap"})
 	public void isIntegradoLdap(String matricula) throws AplicacaoException {
 		try{

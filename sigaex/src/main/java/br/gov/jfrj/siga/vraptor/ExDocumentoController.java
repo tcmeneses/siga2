@@ -35,6 +35,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -69,11 +70,16 @@ import br.com.caelum.vraptor.observer.upload.UploadedFile;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Data;
+import br.gov.jfrj.siga.base.SigaBaseProperties;
+import br.gov.jfrj.siga.base.SigaMessages;
 import br.gov.jfrj.siga.cp.CpTipoConfiguracao;
+import br.gov.jfrj.siga.cp.bl.Cp;
 import br.gov.jfrj.siga.cp.model.DpPessoaSelecao;
 import br.gov.jfrj.siga.dp.CpOrgao;
 import br.gov.jfrj.siga.dp.DpLotacao;
 import br.gov.jfrj.siga.dp.DpPessoa;
+import br.gov.jfrj.siga.dp.DpVisualizacao;
+import br.gov.jfrj.siga.dp.DpVisualizacaoAcesso;
 import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.ex.ExClassificacao;
 import br.gov.jfrj.siga.ex.ExDocumento;
@@ -911,11 +917,51 @@ public class ExDocumentoController extends ExController {
 								+ " cancelado ");
 				}
 			} else  {
-				throw new AplicacaoException("Documento "
-						+ exDocumentoDTO.getMob().getSigla()
-						+ " inacessível ao usuário " + getTitular().getSigla()
-						+ "/" + getLotaTitular().getSiglaCompleta() + "." + s
-						+ " " + msgDestinoDoc);
+				if(SigaBaseProperties.getString("siga.local") != null && "GOVSP".equals(SigaBaseProperties.getString("siga.local"))) {
+					String a[] = exDocumentoDTO.getMob().doc().getListaDeAcessosString().split(",");
+					CpDao cpdao = CpDao.getInstance();
+					DpPessoa p = null;
+					DpLotacao l = null;
+					String parteNumerica = null;
+					s = "(";
+					for (int i = 0; i < a.length; i++) {
+						
+						parteNumerica = a[i].replaceAll("[^0123456789]", "");
+						if(parteNumerica != null && !"".equals(parteNumerica)) {
+							p = new DpPessoa();
+							p.setMatricula(Long.valueOf(parteNumerica));  
+							p.setSesbPessoa(a[i].replaceAll("[^a-zA-Z]", ""));
+							p = cpdao.consultarPorSigla(p);
+							if(p != null)
+								s += p.getNomePessoa() + "("+a[i].trim()+"/"+ p.getLotacao().getSiglaLotacao()+")";
+						} else {
+							l = new DpLotacao();
+							l.setOrgaoUsuario(exDocumentoDTO.getDoc().getOrgaoUsuario());
+							l.setSigla(a[i].replace(exDocumentoDTO.getDoc().getOrgaoUsuario().getSigla(), ""));
+							l = cpdao.consultarPorSigla(l);
+							if(l !=null)
+								s += "("+l.getNomeLotacao()+")";
+						}
+						s += (i+1 == a.length) ? "" : ",";
+					}
+					s += ")";
+					
+					
+					s = " "
+							+ exDocumentoDTO.getMob().doc().getExNivelAcessoAtual()
+									.getNmNivelAcesso() + " " + s;
+					throw new AplicacaoException("Documento "
+							+ exDocumentoDTO.getMob().getSigla()
+							+ " inacessível ao usuário " + getTitular().getNomePessoa() + "(" +getTitular().getSigla()
+							+ "/" + getLotaTitular().getSiglaCompleta() + ")." + s
+							+ " " + msgDestinoDoc);
+				} else {
+					throw new AplicacaoException("Documento "
+							+ exDocumentoDTO.getMob().getSigla()
+							+ " inacessível ao usuário " + getTitular().getSigla()
+							+ "/" + getLotaTitular().getSiglaCompleta() + "." + s
+							+ " " + msgDestinoDoc);
+				}
 			}
 		}
 	}
@@ -955,8 +1001,10 @@ public class ExDocumentoController extends ExController {
 				mobUlt = mobUlt.getGrandeMestre();
 
 			if (mobUlt.getUltimaMovimentacaoNaoCancelada() != null) {
-				dest = mobUlt.getUltimaMovimentacaoNaoCancelada().getResp()
-						.getPessoaAtual();
+				if (mobUlt.getUltimaMovimentacaoNaoCancelada().getResp() != null) {
+					dest = mobUlt.getUltimaMovimentacaoNaoCancelada().getResp()
+							.getPessoaAtual();
+				}
 				lotaDest = mobUlt.getUltimaMovimentacaoNaoCancelada()
 						.getLotaResp().getLotacaoAtual();
 			}
@@ -1098,9 +1146,9 @@ public class ExDocumentoController extends ExController {
 		result.include("currentTimeMillis", System.currentTimeMillis());
 		result.include("popup", popup);
 	}
-
+	
 	@Get("app/expediente/doc/exibirHistorico")
-	public void aExibirHistorico(final String sigla, final boolean popup) throws Exception {
+	public void aExibirHistorico(final String sigla, final boolean popup, final Long idVisualizacao) throws Exception {
 		assertAcesso("");
 
 		final ExDocumentoDTO exDocumentoDTO = new ExDocumentoDTO();
@@ -1108,7 +1156,9 @@ public class ExDocumentoController extends ExController {
 		exDocumentoDTO.setSigla(sigla);
 		buscarDocumento(false, exDocumentoDTO);
 
-		assertAcesso(exDocumentoDTO);
+		if(!podeVisualizarDocumento(exDocumentoDTO.getMob(), getTitular(), idVisualizacao)) {
+			assertAcesso(exDocumentoDTO);
+		}
 
 		if (Ex.getInstance()
 				.getComp()
@@ -1141,10 +1191,10 @@ public class ExDocumentoController extends ExController {
 		result.include("currentTimeMillis", System.currentTimeMillis());
 		result.include("popup", popup);
 	}
-
-	@Get({ "/app/expediente/doc/exibir", "/expediente/doc/exibir.action" })
-	public void exibe(final boolean conviteEletronico, final String sigla,
-			final ExDocumentoDTO exDocumentoDTO, final Long idmob)
+	
+	@Get({ "/app/expediente/doc/visualizar"})
+	public void visualiza(final boolean conviteEletronico, final String sigla,
+			final ExDocumentoDTO exDocumentoDTO, final Long idmob, final Long idVisualizacao)
 			throws Exception {
 		assertAcesso("");
 
@@ -1160,7 +1210,89 @@ public class ExDocumentoController extends ExController {
 		exDocumentoDto.setSigla(sigla);
 		buscarDocumento(false, exDocumentoDto);
 
-		assertAcesso(exDocumentoDto);
+		if(!podeVisualizarDocumento(exDocumentoDTO.getMob(), getTitular(), idVisualizacao) || !Cp.getInstance().getConf()
+				.podePorConfiguracao(getCadastrante(), getCadastrante().getLotacao(), CpTipoConfiguracao.TIPO_CONFIG_DELEGAR_VISUALIZACAO)) {
+			assertAcesso(exDocumentoDto);
+		}
+		
+		if(idVisualizacao != null && !idVisualizacao.equals(Long.valueOf(0))) {
+			result.include("idVisualizacao", idVisualizacao);
+			DpVisualizacaoAcesso acesso = new DpVisualizacaoAcesso();
+			DpVisualizacao vis = dao().consultar(idVisualizacao, DpVisualizacao.class, false);
+			acesso.setDtAcesso(dao().dt());
+			acesso.setIdDoc(exDocumentoDTO.getDoc().getIdDoc());
+			acesso.setIdTitular(vis.getTitular().getId());
+			acesso.setIdDelegado(getTitular().getId());
+			acesso.setIdVisualizacao(vis.getIdVisualizacao());
+			dao().gravar(acesso);
+		}
+
+		if (Ex.getInstance()
+				.getComp()
+				.podeReceberEletronico(getTitular(), getLotaTitular(),
+						exDocumentoDto.getMob())) {
+			Ex.getInstance()
+					.getBL()
+					.receber(getCadastrante(), getLotaTitular(),
+							exDocumentoDto.getMob(), new Date());
+		}
+
+		if (exDocumentoDto.getMob() == null
+				|| exDocumentoDto.getMob().isGeral()) {
+			if (exDocumentoDto.getMob().getDoc().isFinalizado()) {
+				if (exDocumentoDto.getDoc().isProcesso()) {
+					exDocumentoDto.setMob(exDocumentoDto.getDoc()
+							.getUltimoVolume());
+				} else {
+					exDocumentoDto.setMob(exDocumentoDto.getDoc()
+							.getPrimeiraVia());
+				}
+			}
+		}
+
+		final ExDocumentoVO docVO = new ExDocumentoVO(exDocumentoDto.getDoc(),
+				exDocumentoDto.getMob(), getCadastrante(), getTitular(),
+				getLotaTitular(), true, false);
+
+		docVO.exibe();
+
+		String Sigla = "";
+		if (exDocumentoDto.getSigla() != null) {
+			Sigla = exDocumentoDto.getSigla().replace("/", "");
+		}
+		
+		docVO.addAcoesVisualizar(docVO, idVisualizacao);
+
+		result.include("docVO", docVO);
+		docVO.getMobs().get(0).getAcoesOrdenadasPorNome();
+		result.include("sigla", Sigla);
+		result.include("id", exDocumentoDto.getId());
+		result.include("mob", exDocumentoDto.getMob());
+		result.include("lota", this.getLotaTitular());
+		result.include("param", exDocumentoDto.getParamsEntrevista());
+	}
+
+	@Get({ "/app/expediente/doc/exibir", "/expediente/doc/exibir.action" })
+	public void exibe(final boolean conviteEletronico, final String sigla,
+			final ExDocumentoDTO exDocumentoDTO, final Long idmob, final Long idVisualizacao)
+			throws Exception {
+		assertAcesso("");
+
+		ExDocumentoDTO exDocumentoDto;
+		if (exDocumentoDTO == null) {
+			exDocumentoDto = new ExDocumentoDTO();
+		} else {
+			exDocumentoDto = exDocumentoDTO;
+		}
+
+		exDocumentoDto.setIdMob(idmob);
+
+		exDocumentoDto.setSigla(sigla);
+		buscarDocumento(false, exDocumentoDto);
+
+		if(!podeVisualizarDocumento(exDocumentoDto.getMob(), getTitular(), idVisualizacao)) {
+			assertAcesso(exDocumentoDto);
+		}
 
 		if (Ex.getInstance()
 				.getComp()
@@ -1202,18 +1334,19 @@ public class ExDocumentoController extends ExController {
 		result.include("mob", exDocumentoDto.getMob());
 		result.include("lota", this.getLotaTitular());
 		result.include("param", exDocumentoDto.getParamsEntrevista());
+		result.include("idVisualizacao", idVisualizacao);
 	}
 
 	@Get("app/expediente/doc/exibirProcesso")
-	public void exibeProcesso(final String sigla, final boolean podeExibir)
+	public void exibeProcesso(final String sigla, final boolean podeExibir, Long idVisualizacao)
 			throws Exception {
-		exibe(false, sigla, null, null);
+		exibe(false, sigla, null, null, idVisualizacao);
 	}
 
 	@Get("/app/expediente/doc/exibirResumoProcesso")
 	public void exibeResumoProcesso(final String sigla, final boolean podeExibir)
 			throws Exception {
-		exibe(false, sigla, null, null);
+		exibe(false, sigla, null, null, null);
 	}
 
 	private void verificaDocumento(final ExDocumento doc) {
@@ -1527,7 +1660,7 @@ public class ExDocumentoController extends ExController {
 				if (numPaginas == null || d.getArquivoComStamp() == null) {
 					throw new AplicacaoException(
 							MessageFormat
-									.format("O arquivo {0} está corrompido. Favor gera-lo novamente antes de anexar.",
+									.format("O arquivo {0} está corrompido ou protegido por senha. Favor gera-lo novamente antes de anexar.",
 											arquivo.getFileName()));
 				}
 
@@ -1541,6 +1674,10 @@ public class ExDocumentoController extends ExController {
 			exBL.gravar(getCadastrante(), getTitular(), getLotaTitular(),
 					exDocumentoDTO.getDoc());
 
+			if(exDocumentoDTO.getDoc().getExMobilPai() != null && Ex.getInstance().getComp().podeRestrigirAcesso(getCadastrante(), getLotaCadastrante(), exDocumentoDTO.getDoc().getExMobilPai())) {
+				exBL.copiarRestringir(exDocumentoDTO.getDoc().getMobilGeral(), exDocumentoDTO.getDoc().getExMobilPai().getDoc().getMobilGeral(), getCadastrante(), getTitular(), exDocumentoDTO.getDoc().getData());
+			}
+			
 			if (!exDocumentoDTO.getDoc().isFinalizado()
 					&& (exDocumentoDTO.getIdTpDoc() == ExTipoDocumento.TIPO_DOCUMENTO_INTERNO_CAPTURADO || exDocumentoDTO
 							.getIdTpDoc() == ExTipoDocumento.TIPO_DOCUMENTO_EXTERNO_CAPTURADO))
@@ -1773,11 +1910,17 @@ public class ExDocumentoController extends ExController {
 			throw new AplicacaoException(
 					"Não é possível tornar documento sem efeito.");
 		try {
-
-			Ex.getInstance()
-					.getBL()
-					.TornarDocumentoSemEfeito(getCadastrante(),
-							getLotaTitular(), doc, descrMov);
+			if (SigaMessages.isSigaSP() && doc.isCapturado()) {
+				Ex.getInstance()
+				.getBL()
+				.cancelarDocumento(getCadastrante(),
+						getLotaTitular(), doc);
+			} else {
+				Ex.getInstance()
+						.getBL()
+						.TornarDocumentoSemEfeito(getCadastrante(),
+								getLotaTitular(), doc, descrMov);
+			}
 		} catch (final Exception e) {
 			throw e;
 		}
@@ -2321,10 +2464,16 @@ public class ExDocumentoController extends ExController {
 		ExMobil mobPai = null;
 		if (exDocumentoDTO.getMobilPaiSel().buscarPorSigla())
 			mobPai = exDocumentoDTO.getMobilPaiSel().buscarObjeto();
+
+		boolean isEditandoAnexo = false;
+		if (exDocumentoDTO.getMob().getExDocumento().getExMobilPai() != null 
+				|| exDocumentoDTO.isCriandoAnexo())
+			isEditandoAnexo = true;		
+		
 		exDocumentoDTO.setModelos(Ex
 				.getInstance()
 				.getBL()
-				.obterListaModelos(tipo, null, exDocumentoDTO.isCriandoAnexo(),
+				.obterListaModelos(tipo, null, isEditandoAnexo,
 						exDocumentoDTO.getCriandoSubprocesso(), mobPai,
 						headerValue, true, getTitular(), getLotaTitular(),
 						exDocumentoDTO.getAutuando()));

@@ -52,6 +52,8 @@ import org.jboss.logging.Logger;
 
 import br.gov.jfrj.itextpdf.Documento;
 import br.gov.jfrj.siga.base.AplicacaoException;
+import br.gov.jfrj.siga.base.SigaBaseProperties;
+import br.gov.jfrj.siga.base.SigaMessages;
 import br.gov.jfrj.siga.base.Texto;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
 import br.gov.jfrj.siga.dp.DpLotacao;
@@ -686,9 +688,13 @@ public class ExDocumento extends AbstractExDocumento implements Serializable,
 			lotaBase = getLotaCadastrante();
 
 		if (s == null && lotaBase != null) {
-			s = lotaBase.getLocalidadeString();
+			if (SigaBaseProperties.getString("siga.local") != null && "GOVSP".equals(SigaBaseProperties.getString("siga.local"))
+						&& lotaBase.getLocalidade() != null && lotaBase.getLocalidade().getNmLocalidade() != null) {
+				s = lotaBase.getLocalidade().getNmLocalidade();	
+			} else {
+				s = lotaBase.getLocalidadeString();	
+			}
 		}
-
 		return s;
 	}
 
@@ -884,6 +890,13 @@ public class ExDocumento extends AbstractExDocumento implements Serializable,
 	 */
 	public boolean isFinalizado() {
 		return getDtFinalizacao() != null;
+	}
+
+	/**
+	 * Verifica se um documento é composto
+	 */
+	public Boolean isComposto() {
+		return getExFormaDocumento().isComposto() || getExModelo().getModeloAtual().isComposto();
 	}
 
 	/**
@@ -1540,7 +1553,7 @@ public class ExDocumento extends AbstractExDocumento implements Serializable,
 	 */
 	public boolean isNumeracaoUnicaAutomatica() {
 		// return isEletronico() && getExFormaDocumento().isNumeracaoUnica();
-		return (getExFormaDocumento().isNumeracaoUnica())
+		return (getExFormaDocumento().isNumeracaoUnica() || (SigaMessages.isSigaSP() && isExpediente() && !getExDocumentoFilhoSet().isEmpty()))
 				&& (getExTipoDocumento().getId() == ExTipoDocumento.TIPO_DOCUMENTO_INTERNO || getExTipoDocumento()
 						.getId() == ExTipoDocumento.TIPO_DOCUMENTO_INTERNO_FOLHA_DE_ROSTO)
 				&& isEletronico();
@@ -1673,6 +1686,13 @@ public class ExDocumento extends AbstractExDocumento implements Serializable,
 		return getMobilGeral().getMovsNaoCanceladas(
 				ExTipoMovimentacao.TIPO_MOVIMENTACAO_ASSINATURA_COM_SENHA);
 	}
+	
+	public Set<ExMovimentacao> getAssinaturasPorComSenha() {
+		if (getMobilGeral() == null)
+			return new TreeSet<ExMovimentacao>();
+		return getMobilGeral().getMovsNaoCanceladas(
+				ExTipoMovimentacao.TIPO_MOVIMENTACAO_ASSINATURA_POR_COM_SENHA);
+	}
 
 	public Set<ExMovimentacao> getAutenticacoesComSenha() {
 		if (getMobilGeral() == null)
@@ -1770,10 +1790,17 @@ public class ExDocumento extends AbstractExDocumento implements Serializable,
 				.getAssinantesString(getAssinaturasComToken());
 		String assinantesSenha = Documento
 				.getAssinantesString(getAssinaturasComSenha());
+		String assinantesPorSenha = Documento
+				.getAssinantesStringComMatricula(getAssinaturasPorComSenha());
+
 
 		if (assinantesToken.length() > 0)
 			retorno = "Assinado digitalmente por " + assinantesToken + ".\n";
-
+		
+		if (assinantesPorSenha.length() > 0) {
+			retorno = retorno + "Assinado com senha por " + assinantesPorSenha +".\n" ;
+		}
+		
 		if (assinantesSenha.length() > 0)
 			retorno = retorno + "Assinado com senha por " + assinantesSenha
 					+ ".\n";

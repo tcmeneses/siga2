@@ -164,8 +164,9 @@ public class ExMarcadorBL {
 				mAnterior = m;
 			}
 		}
-
-		calcularMarcadoresTransferencia(dt);
+		
+		if (!mob.isArquivado())
+			calcularMarcadoresTransferencia(dt);
 
 		// Acrescentar marcas manuais (Urgente, Idoso, etc)
 		if (m == CpMarcador.MARCADOR_EM_ANDAMENTO) {
@@ -424,7 +425,7 @@ public class ExMarcadorBL {
 		for (ExMovimentacao mov : movs(ExTipoMovimentacao.TIPO_MOVIMENTACAO_INCLUSAO_DE_COSIGNATARIO)) {
 			if (mob.getDoc().isEletronico()) {
 				if (mob.getDoc().isAssinadoPelaPessoaComTokenOuSenha(mov.getSubscritor()))
-					return;
+					continue;
 				else if (mob.getDoc().isAssinadoPeloSubscritorComTokenOuSenha())
 					acrescentarMarca(CpMarcador.MARCADOR_COMO_SUBSCRITOR, mov.getDtIniMov(), mov.getSubscritor(), null);
 				else

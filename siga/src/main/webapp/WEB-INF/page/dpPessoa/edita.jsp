@@ -2,6 +2,7 @@
 	buffer="64kb"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://localhost/jeetags" prefix="siga"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 <script type="text/javascript">
 	function validar() {
@@ -33,7 +34,8 @@
 		}
 
 		if(idLotacao==null || idLotacao == 0) {
-			mensagemAlerta("Preencha a lotação da pessoa.");
+			var msg="<fmt:message key='usuario.lotacao'/>";
+			mensagemAlerta("Preencha a "+msg.toLowerCase()+" da pessoa.");
 			document.getElementById('idLotacao').focus();
 			return;	
 		}
@@ -144,11 +146,14 @@
    	}
 
 	function validarNome(campo) {
-		campo.value = campo.value.replace(/[^a-zA-ZáâãéêíóôõúçÁÂÃÉÊÍÓÔÕÚÇ'' ]/g,'');
+		campo.value = campo.value.replace(/[^a-zA-ZáâãäéêëíïóôõöúüçñÁÂÃÄÉÊËÍÏÓÔÕÖÚÜÇÑ'' ]/g,'');
 	}
 </script>
 
 <siga:pagina titulo="Cadastro de Pessoa">
+	<link rel="stylesheet" href="/siga/javascript/select2/select2.css" type="text/css" media="screen, projection" />
+	<link rel="stylesheet" href="/siga/javascript/select2/select2-bootstrap.css" type="text/css" media="screen, projection" />	
+
 	<!-- main content -->
 	<div class="container-fluid">
 		<div class="card bg-light mb-3" >
@@ -160,10 +165,10 @@
 				<input type="hidden" name="postback" value="1" />
 				<input type="hidden" name="id" value="${id}" />
 				<div class="row">
-					<div class="col-sm-4">
+					<div class="col-md-4">
 						<div class="form-group">
 							<label for="idOrgaoUsu">&Oacute;rg&atilde;o</label>
-							<select name="idOrgaoUsu" value="${idOrgaoUsu}"  onchange="carregarRelacionados(this.value)" class="form-control">
+							<select name="idOrgaoUsu" value="${idOrgaoUsu}"  onchange="carregarRelacionados(this.value)" class="form-control  siga-select2">
 								<c:forEach items="${orgaosUsu}" var="item">
 									<option value="${item.idOrgaoUsu}"
 										${item.idOrgaoUsu == idOrgaoUsu ? 'selected' : ''}>
@@ -172,10 +177,10 @@
 							</select>
 						</div>
 					</div>
-					<div class="col-sm-2">
+					<div class="col-md-2">
 						<div class="form-group">
 							<label for="idCargo">Cargo</label>
-							<select name="idCargo" value="${idCargo}" class="form-control">
+							<select name="idCargo" value="${idCargo}" class="form-control  siga-select2">
 								<c:forEach items="${listaCargo}" var="item">
 									<option value="${item.idCargo}"
 										${item.idCargo == idCargo ? 'selected' : ''}>
@@ -184,10 +189,10 @@
 							</select>
 						</div>
 					</div>
-					<div class="col-sm-2">
+					<div class="col-md-2">
 						<div class="form-group">
 							<label for="idFuncao">Fun&ccedil;&atilde;o de Confian&ccedil;a</label>
-							<select name="idFuncao" value="${idFuncao}" class="form-control">
+							<select id="idFuncao" name="idFuncao" value="${idFuncao}" class="form-control  siga-select2">
 								<c:forEach items="${listaFuncao}" var="item">
 									<option value="${item.idFuncao}"
 										${item.idFuncao == idFuncao ? 'selected' : ''}>
@@ -196,10 +201,10 @@
 							</select>
 						</div>
 					</div>
-					<div class="col-sm-4">
-						<div class="form-group">
-							<label for="idLotacao">Lota&ccedil;&atilde;o</label>
-							<select name="idLotacao" value="${idLotacao}" class="form-control">
+					<div class="col-md-4">
+						<div class="form-group" id="idLotacaoGroup">
+							<label for="idLotacao"><fmt:message key="usuario.lotacao"/></label>
+							<select id="idLotacao" style="width: 100%" name="idLotacao" value="${idLotacao}" class="form-control  siga-select2">
 								<c:forEach items="${listaLotacao}" var="item">
 									<option value="${item.idLotacao}" ${item.idLotacao == idLotacao ? 'selected' : ''}>
 										<c:if test="${item.descricao ne 'Selecione'}">${item.siglaLotacao} / </c:if>${item.descricao}
@@ -210,25 +215,25 @@
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-sm-4">
+					<div class="col-md-4">
 						<div class="form-group">
 							<label for="nmPessoa">Nome</label>
 							<input type="text" id="nmPessoa" name="nmPessoa" value="${nmPessoa}" maxlength="60" class="form-control" onkeyup="validarNome(this)"/>
 						</div>
 					</div>
-					<div class="col-sm-2">
+					<div class="col-md-2">
 						<div class="form-group">
 							<label for="nmPessoa">Data de Nascimento</label>
 							<input type="text" id="dtNascimento" name="dtNascimento" value="${dtNascimento}" maxlength="10" onkeyup="this.value = mascaraData( this.value )" class="form-control" />
 						</div>
 					</div>
-					<div class="col-sm-2">
+					<div class="col-md-2">
 						<div class="form-group">
 							<label for="nmPessoa">CPF</label>
 							<input type="text" id="cpf" name="cpf" value="${cpf}" maxlength="14" onkeyup="this.value = cpf_mask(this.value)" class="form-control" />
 						</div>
 					</div>
-					<div class="col-sm-4">
+					<div class="col-md-4">
 						<div class="form-group">
 							<label for="nmPessoa">E-mail</label>
 							<input type="text" id="email" name="email" value="${email}" maxlength="60" onchange="validarEmail(this)" onkeyup="this.value = this.value.toLowerCase().trim()" class="form-control" />
@@ -237,12 +242,12 @@
 				</div>
 				<c:if test="${empty id}">
 					<div class="row">
-						<div class="col-sm-3">
+						<div class="col-md-4 col-sm-6">
 							<div class="form-group">
 								<span>Carregar planilha para inserir múltiplos registros:</span>
 							</div>
 						</div>
-						<div class="col-sm-2">
+						<div class="col-md-2 col-sm-2">
 							<div class="form-group">
 								<input type="button" value="Carregar planilha" onclick="javascript:location.href='/siga/app/pessoa/carregarExcel';" class="btn btn-primary" />
 							</div>
@@ -250,7 +255,7 @@
 					</div>
 				</c:if>
 				<div class="row">
-					<div class="col-sm-2">
+					<div class="col-sm-12">
 						<div class="form-group">
 							<button type="button" onclick="javascript: validar();" class="btn btn-primary" >Ok</button> 
 							<button type="button" onclick="javascript:history.back();" class="btn btn-primary" >Cancelar</button>
@@ -282,7 +287,9 @@
 		</div>
 	</div>
 </siga:pagina>
-
+<script type="text/javascript" src="/siga/javascript/select2/select2.min.js"></script>
+<script type="text/javascript" src="/siga/javascript/select2/i18n/pt-BR.js"></script>
+<script type="text/javascript" src="/siga/javascript/siga.select2.js"></script>
 <script>
 function voltar() {
 	frm.action = 'listar';

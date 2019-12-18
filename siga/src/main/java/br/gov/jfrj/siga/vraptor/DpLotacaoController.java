@@ -271,7 +271,7 @@ public class DpLotacaoController extends SigaSelecionavelControllerSupport<DpLot
 		if(Long.valueOf(0).equals(idLocalidade))
 			throw new AplicacaoException("Localidade da lotação não informado");
 		
-		if(nmLotacao != null && !nmLotacao.matches("[a-zA-ZàáâãéêíóôõúçÀÁÂÃÉÊÍÓÔÕÚÇ 0-9.,/-]+")) 
+		if(nmLotacao != null && !nmLotacao.matches("[\'a-zA-ZàáâãéêíóôõúçÀÁÂÃÉÊÍÓÔÕÚÇ 0-9.,/-]+")) 
 			throw new AplicacaoException("Nome com caracteres não permitidos");
 		
 		if(siglaLotacao != null && !siglaLotacao.matches("[a-zA-ZçÇ0-9,/-]+")) 
@@ -300,7 +300,10 @@ public class DpLotacaoController extends SigaSelecionavelControllerSupport<DpLot
 		} else {
 			lotacao = dao().consultar(id, DpLotacao.class, false);
 			listPessoa = dao().getInstance().pessoasPorLotacao(id, Boolean.TRUE, Boolean.FALSE);
-			
+			if(dao().consultarQtdeDocCriadosPossePorDpLotacao(id) > 0 && 
+					(!lotacao.getNomeLotacao().equalsIgnoreCase(Texto.removerEspacosExtra(nmLotacao).trim()) || !lotacao.getSiglaLotacao().equalsIgnoreCase(siglaLotacao.toUpperCase().trim()))) {
+				throw new AplicacaoException("Não é permitido a alteração do nome e sigla da unidade após criação de documento ou tramitação de documento para unidade.");
+			}
 		}
 		
 		//valida se pode inativar lotação

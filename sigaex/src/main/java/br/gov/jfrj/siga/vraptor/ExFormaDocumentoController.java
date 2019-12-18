@@ -92,6 +92,7 @@ public class ExFormaDocumentoController extends ExController {
 				}
 			}
 
+			result.include("isComposto", forma.getIsComposto());
 			result.include("origemExterno", origemExterno);
 			result.include("origemInternoImportado", origemInternoImportado);
 			result.include("origemInternoProduzido", origemInternoProduzido);
@@ -126,7 +127,8 @@ public class ExFormaDocumentoController extends ExController {
 
 	@Post("app/forma/gravar")
 	public void gravar(final Integer postback, final Long id, final String descricao, final String sigla, final Long idTipoFormaDoc, final boolean origemExterno,
-			final boolean origemInternoImportado, final boolean origemInternoProduzido, final boolean origemInternoCapturado, final boolean origemExternoCapturado) {
+			final boolean origemInternoImportado, final boolean origemInternoProduzido, final boolean origemInternoCapturado, 
+			final Integer isComposto, final boolean origemExternoCapturado) {
 		assertAcesso(ACESSO_SIGA_DOC_MOD);
 		setPostback(postback);
 
@@ -141,6 +143,9 @@ public class ExFormaDocumentoController extends ExController {
 		} else {
 			forma.getExTipoDocumentoSet().clear();
 		}
+
+		forma.setIsComposto(isComposto);
+
 		if (origemInternoProduzido) {
 			forma.getExTipoDocumentoSet().add(dao().consultar(ExTipoDocumento.TIPO_DOCUMENTO_INTERNO, ExTipoDocumento.class, false));
 		}
@@ -165,6 +170,7 @@ public class ExFormaDocumentoController extends ExController {
 		result.include("descricao", descricao);
 		result.include("sigla", sigla);
 		result.include("idTipoFormaDoc", idTipoFormaDoc);
+		result.include("isComposto", isComposto);
 		result.include("origemExterno", origemExterno);
 		result.include("origemInternoImportado", origemInternoImportado);
 		result.include("origemInternoProduzido", origemInternoProduzido);

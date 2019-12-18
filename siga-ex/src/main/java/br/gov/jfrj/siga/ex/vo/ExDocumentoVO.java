@@ -56,6 +56,7 @@ public class ExDocumentoVO extends ExVO {
 	String outrosMobsLabel;
 	String nomeCompleto;
 	String dtDocDDMMYY;
+	String dataPrimeiraAssinatura;
 	String subscritorString;
 	String originalNumero;
 	String originalData;
@@ -101,6 +102,7 @@ public class ExDocumentoVO extends ExVO {
 
 		this.nomeCompleto = doc.getNomeCompleto();
 		this.dtDocDDMMYY = doc.getDtDocDDMMYY();
+		this.dataPrimeiraAssinatura = this.obterDataPrimeiraAssinatura(doc);
 		this.subscritorString = doc.getSubscritorString();
 		this.cadastranteString = doc.getCadastranteString();
 		if (doc.getLotaCadastrante() != null)
@@ -389,6 +391,65 @@ public class ExDocumentoVO extends ExVO {
 
 	}
 	
+	public void addAcoesVisualizar(ExDocumentoVO docVO, Long idVisualizacao) {
+		ExVO vo = new ExVO();
+		
+		int numUltMobil = doc.getNumUltimoMobil();
+		vo.addAcao(
+				SigaMessages.getMessage("icon.ver.mais"),
+				SigaMessages.getMessage("documento.ver.mais"),
+				"/app/expediente/doc",
+				SigaMessages.getMessage("documento.acao.exibirAntigo")+ "?sigla="+doc+"&idVisualizacao="+idVisualizacao,
+				Boolean.TRUE, 
+						numUltMobil < 20 ? "" : "Exibir todos os " + numUltMobil + " volumes do processo simultaneamente pode exigir um tempo maior de processamento. Deseja exibi-los?", 
+						null, null, null, null);
+		
+		vo.addAcao(
+				SigaMessages.getMessage("icon.ver.impressao"),
+				SigaMessages.getMessage("documento.ver.impressao"),
+				"/app/arquivo",
+				"exibir",
+				Boolean.TRUE,
+				null, "&popup=true&arquivo=" + doc.getReferenciaPDF()+"&idVisualizacao="+idVisualizacao, null,
+				null, null);
+		
+		vo.addAcao(
+				"folder_magnify",
+				SigaMessages.getMessage("documento.ver.dossie"),
+				"/app/expediente/doc",
+				"exibirProcesso?sigla="+doc+"&idVisualizacao="+idVisualizacao,
+				Boolean.TRUE);
+		
+			
+		docVO.getMobs().get(0).setAcoes(vo.getAcoes());
+		
+		
+	}
+	
+	public String obterDataPrimeiraAssinatura(ExDocumento doc) {
+		String retorno = "";
+		
+		List<ExMovimentacao> lista = new ArrayList<ExMovimentacao>();
+		lista.addAll(doc.getMobilGeral().getMovsNaoCanceladas(ExTipoMovimentacao.TIPO_MOVIMENTACAO_ASSINATURA_COM_SENHA));
+		lista.addAll(doc.getMobilGeral().getMovsNaoCanceladas(ExTipoMovimentacao.TIPO_MOVIMENTACAO_ASSINATURA_DIGITAL_DOCUMENTO));
+		lista.addAll(doc.getMobilGeral().getMovsNaoCanceladas(ExTipoMovimentacao.TIPO_MOVIMENTACAO_CONFERENCIA_COPIA_COM_SENHA));
+		
+		if(lista.isEmpty()) {
+			return retorno;
+		} else if(lista.size() == 1) {
+			retorno = lista.get(0).getDtMovDDMMYYYY();
+		} else {
+			Long i = Long.valueOf(0);
+			for (ExMovimentacao exMovimentacao : lista) {
+				if(exMovimentacao.getIdMov() < i || i.equals(Long.valueOf(0))) {
+					i = exMovimentacao.getIdMov();
+					retorno = exMovimentacao.getDtMovDDMMYYYY();
+				}
+			}
+		}
+		return retorno;
+	}
+	
 	/**
 	 * @param doc
 	 * @param titular
@@ -568,7 +629,25 @@ public class ExDocumentoVO extends ExVO {
 				"redefinir_nivel_acesso",
 				Ex.getInstance().getComp()
 						.podeRedefinirNivelAcesso(titular, lotaTitular, mob));
-
+		
+		vo.addAcao(
+				"group_link",
+				"Restrição de Acesso",
+				"/app/expediente/mov",
+				"restringir_acesso",
+				Ex.getInstance().getComp().podeRestrigirAcesso(doc.getCadastrante(), doc.getCadastrante().getLotacao(), mob));
+		
+		vo.addAcao(
+				"arrow_undo",
+				"Redefinir Acesso Padrão",
+				"/app/expediente/mov",
+				"desfazer_restricao_acesso",
+				Ex.getInstance()
+						.getComp()
+						.podeDesfazerRestricaoAcesso(doc.getCadastrante(), doc.getCadastrante().getLotacao(), mob),
+				"Esta operação anulará as Restrições de Acesso. Prosseguir?",
+				null, null, null, "once");
+		
 		vo.addAcao(
 				"book_add",
 				"Solicitar Publicação no Boletim",
@@ -688,6 +767,14 @@ public class ExDocumentoVO extends ExVO {
 
 	public String getClasse() {
 		return classe;
+	}
+
+	public String getDataPrimeiraAssinatura() {
+		return dataPrimeiraAssinatura;
+	}
+
+	public void setDataPrimeiraAssinatura(String dataPrimeiraAssinatura) {
+		this.dataPrimeiraAssinatura = dataPrimeiraAssinatura;
 	}
 
 	public String getClassificacaoDescricaoCompleta() {

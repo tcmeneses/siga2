@@ -24,8 +24,10 @@
  */
 package br.gov.jfrj.siga.vraptor;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -493,8 +495,13 @@ public class DpPessoaController extends SigaSelecionavelControllerSupport<DpPess
 		if(email == null || email.trim() == "") 
 			throw new AplicacaoException("E-mail não informado");
 		
-		if(nmPessoa != null && !nmPessoa.matches("[a-zA-ZáâãéêíóôõúçÁÂÃÉÊÍÓÔÕÚÇ'' ]+")) 
+		if(nmPessoa != null && !nmPessoa.matches("[a-zA-ZáâãäéêëíïóôõöúüçñÁÂÃÄÉÊËÍÏÓÔÕÖÚÜÇÑ'' ]+")) 
 			throw new AplicacaoException("Nome com caracteres não permitidos");
+		
+		int i = dao().consultarQtdePorEmailIgualCpfDiferente(Texto.removerEspacosExtra(email).trim().replace(" ",""), Long.valueOf(cpf.replace("-", "").replace(".", "").trim()));
+		if(i > 0) {
+			throw new AplicacaoException("E-mail informado está cadastrado para outro CPF");
+		}
 		
 		DpPessoa pessoa = new DpPessoa();
 		
@@ -505,6 +512,10 @@ public class DpPessoaController extends SigaSelecionavelControllerSupport<DpPess
 			pessoa.setSituacaoFuncionalPessoa(SituacaoFuncionalEnum.APENAS_ATIVOS.getValor()[0]);
 		} else {
 			pessoa = dao().consultar(id, DpPessoa.class, false);
+			Integer qtde = dao().quantidadeDocumentos(pessoa);
+			if(qtde > 0 && !idLotacao.equals(pessoa.getLotacao().getId())) {
+				throw new AplicacaoException("A unidade da pessoa não pode ser alterada, pois existem documentos pendentes");	
+			}
 		}
 		
 		if(dtNascimento != null && !"".equals(dtNascimento)) {
@@ -734,5 +745,68 @@ public class DpPessoaController extends SigaSelecionavelControllerSupport<DpPess
 			cpfAnterior = dpPessoa2.getCpfPessoa().toString();
 		}
 		this.result.redirectTo(this).enviaEmail(0, idOrgaoUsu, nome, cpfPesquisa, idLotacaoPesquisa);
+	}
+	
+	@Post
+	@Path("app/pessoa/exportarCsv")
+	public Download exportarCsv(Long idOrgaoUsu, String nome, String cpfPesquisa, Long idCargoPesquisa, Long idFuncaoPesquisa, Long idLotacaoPesquisa) throws UnsupportedEncodingException {
+			
+		result.include("request",getRequest());
+
+		CpOrgaoUsuario ou = new CpOrgaoUsuario(); 
+		
+		if(idOrgaoUsu != null && ("ZZ".equals(getTitular().getOrgaoUsuario().getSigla()) || CpDao.getInstance().consultarPorSigla(getTitular().getOrgaoUsuario()).getId().equals(idOrgaoUsu))) {
+			DpPessoa dpPessoa = new DpPessoa();
+			
+			if(ou.getId() == null) {
+				ou.setIdOrgaoUsu(idOrgaoUsu);
+				ou = CpDao.getInstance().consultarPorId(ou);
+			}
+			dpPessoa.setOrgaoUsuario(ou);
+			dpPessoa.setNomePessoa(Texto.removeAcento(nome != null ? nome : ""));
+			if(idCargoPesquisa != null) {
+				DpCargo cargo = new DpCargo();
+				cargo.setId(idCargoPesquisa);
+				dpPessoa.setCargo(cargo);
+			}
+			if(idLotacaoPesquisa != null) {
+				DpLotacao lotacao = new DpLotacao();
+				lotacao.setId(idLotacaoPesquisa);
+				dpPessoa.setLotacao(lotacao);
+			}
+			if(idFuncaoPesquisa != null) {
+				DpFuncaoConfianca funcao = new DpFuncaoConfianca();
+				funcao.setIdFuncao(idFuncaoPesquisa);
+				dpPessoa.setFuncaoConfianca(funcao);
+			}
+			if(cpfPesquisa != null && !"".equals(cpfPesquisa)) {
+				dpPessoa.setCpfPessoa(Long.valueOf(cpfPesquisa.replace(".", "").replace("-", "")));
+			}
+			dpPessoa.setId(Long.valueOf(0));
+			List<DpPessoa> lista = CpDao.getInstance().consultarPessoaComOrgaoFuncaoCargo(dpPessoa);
+			
+			InputStream inputStream = null;
+			StringBuffer texto = new StringBuffer();
+			texto.append("Sigla do Órgão;Cargo;Função de Confiança;Sigla da Unidade;Nome;Data de Nascimento;CPF;E-mail;Matrícula" + System.getProperty("line.separator"));
+			
+			for (DpPessoa p : lista) {
+				texto.append(p.getOrgaoUsuario().getSiglaOrgaoUsu()+";");
+				texto.append(p.getCargo().getNomeCargo()+";");
+				texto.append(p.getFuncaoConfianca() != null ? p.getFuncaoConfianca().getNomeFuncao()+";" : ";");
+				texto.append(p.getLotacao().getSiglaLotacao()+";");
+				texto.append(p.getNomePessoa()+";");
+				texto.append(p.getDataNascimento() == null ? ";" : p.getDataNascimento() +";");
+				texto.append(p.getCpfFormatado()+";");
+				texto.append(p.getEmailPessoa()+";");
+				texto.append(p+";");
+				texto.append(System.getProperty("line.separator"));
+			}
+			
+			inputStream = new ByteArrayInputStream(texto.toString().getBytes("ISO-8859-1"));
+			
+			return new InputStreamDownload(inputStream, "text/csv", "pessoas.csv");	
+		}
+			
+		return null;
 	}
 }

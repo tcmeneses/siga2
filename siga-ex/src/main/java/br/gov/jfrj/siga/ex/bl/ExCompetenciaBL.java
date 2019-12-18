@@ -19,21 +19,24 @@
 package br.gov.jfrj.siga.ex.bl;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Set;
 
-import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.SigaBaseProperties;
 import br.gov.jfrj.siga.base.SigaMessages;
 import br.gov.jfrj.siga.cp.CpComplexo;
+import br.gov.jfrj.siga.cp.CpServico;
 import br.gov.jfrj.siga.cp.CpSituacaoConfiguracao;
 import br.gov.jfrj.siga.cp.CpTipoConfiguracao;
 import br.gov.jfrj.siga.cp.bl.CpCompetenciaBL;
 import br.gov.jfrj.siga.dp.CpMarca;
 import br.gov.jfrj.siga.dp.CpMarcador;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
+import br.gov.jfrj.siga.dp.CpTipoLotacao;
 import br.gov.jfrj.siga.dp.DpCargo;
 import br.gov.jfrj.siga.dp.DpFuncaoConfianca;
 import br.gov.jfrj.siga.dp.DpLotacao;
@@ -54,6 +57,7 @@ import br.gov.jfrj.siga.ex.ExTipoFormaDoc;
 import br.gov.jfrj.siga.ex.ExTipoMovimentacao;
 import br.gov.jfrj.siga.ex.ExVia;
 import br.gov.jfrj.siga.hibernate.ExDao;
+import br.gov.jfrj.siga.model.dao.DaoFiltro;
 
 public class ExCompetenciaBL extends CpCompetenciaBL {
 
@@ -742,7 +746,6 @@ public class ExCompetenciaBL extends CpCompetenciaBL {
 			DpFuncaoConfianca funcaoConfiancaObjeto, CpOrgaoUsuario orgaoObjeto) {
 		return podePorConfiguracao(titular, lotaTitular, 0L, tipoConfig, pessoaObjeto, lotacaoObjeto, complexoObjeto, cargoObjeto, funcaoConfiancaObjeto, orgaoObjeto);
 	}
-
 	/**
 	 * Retorna se é possível fazer arquivamento corrente de um móbil, segundo as regras a
 
@@ -869,10 +872,38 @@ public class ExCompetenciaBL extends CpCompetenciaBL {
 		
 		if(!mob.doc().isEletronico() || mob.doc().isPendenteDeAssinatura())
 			return false;
-		
-		if(mob.doc().getSubscritor() == null || !mob.doc().getSubscritor().equivale(titular))
-			return false;
-		
+
+		if (mob.doc().isCapturado()) {
+			if (mob.doc().getExMobilPai() != null)
+				return false;
+
+			if(!mob.doc().getCadastrante().equivale(titular))
+				return false;
+			
+			if (!getConf()
+				.podePorConfiguracao(null, null, null, mob.doc().getExTipoDocumento(), mob.doc().getExFormaDocumento(), 
+					mob.doc().getExModelo(), null, null, 
+					ExDao.getInstance().consultar(ExTipoMovimentacao.TIPO_MOVIMENTACAO_TORNAR_SEM_EFEITO,
+							ExTipoMovimentacao.class, false), 
+					null, null, null, lotaTitular, titular, null,null,
+					CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR, null, null, null, null, null, null) )
+				return false;
+
+			for (ExMobil m : mob.doc().getExMobilSet()) {
+				ExMovimentacao lastMov = m.getUltimaMovimentacaoNaoCancelada();
+				if (!(lastMov.getIdTpMov() == ExTipoMovimentacao.TIPO_MOVIMENTACAO_CONFERENCIA_COPIA_COM_SENHA)
+					&& !(lastMov.getIdTpMov() == ExTipoMovimentacao.TIPO_MOVIMENTACAO_CRIACAO)
+					&& !(lastMov.getIdTpMov() == ExTipoMovimentacao.TIPO_MOVIMENTACAO_RECEBIMENTO  
+						&& (mob.doc().getLotaCadastrante().equivale(lastMov.getLotaResp()) || mob.doc().getCadastrante().equivale(lastMov.getResp())) ) 
+					&& !(lastMov.getIdTpMov() == ExTipoMovimentacao.TIPO_MOVIMENTACAO_TRANSFERENCIA  
+						&& (mob.doc().getLotaCadastrante().equivale(lastMov.getLotaResp()) || mob.doc().getCadastrante().equivale(lastMov.getResp())) ) ) 
+						return false;
+			}
+		} else {
+			if(mob.doc().getSubscritor() == null || !mob.doc().getSubscritor().equivale(titular))
+				return false;
+		}
+			
 		//Verifica se o documento está com pedido de publicação no DJE ou BIE.
 		if(mob.doc().isPublicacaoSolicitada() ||  
 				mob.doc().isPublicacaoAgendada() || 	
@@ -887,8 +918,8 @@ public class ExCompetenciaBL extends CpCompetenciaBL {
 								lotaTitular,
 								ExTipoMovimentacao.TIPO_MOVIMENTACAO_TORNAR_SEM_EFEITO,
 								CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR);
-	}	
-	
+	}
+
 	/**
 	 * Retorna se é possível criar subprocesso, segundo as regras abaixo:
 	 * <ul>
@@ -1600,11 +1631,16 @@ public class ExCompetenciaBL extends CpCompetenciaBL {
 			if (mobPai == null)
 				return false;
 		}
+		
+		ExMobil mobUlt = mobPai;
+		if (mobPai.isApensado()) {			
+			mobUlt = mobPai.getGrandeMestre();			
+		}
 
 		if (mob.isEmTransito()
 				|| mob.isCancelada()
 				|| (!mob.isJuntadoExterno() && !podeMovimentar(titular,
-						lotaTitular, mobPai)) || (!mob.isJuntado()))
+						lotaTitular, mobUlt)) || (!mob.isJuntado()))
 			return false;
 
 		return getConf().podePorConfiguracao(titular, lotaTitular,
@@ -1967,7 +2003,12 @@ public class ExCompetenciaBL extends CpCompetenciaBL {
 			final DpLotacao lotaTitular, final ExMobil mob) {
 		if (!mob.isVia())
 			return false;
-		if (!mob.getExDocumento().isPendenteDeAssinatura())
+		if (!mob.getExDocumento().isPendenteDeAssinatura() && (SigaBaseProperties.getString("siga.local") == null || !"GOVSP".equals(SigaBaseProperties.getString("siga.local"))))		
+			return false;
+		if (!mob.getExDocumento().getMobilGeral().getMovsNaoCanceladas(ExTipoMovimentacao.TIPO_MOVIMENTACAO_ASSINATURA_COM_SENHA).isEmpty()  && (!mob.getMovsNaoCanceladas(ExTipoMovimentacao.TIPO_MOVIMENTACAO_TRANSFERENCIA).isEmpty() ||
+				!mob.getMovsNaoCanceladas(ExTipoMovimentacao.TIPO_MOVIMENTACAO_JUNTADA).isEmpty() || !mob.getExDocumentoFilhoSet().isEmpty() ||
+				!mob.getJuntados(Boolean.TRUE).isEmpty()) &&
+				(SigaBaseProperties.getString("siga.local") != null && "GOVSP".equals(SigaBaseProperties.getString("siga.local"))))
 			return false;
 		final ExMovimentacao exUltMovNaoCanc = mob
 				.getUltimaMovimentacaoNaoCancelada();
@@ -3835,7 +3876,7 @@ public class ExCompetenciaBL extends CpCompetenciaBL {
 
 		return getConf().podePorConfiguracao(titular, lotaTitular,
 				ExTipoMovimentacao.TIPO_MOVIMENTACAO_RECEBIMENTO,
-				CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR);
+				CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR) && !(SigaBaseProperties.getString("siga.local") != null && "GOVSP".equals(SigaBaseProperties.getString("siga.local")));
 	}
 
 	/**
@@ -4010,6 +4051,49 @@ public class ExCompetenciaBL extends CpCompetenciaBL {
 		return podeBotaoAgendarPublicacaoBoletim(titular, lotaTitular, mob)
 				&& (agora.get(Calendar.HOUR_OF_DAY) < 17 
 					|| podeGerenciarPublicacaoBoletimPorConfiguracao(titular, lotaTitular, mob));
+	}
+	
+	public boolean podeRestrigirAcesso(final DpPessoa cadastrante,
+			final DpLotacao lotaCadastrante, final ExMobil mob) {
+		
+		List<ExMovimentacao> listMovJuntada = new ArrayList<ExMovimentacao>();
+        if(mob.getDoc().getMobilDefaultParaReceberJuntada() != null) {
+            listMovJuntada.addAll(mob.getDoc().getMobilDefaultParaReceberJuntada().getMovsNaoCanceladas(ExTipoMovimentacao.TIPO_MOVIMENTACAO_JUNTADA));
+        }
+		
+		return (getConf()
+				.podePorConfiguracao(
+						cadastrante,
+						lotaCadastrante,
+						ExTipoMovimentacao.TIPO_MOVIMENTACAO_RESTRINGIR_ACESSO,
+						CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR)) &&
+				(!getConf().podePorConfiguracao(
+							cadastrante,
+							lotaCadastrante,
+							mob.doc().getExModelo(),
+							CpTipoConfiguracao.TIPO_CONFIG_INCLUIR_DOCUMENTO) || mob.getDoc().getPai()==null) && listMovJuntada.size() == 0;
+	}
+	
+	public boolean podeDesfazerRestricaoAcesso(final DpPessoa cadastrante,
+			final DpLotacao lotaCadastrante, final ExMobil mob) {
+		List<ExMovimentacao> listMovJuntada = new ArrayList<ExMovimentacao>();
+        if(mob.getDoc().getMobilDefaultParaReceberJuntada() != null) {
+            listMovJuntada.addAll(mob.getDoc().getMobilDefaultParaReceberJuntada().getMovsNaoCanceladas(ExTipoMovimentacao.TIPO_MOVIMENTACAO_JUNTADA));
+        }
+		List<ExMovimentacao> lista = new ArrayList<ExMovimentacao>();
+		lista.addAll(mob.getMovsNaoCanceladas(ExTipoMovimentacao.TIPO_MOVIMENTACAO_RESTRINGIR_ACESSO));
+		return (!lista.isEmpty() &&
+				getConf()
+				.podePorConfiguracao(
+						cadastrante,
+						lotaCadastrante,
+						ExTipoMovimentacao.TIPO_MOVIMENTACAO_RESTRINGIR_ACESSO,
+						CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR)) &&
+				(!getConf().podePorConfiguracao(
+							cadastrante,
+							lotaCadastrante,
+							mob.doc().getExModelo(),
+							CpTipoConfiguracao.TIPO_CONFIG_INCLUIR_DOCUMENTO) || mob.getDoc().getPai()==null) && listMovJuntada.size() == 0;
 	}
 
 	/**
@@ -4417,7 +4501,6 @@ public class ExCompetenciaBL extends CpCompetenciaBL {
 	 * Retorna se é possível incluir ciencia do documento a que pertence o
 	 * móbil passado por parâmetro, conforme as seguintes condições:
 	 * <ul>
-	 * <li>Modelo do documento pode incluir documentos</li>
 	 * <li>Documento não foi tramitado</li>
 	 * <li>Documento tem de estar assinado ou autenticado</li>
 	 * <li>Documento não pode estar juntado a outro</li>
@@ -4445,17 +4528,14 @@ public class ExCompetenciaBL extends CpCompetenciaBL {
 					&& !mob.isJuntado()
 					&& !mob.isArquivado()
 					&& !mob.isVolumeEncerrado()
-					&& !getConf()
-							.podePorConfiguracao(
-									titular, 
-									lotaTitular, 
-									mob.getDoc().getExTipoDocumento(), 
-									mob.getDoc().getExFormaDocumento(), 
-									mob.getDoc().getExModelo(), CpTipoConfiguracao.TIPO_CONFIG_INCLUIR_DOCUMENTO)
 					&& getConf()
 							.podePorConfiguracao(
 									titular,
 									lotaTitular,
+									null,
+									null,
+									mob.getDoc().getExFormaDocumento(), 
+									mob.getDoc().getExModelo(), 
 									ExTipoMovimentacao.TIPO_MOVIMENTACAO_CIENCIA,
 									CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR));
 	}
@@ -4532,7 +4612,14 @@ public class ExCompetenciaBL extends CpCompetenciaBL {
 				doc.getExFormaDocumento(),
 				CpTipoConfiguracao.TIPO_CONFIG_REINICIAR_NUMERACAO_TODO_ANO);
 	}
-
+	
+	
+	public boolean podeReiniciarNumeracao(CpOrgaoUsuario orgaoUsuario, ExFormaDocumento formaDocumento) throws Exception {
+		return getConf().podePorConfiguracao(orgaoUsuario,
+				formaDocumento,
+				CpTipoConfiguracao.TIPO_CONFIG_REINICIAR_NUMERACAO_TODO_ANO);
+	}
+	
 
 	/**
 
@@ -4588,6 +4675,16 @@ public class ExCompetenciaBL extends CpCompetenciaBL {
 				&& !mob.doc().isPendenteDeAssinatura() && !mob.isEmTransito() && podeMovimentar && getConf().podePorConfiguracao(titular, lotaTitular,
 						ExTipoMovimentacao.TIPO_MOVIMENTACAO_AUTUAR,
 						CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR));
+	}
+	
+	public boolean podeAssinarPorComSenha(final DpPessoa cadastrante,
+			final DpLotacao lotaCadastrante) {
+		return (getConf()
+				.podePorConfiguracao(
+						cadastrante,
+						lotaCadastrante,
+						ExTipoMovimentacao.TIPO_MOVIMENTACAO_ASSINATURA_POR_COM_SENHA,
+						CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR)) ;
 	}
 
 }

@@ -61,6 +61,7 @@
 	function telaCheia(b) {
         $('#sidebar').toggleClass('active');
         $('.wrapper').toggleClass('col-sm-3');
+        $('.wrapper').toggleClass('d-none');
         
         if ($('#TelaCheia').hasClass('btn-secondary')) {
 	 		b.classList.remove("btn-secondary");
@@ -268,7 +269,7 @@
 </siga:pagina>
 <script src="/siga/bootstrap/js/bootstrap.min.js"></script>
 <script>
-	var path = '/sigaex/app/arquivo/exibir?arquivo=';
+	var path = '/sigaex/app/arquivo/exibir?idVisualizacao=${idVisualizacao}&arquivo=';
 	var htmlAtual = '${arqsNum[0].referenciaHtmlCompleto}';
 	var pdfAtual = '${arqsNum[0].referenciaPDFCompleto}';
 

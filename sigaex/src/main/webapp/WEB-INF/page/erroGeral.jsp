@@ -1,9 +1,49 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<%@ page isErrorPage="true" import="java.io.*" contentType="text/html"%>
+<%@ page isErrorPage="true" import="java.io.*" contentType="text/html; charset=UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://localhost/jeetags" prefix="siga"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="http://localhost/libstag" prefix="f"%>
 
 <c:catch var="selectException">
+	<%
+		// Servidor: ultimos dois bytes antes de / e ultimos dois bytes da porta (antes do hifen):
+		//     xxx-xxxxx-xAA/nnn.nnn.nnn.nnn:nnBB-nn ==> AABB 
+		String th = Thread.currentThread().getName();
+		String port1 = th.split(":") [1];
+		String port2 = port1.split("-") [0];
+		String serv1 = th.split("/") [0];
+		String serv2 = serv1.substring(serv1.length() - 2);
+		pageContext.getRequest().setAttribute("thread", 
+				serv1.substring(serv1.length() - 2) + (port2.substring(port2.length() - 3)) );
+
+		java.lang.Throwable t = (Throwable) pageContext.getRequest().getAttribute("exception");
+		if (t == null){
+			t = (Throwable) exception;
+		}
+	    Throwable cause = null; 
+	    while(null != (cause = t.getCause())  && (t != cause) ) {
+	        t = cause;
+	    }
+	    String tipoException = "Geral";
+	    if (t.getClass().getSimpleName()
+				.equals("AplicacaoException")) {
+			tipoException = "AplicacaoException";
+	    }
+				
+		// Get the ErrorData
+		pageContext.getRequest().setAttribute("tipoException", tipoException);
+		if (pageContext.getRequest().getAttribute("exceptionGeral") == null 
+				|| pageContext.getRequest().getAttribute("exceptionStackGeral") == null) {
+			pageContext.getRequest().setAttribute("exceptionGeral", t);
+			java.io.StringWriter sw = new java.io.StringWriter();
+			java.io.PrintWriter pw = new java.io.PrintWriter(sw);
+			t.printStackTrace(pw);
+			pageContext.getRequest().setAttribute("exceptionStackGeral",
+					sw.toString());
+		}
+	%>
 	<c:if test="${empty exceptionGeral or empty exceptionStackGeral}">
 		<%
  			java.lang.Throwable t = (Throwable) pageContext.getRequest().getAttribute("exception");
@@ -78,7 +118,37 @@ This is a useless buffer to fill the page to 513 bytes to avoid display of Frien
 							</div>
 						</div>
 					</div>
-					<c:if test="${siga_cliente != 'GOVSP'}">
+					<c:if test="${siga_cliente == 'GOVSP'}">
+						<c:if test="${tipoException != 'AplicacaoException'}">
+							<div class="row">
+								<div class="col">
+									<div class="form-group">
+								      <table id="idBasico" class="table">
+								      	<tr>
+								      		<td>Data/Hora:</td>
+											<jsp:useBean id="now" class="java.util.Date" />
+											<fmt:formatDate var="datahora" value="${now}" pattern="yyyy-MM-dd HH:mm:ss" />
+								      		<td><c:out value="${datahora}" /></td>
+								      	</tr>
+										<c:if test="${param.sigla != null}">
+									      	<tr>
+									      		<td>Documento:</td>
+									      		<td><c:out value="${param.sigla}" /></td>
+									      	</tr>
+									    </c:if>
+								      	<tr>
+								      		<td>Servidor:</td>
+								      		<td><c:out value="${thread}" /> / <c:out value="${f:resource('ambiente')}" /></td>
+								      	</tr>
+									  	<tr>
+									  		<td>Usuário</td>
+											<td><c:out value="${cadastrante.lotacao}" /> / <c:out value="${cadastrante.sigla}" /></td>
+									  	</tr>
+								      </table>
+								    </div>
+								</div>
+							</div>
+						</c:if>
 						<div class="row">
 							<div class="col">
 								<div class="form-group">

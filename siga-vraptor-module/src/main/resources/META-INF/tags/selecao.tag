@@ -51,7 +51,9 @@
 <c:set var="urlBase" value="${fn:replace(req.requestURL, req.requestURI, '')}"/>
 <c:if test="${not empty f:resource('siga.base.url')}">
 	<c:if test = "${fn:startsWith(f:resource('siga.base.url'), 'https') }">
-		<c:set var="urlBase" value="${fn:replace(urlBase, 'http', 'https')}"/>
+		<c:if test = "${!fn:startsWith(urlBase, 'https') }">
+			<c:set var="urlBase" value="${fn:replace(urlBase, 'http', 'https')}"/>
+		</c:if>
 	</c:if>
 </c:if>
 
@@ -231,7 +233,7 @@ self.resposta_ajax_${propriedade}${tipoSel} = function(response, d1, d2, d3) {
 	var sigla = document.getElementsByName('${inputNameTipoSel}.sigla')[0].value;
     var data = response.split(';');
     if (data[0] == '1')
-	    return retorna_${propriedade}${tipoSel}(data[1], data[2], data[3]);
+	    return retorna_${propriedade}${tipoSel}(data[1], data[2], data[3].replace(/<\/?[^>]+(>|$)/g, ''));
     retorna_${propriedade}${tipoSel}('', '', '');
     
     <c:choose>

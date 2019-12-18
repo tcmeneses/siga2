@@ -57,6 +57,7 @@ import br.gov.jfrj.siga.sinc.lib.Desconsiderar;
 		@NamedQuery(name = "consultarPorIdInicialDpPessoaInclusiveFechadas", query = "select pes from DpPessoa pes where pes.idPessoaIni = :idPessoaIni"),
 		@NamedQuery(name = "consultarPorCpf", query = "from DpPessoa pes where pes.cpfPessoa = :cpfPessoa and pes.dataFimPessoa is null"),
 		@NamedQuery(name = "consultarPorEmail", query = "from DpPessoa pes where pes.emailPessoa = :emailPessoa and pes.dataFimPessoa is null"),
+		@NamedQuery(name = "consultarPorEmailIgualCpfDiferente", query = "select count(pes) from DpPessoa pes where lower(pes.emailPessoa) = lower(:emailPessoa) and pes.cpfPessoa <> :cpf"),
 		@NamedQuery(name = "consultarPorOrgaoUsuDpPessoaInclusiveFechadas", query = "from DpPessoa pes where pes.orgaoUsuario.idOrgaoUsu = :idOrgaoUsu"),
 		@NamedQuery(name = "consultarPorFiltroDpPessoa", query = "from DpPessoa pes "
 				+ "  where ((upper(pes.nomePessoaAI) like upper('%' || :nome || '%')) or ((pes.sesbPessoa || pes.matricula) like upper('%' || :nome || '%')))"
@@ -106,7 +107,21 @@ import br.gov.jfrj.siga.sinc.lib.Desconsiderar;
 				+ "  	and (:lotacao = null or :lotacao = 0L or pes.lotacao.idLotacao = :lotacao)"
 				+ " and (:cargo = null or :cargo = 0L or pes.cargo.idCargo = :cargo) "
 				+ " and (:funcao = null or :funcao = 0L or pes.funcaoConfianca.idFuncao = :funcao) "
-				+ "	group by pes.idPessoaIni) order by upper(pes.nomePessoa)"),
+				+ "	group by pes.idPessoaIni) order by upper(pes.nomePessoaAI)"),
+		@NamedQuery(name = "consultarPessoaComOrgaoFuncaoCargo", query = "from DpPessoa pes"
+				+ " left join fetch pes.cargo car "
+				+ " left join fetch pes.funcaoConfianca fun "
+				+ " left join fetch pes.lotacao lot "
+				+ " where pes.idPessoa in ("
+				+ "	select max(pes.idPessoa)"
+				+ "	from DpPessoa pes"
+				+ "	where ((upper(pes.nomePessoaAI) like upper('%' || :nome || '%')) or ((pes.sesbPessoa || pes.matricula) like upper('%' || :nome || '%')))"
+				+ "  	and (:idOrgaoUsu = null or :idOrgaoUsu = 0 or pes.orgaoUsuario.idOrgaoUsu = :idOrgaoUsu)"
+				+ " and (:cpf = null or :cpf = 0 or pes.cpfPessoa like '%' || :cpf || '%') "
+				+ "  	and (:lotacao = null or :lotacao = 0 or pes.lotacao.idLotacao = :lotacao)"
+				+ " and (:cargo = null or :cargo = 0 or pes.cargo.idCargo = :cargo) "
+				+ " and (:funcao = null or :funcao = 0 or pes.funcaoConfianca.idFuncao = :funcao) "
+				+ "	group by pes.idPessoaIni) order by upper(pes.nomePessoaAI)"),
 		@NamedQuery(name = "consultarQuantidadeDpPessoaInclusiveFechadas", query = "select count(distinct pes.idPessoaIni)"
 				+ "		from DpPessoa pes"
 				+ "		where ((upper(pes.nomePessoaAI) like upper('%' || :nome || '%')) or ((pes.sesbPessoa || pes.matricula) like upper('%' || :nome || '%')))"

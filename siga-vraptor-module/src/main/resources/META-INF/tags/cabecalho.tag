@@ -65,7 +65,16 @@
 		<meta name="theme-color" content="#007bff">
 	</c:otherwise>
 </c:choose>
-<title>SIGA - ${titulo_pagina}</title>
+<title>
+<c:choose>
+	<c:when test="${siga_cliente == 'GOVSP'}">
+		SP Sem Papel - ${titulo_pagina}
+	</c:when>
+	<c:otherwise>
+		SIGA - ${titulo_pagina}	
+	</c:otherwise>
+</c:choose>
+</title>
 <META http-equiv="X-UA-Compatible" content="${XUACompatible}">
 <META HTTP-EQUIV="Expires" CONTENT="0">
 <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
@@ -77,14 +86,14 @@ ${meta}
 
 <link rel="stylesheet" href="/siga/bootstrap/css/bootstrap.min.css"	type="text/css" media="screen, projection" />
 
-<!--  <link rel="stylesheet" href="/siga/css/menuhover.css" type="text/css"/> -->
+<!--   <link rel="stylesheet" href="/siga/css/menuhover.css" type="text/css"/> -->
 
 <!-- 
 <link rel="stylesheet" href="/siga/css/ecoblue/css/ecoblue.css"
 	type="text/css" media="screen, projection">
  -->
 
-<link rel="stylesheet" href="/siga/css/ecoblue/css/custom.css"
+<link rel="stylesheet" href="/siga/css/ecoblue/css/custom-bs4.css"
 	type="text/css" media="screen, projection">
 	
 	
@@ -421,9 +430,9 @@ ${meta}
 					</div>
 				</c:if>
 			</div>
-			<div class="row ${mensagemCabec==null?'d-none':''}" >
+			<div class="row ${mensagemCabec==null?'d-none':''}" id=mensagemCabecId" >
 				<div class="col" >
-					<div class="alert ${msgCabecClass} fade show" role="alert">
+					<div class="alert ${msgCabecClass} fade show" id="mensagemCabec" role="alert">
 						${mensagemCabec}
 						<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 							<span aria-hidden="true">&times;</span>

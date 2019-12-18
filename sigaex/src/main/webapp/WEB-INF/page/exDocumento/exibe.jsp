@@ -102,6 +102,15 @@
 			return '&#' + i.charCodeAt(0) + ';';
 		});
 	}
+	
+	function excluirArqAuxiliar(id, sigla) {
+		frm.elements["id"].value = id;
+		frm.elements["sigla"].value = sigla;
+		frm.action = '/sigaex/app/expediente/mov/cancelar_movimentacao_gravar';
+		frm.submit();
+		//alert(id);
+		//alert(frm.elements["sigla"].value);
+	}
 </script>
 
 <div class="container-fluid content" id="page">
@@ -114,7 +123,9 @@
 	</c:if>
 	<div class="row mt-3">
 		<div class="col">
-			<form name="frm" action="exibir" theme="simple" method="POST"></form>
+			<form name="frm" action="exibir" theme="simple" method="POST">
+				<input type="hidden" id="id" name="id"/> <input type="hidden" id="sigla" name="sigla"/>
+			</form>
 			<h2>
 				<c:if test="${empty ocultarCodigo}">${docVO.sigla}
 				</c:if>
@@ -817,8 +828,17 @@
 								<b>Suporte:</b> ${docVO.fisicoOuEletronico}
 							</p>
 							<p>
-								<b><fmt:message key="documento.data.assinatura"/>:</b> ${docVO.dtDocDDMMYY}
-								<c:if test="${not empty docVO.originalData}">- <b>original:</b> ${docVO.originalData}</c:if>
+								<b><fmt:message key="documento.data.assinatura"/>:</b> 
+								<c:choose>
+									<c:when test="${siga_cliente=='GOVSP'}">
+										${docVO.dataPrimeiraAssinatura}
+									</c:when>
+									<c:otherwise>
+										${docVO.dtDocDDMMYY}
+										<c:if test="${not empty docVO.originalData}">- <b>original:</b> ${docVO.originalData}</c:if>
+									</c:otherwise>
+								</c:choose>
+								
 							</p>
 							<c:if test="${not empty docVO.originalNumero}">
 								<p>
@@ -920,8 +940,24 @@
 									</p>
 									<ul>
 										<c:forEach var="pessoaOuLota" items="${perfil.value}">
-											<li><c:catch var="exception">${pessoaOuLota.nomePessoa}</c:catch>
-												<c:if test="${not empty exception}">${pessoaOuLota.nomeLotacao}</c:if>
+												<c:catch var="exception">
+													${pessoaOuLota.nomePessoa}
+													<c:if test="${siga_cliente == 'GOVSP'}">
+														&nbsp;&nbsp;&nbsp;
+														<a class="btn btn-sm btn-secondary mb-2 " href="javascript:if(confirm('Tem certeza que deseja exluir marcação?')) location.href='/sigaex/app/expediente/mov/cancelarPerfil?sigla=${docVO.sigla}&idPessoa=${pessoaOuLota.id }';" >
+															Excluir marcação
+														</a><br/>
+													</c:if>
+												</c:catch>
+												<c:if test="${not empty exception}">
+													${pessoaOuLota.nomeLotacao}
+													<c:if test="${siga_cliente == 'GOVSP'}">
+														&nbsp;&nbsp;&nbsp;
+														<a class="btn btn-sm btn-secondary mb-2 " href="javascript:if(confirm('Tem certeza que deseja exluir marcação?')) location.href='/sigaex/app/expediente/mov/cancelarPerfil?sigla=${docVO.sigla}&idLotacao=${pessoaOuLota.id }';" >
+															Excluir marcação
+														</a><br/>
+													</c:if>
+												</c:if>
 											</li>
 										</c:forEach>
 									</ul>
@@ -945,7 +981,7 @@
 										(Público)
 									</c:when>
 													<c:otherwise>
-										(${acesso.sigla})
+										(${acesso.sigla} - ${acesso.descricao})
 									</c:otherwise>
 												</c:choose>
 											</c:forEach>
@@ -957,7 +993,7 @@
 													<li>
 														<c:choose>
 															<c:when test="${siga_cliente == 'GOVSP'}">
-																${acesso.descricao} (${acesso.sigla})
+																${acesso.sigla} - ${acesso.descricao}
 															</c:when>
 															<c:otherwise>
 																${acesso.sigla}
@@ -1005,11 +1041,21 @@
 														<c:set var="acaourl"
 															value="${pageContext.request.contextPath}${acao.url}" />
 													</c:if>
-													<siga:link icon="${acao.icone}" title="${acao.nomeNbsp}"
-														pre="${acao.pre}" pos="${acao.pos}" url="${acaourl}"
-														test="${true}" popup="${acao.popup}"
-														confirm="${acao.msgConfirmacao}" ajax="${acao.ajax}"
-														idAjax="${mov.idMov}" classe="${acao.classe}" />
+													<c:choose> 
+														<c:when test="${not empty  acao.icone or siga_cliente ne 'GOVSP'}">
+															<siga:link icon="${acao.icone}" title="${acao.nomeNbsp}"
+																pre="${acao.pre}" pos="${acao.pos}" url="${acaourl}"
+																test="${true}" popup="${acao.popup}"
+																confirm="${acao.msgConfirmacao}" ajax="${acao.ajax}"
+																idAjax="${mov.idMov}" classe="${acao.classe}" />
+														</c:when>
+														<c:otherwise>
+															<input type="button" value="Cancelar"
+																class=" btn btn-sm btn-light"
+																onclick="excluirArqAuxiliar(${mov.idMov}, '${sigla}')" />
+														</c:otherwise>
+													</c:choose>
+
 												</c:forEach>
 												<div class="row ml-4 mb-3">
 													<small class="form-text text-muted mt-0">

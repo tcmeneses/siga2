@@ -24,6 +24,8 @@
  */
 package br.gov.jfrj.siga.hibernate;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -31,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -54,6 +55,7 @@ import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.ex.ExClassificacao;
 import br.gov.jfrj.siga.ex.ExConfiguracao;
 import br.gov.jfrj.siga.ex.ExDocumento;
+import br.gov.jfrj.siga.ex.ExDocumentoNumeracao;
 import br.gov.jfrj.siga.ex.ExEmailNotificacao;
 import br.gov.jfrj.siga.ex.ExEstadoDoc;
 import br.gov.jfrj.siga.ex.ExFormaDocumento;
@@ -164,12 +166,86 @@ public class ExDao extends CpDao {
 	}
 	
 	
-	public Long obterNumeroGerado(final ExDocumento doc)
+	/*****************************/
+	public ExDocumentoNumeracao obterNumeroDocumento(Long idOrgaoUsu, Long idFormaDoc, Long anoEmissao, Boolean lock )
+			throws SQLException {
+	    
+		final Query query = getSessao().getNamedQuery("ExDocumentoNumeracao.obterDocumentoNumeracao");
+		query.setParameter("idOrgaoUsu", idOrgaoUsu);
+		query.setParameter("idFormaDoc", idFormaDoc);
+		query.setParameter("anoEmissao", anoEmissao);
+		query.setLong("flAtivo", 1);
+		
+		if (lock) {
+			query.setLockMode("this", LockMode.PESSIMISTIC_WRITE);
+		}
+		
+		return (ExDocumentoNumeracao) query.uniqueResult();		
+	}
+	
+	public Long obterNumeroGerado(Long idOrgaoUsu, Long idFormaDoc, Long anoEmissao)
 			throws SQLException {
 		Query query = em().createNamedQuery("obterNumeroGerado");
 		query.setParameter("idDoc", doc.getIdDoc());
 		return (Long) query.getSingleResult();
 	}
+	
+
+	public void incrementNumeroDocumento(Long docNumeracao)
+			throws SQLException {
+		
+		final Query query = getSessao().getNamedQuery("ExDocumentoNumeracao.incrementaNumeroDocumento");
+		query.setLong("increment", 1L);
+		query.setLong("id", docNumeracao);
+		
+		query.executeUpdate();
+		
+	}
+	
+	public void insertNumeroDocumento(Long idOrgaoUsu, Long idFormaDoc, Long anoEmissao)
+			throws SQLException {
+	    
+		final Query query = getSessao().getNamedQuery("ExDocumentoNumeracao.insertRangeNumeroDocumento");
+		query.setParameter("idOrgaoUsu", idOrgaoUsu);
+		query.setParameter("idFormaDoc", idFormaDoc);
+		query.setParameter("anoEmissao", anoEmissao);
+		query.setParameter("nrDocumento", 1L);
+		
+		query.executeUpdate();
+
+	}
+	
+	public Long existeRangeNumeroDocumento(Long idOrgaoUsu, Long idFormaDoc)
+			throws SQLException {
+	    
+		final Query query = getSessao().getNamedQuery("ExDocumentoNumeracao.existeRangeDocumentoNumeracao");
+		query.setParameter("idOrgaoUsu", idOrgaoUsu);
+		query.setParameter("idFormaDoc", idFormaDoc);
+		query.setParameter("rownum", 1L);
+		
+		return (Long) query.uniqueResult();
+
+	}
+	
+	
+	public void updateMantemRangeNumeroDocumento(Long docNumeracao)
+			throws SQLException {
+		
+		final Query query = getSessao().getNamedQuery("ExDocumentoNumeracao.mantemRangeNumeroDocumento");
+		
+		Calendar c = Calendar.getInstance();
+		
+		query.setLong("anoEmissao", c.get(Calendar.YEAR));
+		query.setLong("flAtivo", 1);
+		query.setLong("increment", 1L);
+		query.setLong("id", docNumeracao);
+		
+		query.executeUpdate();
+		
+	}
+	
+	/*****************************/
+
 
 	public List consultarPorFiltro(final ExMobilDaoFiltro flt) {
 		return consultarPorFiltro(flt, 0, 0);
@@ -471,7 +547,13 @@ public class ExDao extends CpDao {
 					&& (flt.getIdTipoMobil() == null || flt.getIdTipoMobil() == ExTipoMobil.TIPO_MOBIL_GERAL)) {
 				final ExDocumento d = consultar(flt.getIdDoc(),
 						ExDocumento.class, false);
-				return d.getMobilGeral();
+				
+				try {
+					return d.getMobilGeral();
+				} catch (Exception e2) {
+					throw new AplicacaoException("Não foi possível localizar o documento");
+				}
+				
 			}
 
 			if (flt.getAnoEmissao() == null)
@@ -1097,6 +1179,13 @@ public class ExDao extends CpDao {
 		return em().createQuery(q).getSingleResult();
 	}
 
+	public ExFormaDocumento consultarExFormaPorId(Long idFormaDoc) {
+		final Criteria crit = getSessao()
+				.createCriteria(ExFormaDocumento.class);
+		crit.add(Restrictions.eq("idFormaDoc", idFormaDoc));
+		return (ExFormaDocumento) crit.uniqueResult();
+	}
+	
 	public ExFormaDocumento consultarExForma(String sForma) {
 		CriteriaQuery<ExFormaDocumento> q = cb().createQuery(ExFormaDocumento.class);
 		Root<ExFormaDocumento> c = q.from(ExFormaDocumento.class);
@@ -1334,7 +1423,17 @@ public class ExDao extends CpDao {
 	
 	public List listarDocumentosPorPessoaOuLotacao(DpPessoa titular,
 			DpLotacao lotaTitular) {
-
+		String q = "select marca, marcador, mobil from ExMarca marca"
+				+ " inner join marca.cpMarcador marcador"
+				+ " inner join marca.exMobil mobil"
+				+ " where (marca.dtIniMarca is null or marca.dtIniMarca < sysdate)"
+				+ " and (marca.dtFimMarca is null or marca.dtFimMarca > sysdate)"
+				+ (titular != null ? " and (marca.dpPessoaIni = :titular)"
+						: " and (marca.dpLotacaoIni = :lotaTitular)");
+		if(SigaBaseProperties.getString("siga.local") != null && "GOVSP".equals(SigaBaseProperties.getString("siga.local"))) {
+			q += " and ((mobil.exDocumento.numExpediente is null and marcador = 1) or (mobil.exDocumento.numExpediente is not null))"
+					+ " and marcador <> 10";
+		}
 		long tempoIni = System.nanoTime();
 		Query query = em()
 				.createQuery(
@@ -1343,7 +1442,7 @@ public class ExDao extends CpDao {
 								+ " inner join marca.exMobil mobil"
 								+ " where (marca.dtIniMarca is null or marca.dtIniMarca < sysdate)"
 								+ " and (marca.dtFimMarca is null or marca.dtFimMarca > sysdate)"
-								+ (titular != null ? " and (marca.dpPessoaIni.idPessoa = :titular)"
+								+ (titular != null ? " and (marca.dpPessoaIni = :titular)"
 										: " and (marca.dpLotacaoIni.idLotacao = :lotaTitular)"));
 
 		if (titular != null)

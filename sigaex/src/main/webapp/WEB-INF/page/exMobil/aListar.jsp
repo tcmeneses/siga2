@@ -10,21 +10,24 @@
 <%@ taglib tagdir="/WEB-INF/tags/mod" prefix="mod"%>
 
 <script type="text/javascript" language="Javascript1.1">
-	function alteraTipoDaForma() {
+	function init() {
+		alteraTipoDaForma(alteraForma);
+	}
+	function alteraTipoDaForma(cont) {
 		ReplaceInnerHTMLFromAjaxResponse(
 				'${pageContext.request.contextPath}/app/expediente/doc/carregar_lista_formas?tipoForma='
 						+ document.getElementById('tipoForma').value
 						+ '&idFormaDoc=' + '${idFormaDoc}', null, document
-						.getElementById('comboFormaDiv'))
+						.getElementById('comboFormaDiv'), function() {transformarEmSelect2(null, '#idFormaDoc', '#idFormaDocGroup')})
 	}
 
-	function alteraForma() {
+	function alteraForma(cont) {
 		ReplaceInnerHTMLFromAjaxResponse(
 				'${pageContext.request.contextPath}/app/expediente/doc/carregar_lista_modelos?forma='
 						+ document.getElementById('idFormaDoc').value
 						+ '&idMod='	+ '${idMod}', null, document
-						.getElementById('comboModeloDiv'))
-	}
+						.getElementById('comboModeloDiv'), function() {transformarEmSelect2(null, '#idMod', '#idModGroup')})
+	}		
 
 	function sbmtAction(id, action) {
 		var frm = document.getElementById(id);
@@ -70,7 +73,7 @@
 			document.getElementById('trOrgExterno').style.display = 'none';
 			document.getElementById('trTipo').style.display = '';
 
-			document.getElementById('idFormaDoc').value = '0';
+			if (document.getElementById('idFormaDoc')) document.getElementById('idFormaDoc').value = '0';
 			break;
 		case 1: // Interno Produzido
 			document.getElementById('trNumOrigDoc').style.display = 'none';
@@ -78,7 +81,7 @@
 			document.getElementById('trOrgExterno').style.display = 'none';
 			document.getElementById('trTipo').style.display = '';
 
-			document.getElementById('idFormaDoc').value = '0';
+			if (document.getElementById('idFormaDoc')) document.getElementById('idFormaDoc').value = '0';
 			break;
 		case 2: // Interno Folha de Rosto
 			document.getElementById('trNumOrigDoc').style.display = '';
@@ -86,7 +89,7 @@
 			document.getElementById('trOrgExterno').style.display = 'none';
 			document.getElementById('trTipo').style.display = '';
 
-			document.getElementById('idFormaDoc').value = '0';
+			if (document.getElementById('idFormaDoc')) document.getElementById('idFormaDoc').value = '0';
 			break;
 		case 3: // Externo Folha de Rosto
 			document.getElementById('trNumOrigDoc').style.display = '';
@@ -94,7 +97,7 @@
 			document.getElementById('trOrgExterno').style.display = '';
 			document.getElementById('trTipo').style.display = 'none';
 
-			document.getElementById('idFormaDoc').value = '5';
+			if (document.getElementById('idFormaDoc')) document.getElementById('idFormaDoc').value = '5';
 			break;
 		case 4: // Externo Capturado
 			document.getElementById('trNumOrigDoc').style.display = '';
@@ -102,7 +105,7 @@
 			document.getElementById('trOrgExterno').style.display = '';
 			document.getElementById('trTipo').style.display = 'none';
 
-			document.getElementById('idFormaDoc').value = '0';
+			if (document.getElementById('idFormaDoc')) document.getElementById('idFormaDoc').value = '0';
 			break;
 		case 5: // Interno Capturado
 			document.getElementById('trNumOrigDoc').style.display = 'none';
@@ -110,7 +113,7 @@
 			document.getElementById('trOrgExterno').style.display = 'none';
 			document.getElementById('trTipo').style.display = '';
 
-			document.getElementById('idFormaDoc').value = '0';
+			if (document.getElementById('idFormaDoc')) document.getElementById('idFormaDoc').value = '0';
 			break;
 		}
 	}
@@ -333,6 +336,9 @@
 </script>
 
 <siga:pagina titulo="Lista de Expedientes" popup="${popup}">
+	<link rel="stylesheet" href="/siga/javascript/select2/select2.css" type="text/css" media="screen, projection" />
+	<link rel="stylesheet" href="/siga/javascript/select2/select2-bootstrap.css" type="text/css" media="screen, projection" />
+	
 	<div class="container-fluid content mb-3">
 		<c:if
 			test="${((empty primeiraVez) or (primeiraVez != 'sim')) and ((empty apenasRefresh) or (apenasRefresh != 1))}">
@@ -393,7 +399,8 @@
 						</div>
 
 						<div class="form-group col-md-2">
-							<label for="ultMovTipoResp"><fmt:message key="usuario.pessoa"/>/<fmt:message key="usuario.lotacao"/></label> <select
+							<label for="ultMovTipoResp"><fmt:message key="usuario.pessoa"/>/<fmt:message key="usuario.lotacao"/></label> 
+							<select
 								class="form-control" id="ultMovTipoResp" name="ultMovTipoResp"
 								onchange="javascript:alteraAtendente();">
 								<c:forEach items="${listaTipoResp}" var="item">
@@ -435,8 +442,8 @@
 
 					<div class="form-row">
 						<div class="form-group col-md-3">
-							<label for="orgaoUsu">Órgão</label> <select class="form-control"
-								id="orgaoUsu" name="orgaoUsu">
+							<label for="orgaoUsu">Órgão</label> 
+							<select class="form-control  siga-select2" id="orgaoUsu" name="orgaoUsu">
 								<option value="0">[Todos]</option>
 								<c:forEach items="${orgaosUsu}" var="item">
 									<option value="${item.idOrgaoUsu}"
@@ -476,7 +483,8 @@
 					<div id="trTipo" style="display:${idTpDoc == 3 ? 'none' : ''}"
 						class="form-row">
 						<div class="form-group col-md-3 ${hide_only_GOVSP}">
-							<label for="tipoForma">Tipo da Espécie</label> <select
+							<label for="tipoForma">Tipo da Espécie</label> 
+							<select
 								class="form-control" id="tipoForma" name="idTipoFormaDoc"
 								onchange="javascript:alteraTipoDaForma();">
 								<option value="0">[Todos]</option>
@@ -491,15 +499,12 @@
 						<div class="form-group col-md-3">
 							<div style="display: inline" id="comboFormaDiv"></div>
 							<script type="text/javascript">
-									alteraTipoDaForma();
-								</script>
+								alteraTipoDaForma();
+							</script>
 						</div>
 
 						<div class="form-group col-md-6">
 							<div style="display: inline" id="comboModeloDiv"></div>
-							<script type="text/javascript">
-							setTimeout("alteraForma()", 2000);
-								</script>
 						</div>
 					</div>
 
@@ -515,12 +520,10 @@
 								</c:forEach>
 							</select>
 						</div>
-						<c:if test="${siga_cliente == 'GOVSP'}">
 							<div class="form-group col-md-3">
 								<label for="numExpediente">Número</label>
 							    <input type="text" size="7" name="numExpediente" value="${numExpediente}" maxlength="6" class="form-control" />
 							</div>
-						</c:if>
 					</div>
 					<div class="form-row">
 						<div class="form-group col-md-3" id="trNumOrigDoc"
@@ -697,13 +700,16 @@
 			</div>
 		</div>
 	</div>
+	<script type="text/javascript" src="/siga/javascript/select2/select2.min.js"></script>
+	<script type="text/javascript" src="/siga/javascript/select2/i18n/pt-BR.js"></script>
+	<script type="text/javascript" src="/siga/javascript/siga.select2.js"></script>
 	<script>
 		alteraOrigem();
 	</script>
 	<c:if test="${siga_cliente == 'GOVSP'}">
 		<script>
 		$(document).ready(function() {
-			alteraTipoDaForma()
+			alteraTipoDaForma()					
 		});
 		</script>
 	</c:if>

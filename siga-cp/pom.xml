@@ -63,6 +63,13 @@
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports</artifactId>
 		</dependency>
+
+		
+		<dependency>
+		    <groupId>com.sun.jersey</groupId>
+		    <artifactId>jersey-client</artifactId>
+		    <version>1.9.1</version>
+		</dependency>
 		
 		<dependency>
 		    <groupId>org.apache.commons</groupId>
@@ -115,7 +122,15 @@
 			<groupId>siga</groupId>
 			<artifactId>siga-rel</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>siga</groupId>
+			<artifactId>siga-ldap</artifactId>
+		</dependency>
 		
+		<dependency>
+			<groupId>siga</groupId>
+			<artifactId>siga-jwt</artifactId>
+		</dependency>		
 		<dependency>
             <groupId>org.mvel</groupId>
             <artifactId>mvel2</artifactId>

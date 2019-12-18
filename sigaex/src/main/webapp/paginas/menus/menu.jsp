@@ -3,6 +3,7 @@
 <%@ taglib uri="/WEB-INF/tld/func.tld" prefix="f"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://localhost/jeetags" prefix="siga"%>
+<%@ taglib uri="http://localhost/libstag" prefix="fx"%>
 
 <c:if
 	test="${f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA;DOC:Módulo de Documentos')}">
@@ -16,8 +17,22 @@
 				href="/sigaex/app/expediente/doc/listar?primeiraVez=sim">Pesquisar</a></li>
 
 			<li><a class="dropdown-item" href="/sigaex/app/mesa">Mesa
-					Virtual</a></li>
-
+					Virtual </a></li>
+			
+			
+			<c:if test="${not empty meusDelegados && fx:podeDelegarVisualizacao(cadastrante, cadastrante.lotacao)}">
+				<li class="dropdown-submenu"><a href="javascript:void(0);"
+					class="dropdown-item dropdown-toggle">Mesa Virtual Delegada</a>
+					<ul class="dropdown-menu navmenu-large">
+						<c:forEach var="visualizacao" items="${meusDelegados}">
+							<li><a class="dropdown-item"
+								href="/siga/app/visualizacao/visualizacaoGravar?idVisualizacao=${visualizacao.idVisualizacao}">
+											${f:maiusculasEMinusculas(visualizacao.titular.nomePessoa)}
+							</a></li>
+						</c:forEach>
+		
+					</ul></li>
+			</c:if>
 			<div class="dropdown-divider"></div>
 			<c:catch>
 				<c:if
@@ -145,10 +160,10 @@
 	<c:if
 		test="${f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA:Sistema Integrado de Gestão Administrativa;DOC:Módulo de Documentos;REL:Gerar relatórios')}">
 
-		<li class="nav-item dropdown"><a href="javascript:void(0);"
+		<li id="menuRelatorios" class="nav-item dropdown"><a href="javascript:void(0);"
 			class="nav-link dropdown-toggle" data-toggle="dropdown">
 				Relatórios </a>
-			<ul class="dropdown-menu">
+			<ul id="subMenuRelatorios" class="dropdown-menu">
 				<c:if
 					test="${f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA:Sistema Integrado de Gestão Administrativa;DOC:Módulo de Documentos;REL:Gerar relatórios;FORMS:Relação de formulários')}">
 					<li><a class="dropdown-item"
@@ -249,40 +264,74 @@
 
 	<c:if
 		test="${f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA:Sistema Integrado de Gestão Administrativa;DOC:Módulo de Documentos;REL:Gerar relatórios')}">
-		<li class="nav-item dropdown"><a href="javascript:void(0);"
+		<li id="menuGestao" class="nav-item dropdown"><a href="javascript:void(0);"
 			class="nav-link dropdown-toggle" data-toggle="dropdown"> Gestão </a>
-			<ul class="dropdown-menu">
+			<ul id="subMenuGestao" class="dropdown-menu">
 				<c:if
 					test="${f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA:Sistema Integrado de Gestão Administrativa;DOC:Módulo de Documentos;REL:Gerar relatórios;IGESTAO: Relatório de Indicadores de Gestão')}">
-					<li><a class="dropdown-item" 
+					<li><a class="dropdown-item"
 						href="/sigaex/app/expediente/rel/relIndicadoresGestao?primeiraVez=true">
 							Indicadores de Gestão</a></li>
 				</c:if>
 				<c:if
- 					test="${f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA:Sistema Integrado de Gestão Administrativa;DOC:Módulo de Documentos;REL:Gerar relatórios;RELDOCVOL: Relatório de documentos por volume')}">
+					test="${f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA:Sistema Integrado de Gestão Administrativa;DOC:Módulo de Documentos;REL:Gerar relatórios;RELDOCVOL: Relatório de documentos por volume')}">
 					<li><a class="dropdown-item"
- 						href="/sigaex/app/expediente/rel/relDocumentosPorVolume?primeiraVez=true">
- 							Documentos por Volume </a></li>
- 				</c:if>
-<!-- 				<li><a class="dropdown-item" href="#"> Documentos Fora do -->
-<!-- 						Prazo </a></li> -->
+						href="/sigaex/app/expediente/rel/relDocumentosPorVolume?primeiraVez=true">
+							Documentos por Volume </a></li>
+				</c:if>
+				<c:if
+					test="${f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA:Sistema Integrado de Gestão Administrativa;DOC:Módulo de Documentos;REL:Gerar relatórios;RELFORAPRAZO:Relatório de documentos fora do prazo')}">
+					<li><a class="dropdown-item"
+						href="/sigaex/app/expediente/rel/relDocumentosForaPrazo?primeiraVez=true">
+							Documentos Fora do Prazo </a></li>
+				</c:if>
+				<c:if
+					test="${f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA:Sistema Integrado de Gestão Administrativa;DOC:Módulo de Documentos;REL:Gerar relatórios;RELDEVPROGRAMADA:Relatório de documentos devolção programada')}">
+					<li><a class="dropdown-item"
+						href="/sigaex/app/expediente/rel/relDocumentosDevolucaoProgramada?primeiraVez=true">
+							Documentos por Devolução Programada </a></li>
+				</c:if>
+				<c:if
+					test="${f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA:Sistema Integrado de Gestão Administrativa;DOC:Módulo de Documentos;REL:Gerar relatórios;RELTEMPOMEDIOSITUACAO:Tempo médio por Situação')}">
+					<li><a class="dropdown-item"
+						href="/sigaex/app/expediente/rel/relTempoMedioSituacao?primeiraVez=true">
+							Tempo médio por Situação </a></li>
+				</c:if>
 
-<!-- 				<li><a class="dropdown-item" href="#"> Documentos por -->
-<!-- 						Devolução Programada </a></li> -->
+				<!-- 				<li><a class="dropdown-item" href="#"> Tempo médio -->
+				<!-- 						Tramitação por Espécie Documental </a></li> -->
 
-<!-- 				<li><a class="dropdown-item" href="#"> Tempo médio por -->
-<!-- 						Situação </a></li> -->
-
-<!-- 				<li><a class="dropdown-item" href="#"> Tempo médio -->
-<!-- 						Tramitação por Espécie Documental </a></li> -->
-
-<!-- 				<li><a class="dropdown-item" href="#"> Volume de Tramitação -->
-<!-- 						por Nome de documento </a></li> -->
-<!-- 				<li><a class="dropdown-item"  -->
-<!-- 					href="/sigaex/app/expediente/rel/relDocsOrgaoInteressado?primeiraVez=true"> -->
-<!-- 						Total de documentos por Órgão Interessado</a></li> -->
+				<!-- 				<li><a class="dropdown-item" href="#"> Volume de Tramitação -->
+				<!-- 						por Nome de documento </a></li> -->
+				<c:if
+					test="${f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA:Sistema Integrado de Gestão Administrativa;DOC:Módulo de Documentos;REL:Gerar relatórios;ORGAOINT: Relatório de Documentos Por Órgão Interessado')}">
+					<li><a class="dropdown-item"
+						href="/sigaex/app/expediente/rel/relDocsOrgaoInteressado?primeiraVez=true">
+							Total de documentos por Órgão Interessado</a></li>
+				</c:if>
+				<c:if
+ 					test="${f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA:Sistema Integrado de Gestão Administrativa;DOC:Módulo de Documentos;REL:Gerar relatórios;TRAMESP: Tempo Médio de Tramitação Por Espécie Documental')}">
+					<li><a class="dropdown-item" 
+						href="/sigaex/app/expediente/rel/relTempoTramitacaoPorEspecie?primeiraVez=true">
+							Tempo Médio de Tramitação Por Espécie Documental</a></li>
+				</c:if>
+				<c:if
+ 					test="${f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA:Sistema Integrado de Gestão Administrativa;DOC:Módulo de Documentos;REL:Gerar relatórios;VOLTRAMMOD: Volume de Tramitação Por Nome do Documento')}">
+					<li><a class="dropdown-item" 
+						href="/sigaex/app/expediente/rel/relVolumeTramitacaoPorModelo?primeiraVez=true">
+							Volume de Tramitação Por Nome do Documento</a></li>
+				</c:if>
 			</ul>
 		</li>
 	</c:if>
-
+	<script type="text/javascript" language="Javascript1.1">
+		ulRel = document.getElementById('subMenuGestao');
+		if (ulRel !== null && ulRel.children.length == 0) {
+			$('#menuGestao').addClass('d-none');
+		}
+		ulRel = document.getElementById('subMenuRelatorios');
+		if (ulRel !== null && ulRel.children.length == 0) { 
+			$('#menuRelatorios').addClass('d-none');
+		}
+	</script>
 </c:if>

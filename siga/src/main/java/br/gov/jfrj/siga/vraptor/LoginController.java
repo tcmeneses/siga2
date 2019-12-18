@@ -2,6 +2,11 @@ package br.gov.jfrj.siga.vraptor;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +72,12 @@ public class LoginController extends SigaController {
 				}
 			}
 		}
-
+		
+		final DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+		Calendar c = Calendar.getInstance();
+		
+		result.include("fAviso", "21-11-2019".equals(df.format(c.getTime())));
+		result.include("avisoMensagem", "Prezado usuário, o sistema SP Sem Papel passa por instabilidade e a equipe técnica está trabalhando para solucionar o mais rápido possível, assim que restabelecido essa mensagem sairá do ar.");
 		result.include("versao", manifest.get("Siga-Versao"));
 		result.include("cont", cont);
 	}
@@ -85,13 +95,20 @@ public class LoginController extends SigaController {
 				}
 			}
 			if (usuarioLogado == null || usuarioLogado.trim().length() == 0) {
-				throw new RuntimeException(SigaMessages.getMessage("usuario.falhaautenticacao"));
+				StringBuffer mensagem = new StringBuffer();
+				mensagem.append(SigaMessages.getMessage("usuario.falhaautenticacao"));
+				if(giService.buscarModoAutenticacao(username).equals(GiService._MODO_AUTENTICACAO_LDAP)) {
+					mensagem.append(" ");
+					mensagem.append(SigaMessages.getMessage("usuario.autenticacaovialdap"));
+				}
+				
+				throw new RuntimeException(mensagem.toString());
 			}
 
 			gravaCookieComToken(username, cont);
 			
 		} catch (Exception e) {
-			result.include("loginMensagem", e.getMessage());
+			result.include("loginMensagem", e.getMessage()); // aqui adicionar tente com a senha de rede windows 
 			result.forwardTo(this).login(cont);
 		}
 	}
@@ -130,8 +147,9 @@ public class LoginController extends SigaController {
 	public void authSwap(String username, String cont) throws IOException {
 		
 		try {
-			if (!SigaMessages.isSigaSP()) 
-				throw new ServletException("Funcionalidade não disponível neste ambiente.");
+		//  Incluida na versão comum a todos
+		//	if (!SigaMessages.isSigaSP()) 
+		//		throw new ServletException("Funcionalidade não disponível neste ambiente.");
 
 			CpIdentidade usuarioSwap = CpDao.getInstance().consultaIdentidadeCadastrante(username, true);
 			
