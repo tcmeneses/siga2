@@ -31,8 +31,11 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import javax.persistence.LockModeType;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -41,8 +44,10 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.hibernate.LockMode;
 import org.jboss.logging.Logger;
 
+import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.SigaBaseProperties;
 import br.gov.jfrj.siga.base.Texto;
 import br.gov.jfrj.siga.cp.CpTipoConfiguracao;
@@ -170,23 +175,26 @@ public class ExDao extends CpDao {
 	public ExDocumentoNumeracao obterNumeroDocumento(Long idOrgaoUsu, Long idFormaDoc, Long anoEmissao, Boolean lock )
 			throws SQLException {
 	    
-		final Query query = getSessao().getNamedQuery("ExDocumentoNumeracao.obterDocumentoNumeracao");
+		final Query query = em().createNamedQuery("ExDocumentoNumeracao.obterDocumentoNumeracao");
 		query.setParameter("idOrgaoUsu", idOrgaoUsu);
 		query.setParameter("idFormaDoc", idFormaDoc);
 		query.setParameter("anoEmissao", anoEmissao);
-		query.setLong("flAtivo", 1);
+		query.setParameter("flAtivo", 1L);
 		
 		if (lock) {
-			query.setLockMode("this", LockMode.PESSIMISTIC_WRITE);
+			query.setLockMode(LockModeType.PESSIMISTIC_WRITE);
 		}
 		
-		return (ExDocumentoNumeracao) query.uniqueResult();		
+		return (ExDocumentoNumeracao) query.getSingleResult();		
 	}
 	
 	public Long obterNumeroGerado(Long idOrgaoUsu, Long idFormaDoc, Long anoEmissao)
 			throws SQLException {
 		Query query = em().createNamedQuery("obterNumeroGerado");
-		query.setParameter("idDoc", doc.getIdDoc());
+		query.setParameter("idOrgaoUsu", idOrgaoUsu);
+		query.setParameter("idFormaDoc", idFormaDoc);
+		query.setParameter("anoEmissao", anoEmissao);
+		query.setParameter("flAtivo", 1L);
 		return (Long) query.getSingleResult();
 	}
 	
@@ -194,9 +202,9 @@ public class ExDao extends CpDao {
 	public void incrementNumeroDocumento(Long docNumeracao)
 			throws SQLException {
 		
-		final Query query = getSessao().getNamedQuery("ExDocumentoNumeracao.incrementaNumeroDocumento");
-		query.setLong("increment", 1L);
-		query.setLong("id", docNumeracao);
+		final Query query = em().createNamedQuery("ExDocumentoNumeracao.incrementaNumeroDocumento");
+		query.setParameter("increment", 1L);
+		query.setParameter("id", docNumeracao);
 		
 		query.executeUpdate();
 		
@@ -205,7 +213,7 @@ public class ExDao extends CpDao {
 	public void insertNumeroDocumento(Long idOrgaoUsu, Long idFormaDoc, Long anoEmissao)
 			throws SQLException {
 	    
-		final Query query = getSessao().getNamedQuery("ExDocumentoNumeracao.insertRangeNumeroDocumento");
+		final Query query = em().createNamedQuery("ExDocumentoNumeracao.insertRangeNumeroDocumento");
 		query.setParameter("idOrgaoUsu", idOrgaoUsu);
 		query.setParameter("idFormaDoc", idFormaDoc);
 		query.setParameter("anoEmissao", anoEmissao);
@@ -218,12 +226,12 @@ public class ExDao extends CpDao {
 	public Long existeRangeNumeroDocumento(Long idOrgaoUsu, Long idFormaDoc)
 			throws SQLException {
 	    
-		final Query query = getSessao().getNamedQuery("ExDocumentoNumeracao.existeRangeDocumentoNumeracao");
+		final Query query = em().createNamedQuery("ExDocumentoNumeracao.existeRangeDocumentoNumeracao");
 		query.setParameter("idOrgaoUsu", idOrgaoUsu);
 		query.setParameter("idFormaDoc", idFormaDoc);
 		query.setParameter("rownum", 1L);
 		
-		return (Long) query.uniqueResult();
+		return (Long) query.getSingleResult();
 
 	}
 	
@@ -231,14 +239,14 @@ public class ExDao extends CpDao {
 	public void updateMantemRangeNumeroDocumento(Long docNumeracao)
 			throws SQLException {
 		
-		final Query query = getSessao().getNamedQuery("ExDocumentoNumeracao.mantemRangeNumeroDocumento");
+		final Query query = em().createNamedQuery("ExDocumentoNumeracao.mantemRangeNumeroDocumento");
 		
 		Calendar c = Calendar.getInstance();
 		
-		query.setLong("anoEmissao", c.get(Calendar.YEAR));
-		query.setLong("flAtivo", 1);
-		query.setLong("increment", 1L);
-		query.setLong("id", docNumeracao);
+		query.setParameter("anoEmissao", c.get(Calendar.YEAR));
+		query.setParameter("flAtivo", 1);
+		query.setParameter("increment", 1L);
+		query.setParameter("id", docNumeracao);
 		
 		query.executeUpdate();
 		
@@ -1180,10 +1188,12 @@ public class ExDao extends CpDao {
 	}
 
 	public ExFormaDocumento consultarExFormaPorId(Long idFormaDoc) {
-		final Criteria crit = getSessao()
-				.createCriteria(ExFormaDocumento.class);
-		crit.add(Restrictions.eq("idFormaDoc", idFormaDoc));
-		return (ExFormaDocumento) crit.uniqueResult();
+		CriteriaQuery<ExFormaDocumento> q = cb().createQuery(ExFormaDocumento.class);
+		Root<ExFormaDocumento> c = q.from(ExFormaDocumento.class);
+		q.select(c);
+		
+		q.where(cb().equal(c.get("idFormaDoc"), idFormaDoc));
+		return (ExFormaDocumento) em().createQuery(q).getSingleResult();
 	}
 	
 	public ExFormaDocumento consultarExForma(String sForma) {
