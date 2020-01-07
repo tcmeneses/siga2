@@ -3,6 +3,7 @@ package br.gov.jfrj.siga.tp.vraptor;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
@@ -39,7 +40,7 @@ public class AfastamentoController extends TpController {
 	}
 	
 	@Inject
-	public AfastamentoController(HttpServletRequest request, Result result, Validator validator, SigaObjects so,  EntityManager em) {
+	public AfastamentoController(HttpServletRequest request, Result result,  Validator validator, SigaObjects so,  EntityManager em) {
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 

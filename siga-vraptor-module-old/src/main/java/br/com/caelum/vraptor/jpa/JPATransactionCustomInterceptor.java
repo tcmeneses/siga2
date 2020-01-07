@@ -1,5 +1,7 @@
-package br.gov.jfrj.siga.vraptor;
+package br.com.caelum.vraptor.jpa;
 
+import javax.enterprise.inject.Alternative;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
@@ -21,6 +23,7 @@ import br.com.caelum.vraptor.jpa.event.AfterRollback;
 import br.com.caelum.vraptor.jpa.event.BeforeCommit;
 import br.com.caelum.vraptor.proxy.CDIProxies;
 import br.com.caelum.vraptor.validator.Validator;
+import br.gov.jfrj.siga.vraptor.Transacional;
 
 /**
  * An interceptor that manages Entity Manager Transaction. All requests are
@@ -29,6 +32,7 @@ import br.com.caelum.vraptor.validator.Validator;
  * 
  * @author Lucas Cavalcanti
  */
+@Alternative
 @Specializes
 @Intercepts
 public class JPATransactionCustomInterceptor extends br.com.caelum.vraptor.jpa.JPATransactionInterceptor {
@@ -50,8 +54,9 @@ public class JPATransactionCustomInterceptor extends br.com.caelum.vraptor.jpa.J
 		this(null, null, null, null, null);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Inject
-	public JPATransactionCustomInterceptor(BeanManager beanManager, EntityManager manager, Validator validator,
+	public JPATransactionCustomInterceptor(BeanManager beanManager, EntityManager manager,  @Any Validator validator,
 			MutableResponse response, HttpServletRequest request) {
 		this.beanManager = beanManager;
 		this.manager = manager;

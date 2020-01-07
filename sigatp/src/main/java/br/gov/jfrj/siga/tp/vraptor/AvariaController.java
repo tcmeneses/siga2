@@ -3,6 +3,7 @@ package br.gov.jfrj.siga.tp.vraptor;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -38,7 +39,7 @@ public class AvariaController extends TpController {
 	}
 	
 	@Inject	
-	public AvariaController(HttpServletRequest request, Result result, Validator validator, SigaObjects so, EntityManager em) throws Exception {
+	public AvariaController(HttpServletRequest request, Result result,  Validator validator, SigaObjects so, EntityManager em) throws Exception {
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 

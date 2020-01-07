@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
@@ -50,7 +51,7 @@ public class DocumentoController extends TpController {
 	}
 	
 	@Inject
-    public DocumentoController(HttpServletRequest request, Result result, Validator validator, SigaObjects so,   EntityManager em, MissaoController missaoController,
+    public DocumentoController(HttpServletRequest request, Result result,  Validator validator, SigaObjects so,   EntityManager em, MissaoController missaoController,
             RequisicaoController requisicaoController, ServicoVeiculoController servicoVeiculoController) {
         super(request, result, TpDao.getInstance(), validator, so, em);
         this.missaoController = missaoController;

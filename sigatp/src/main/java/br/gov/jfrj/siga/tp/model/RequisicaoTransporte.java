@@ -31,11 +31,11 @@ import javax.persistence.Query;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.cp.CpComplexo;
@@ -104,7 +104,6 @@ public class RequisicaoTransporte extends TpModel implements Comparable<Requisic
 
     private String passageiros;
 
-    @NotNull
     @NotEmpty
     private String itinerarios;
 

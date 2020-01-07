@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -56,7 +57,7 @@ public class AbastecimentoController extends TpController {
 	}
 	
     @Inject
-	public AbastecimentoController(HttpServletRequest request, Result result, Validator validator, SigaObjects so,  EntityManager em) {
+	public AbastecimentoController(HttpServletRequest request, Result result,  Validator validator, SigaObjects so,  EntityManager em) {
         super(request, result, TpDao.getInstance(), validator, so, em);
     }
 

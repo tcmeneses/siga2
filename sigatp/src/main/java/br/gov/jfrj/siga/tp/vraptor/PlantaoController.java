@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
@@ -46,7 +47,7 @@ public class PlantaoController extends TpController {
 	}
 	
 	@Inject
-    public PlantaoController(HttpServletRequest request, Result result, Validator validator, SigaObjects so,  EntityManager em) {
+    public PlantaoController(HttpServletRequest request, Result result,  Validator validator, SigaObjects so,  EntityManager em) {
         super(request, result, TpDao.getInstance(), validator, so, em);
     }
 

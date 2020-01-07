@@ -3,6 +3,7 @@ package br.gov.jfrj.siga.tp.vraptor;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -44,7 +45,7 @@ public class GabineteController extends TpController {
 	}
 	
 	@Inject
-    public GabineteController(HttpServletRequest request, Result result, Validator validator, SigaObjects so,  EntityManager em) {
+    public GabineteController(HttpServletRequest request, Result result,  Validator validator, SigaObjects so,  EntityManager em) {
         super(request, result, TpDao.getInstance(), validator, so, em);
     }
 

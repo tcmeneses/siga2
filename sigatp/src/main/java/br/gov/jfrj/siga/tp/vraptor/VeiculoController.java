@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
@@ -47,7 +48,7 @@ public class VeiculoController extends TpController {
 	}
 	
 	@Inject
-	public VeiculoController(HttpServletRequest request, Result result, Validator validator, SigaObjects so,  EntityManager em) {
+	public VeiculoController(HttpServletRequest request, Result result,  Validator validator, SigaObjects so,  EntityManager em) {
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 

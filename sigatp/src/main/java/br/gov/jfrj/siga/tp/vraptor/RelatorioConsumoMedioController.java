@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
@@ -47,7 +48,7 @@ public class RelatorioConsumoMedioController extends TpController {
 	}
 	
 	@Inject
-	public RelatorioConsumoMedioController(HttpServletRequest request, Result result,  Validator validator, SigaObjects so,  EntityManager em) {
+	public RelatorioConsumoMedioController(HttpServletRequest request, Result result,   Validator validator, SigaObjects so,  EntityManager em) {
         super(request, result, TpDao.getInstance(), validator, so, em);
     }
 

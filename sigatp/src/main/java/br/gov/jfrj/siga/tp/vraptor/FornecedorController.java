@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -39,7 +40,7 @@ public class FornecedorController extends TpController {
 	}
 	
 	@Inject
-	public FornecedorController(HttpServletRequest request, Result result,  Validator validator, SigaObjects so,  EntityManager em) {
+	public FornecedorController(HttpServletRequest request, Result result,   Validator validator, SigaObjects so,  EntityManager em) {
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 

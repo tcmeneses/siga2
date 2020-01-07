@@ -3,6 +3,7 @@ package br.gov.jfrj.siga.tp.vraptor;
 import java.io.IOException;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,7 +34,7 @@ public class TipoDePassageiroRestController extends TpController {
 	}
 	
 	@Inject
-    public TipoDePassageiroRestController(HttpServletRequest request, Result result,  Validator validator, SigaObjects so,  EntityManager em) {
+    public TipoDePassageiroRestController(HttpServletRequest request, Result result,   Validator validator, SigaObjects so,  EntityManager em) {
         super(request, result, TpDao.getInstance(), validator, so, em);
     }
 

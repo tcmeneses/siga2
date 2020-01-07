@@ -1,6 +1,7 @@
 package br.gov.jfrj.siga.tp.vraptor;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
@@ -31,7 +32,7 @@ public class FinalidadeRequisicaoRestController extends TpController {
 	}
 	
 	@Inject
-    public FinalidadeRequisicaoRestController(HttpServletRequest request, Result result,  Validator validator, SigaObjects so,  EntityManager em) {
+    public FinalidadeRequisicaoRestController(HttpServletRequest request, Result result,   Validator validator, SigaObjects so,  EntityManager em) {
         super(request, result, TpDao.getInstance(), validator, so, em);
     }
 

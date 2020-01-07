@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -38,7 +39,7 @@ public class AutoDeInfracaoController extends TpController{
 	
 	@Inject	
 	public AutoDeInfracaoController(HttpServletRequest request, Result result,
-			 Locale localization, Validator validator, SigaObjects so,  EntityManager em) {
+			 Locale localization,  Validator validator, SigaObjects so,  EntityManager em) {
 		super(request, result, TpDao.getInstance(),  validator, so, em);
 	}
 

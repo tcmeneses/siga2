@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
@@ -85,7 +86,7 @@ public class MissaoController extends TpController {
 	}
 	
 	@Inject
-	public MissaoController(HttpServletRequest request, Result result, Validator validator, SigaObjects so,  EntityManager em, RequisicaoController requisicaoController){
+	public MissaoController(HttpServletRequest request, Result result,  Validator validator, SigaObjects so,  EntityManager em, RequisicaoController requisicaoController){
 		super(request, result, TpDao.getInstance(), validator, so, em);
 		this.requisicaoController = requisicaoController;
 	}

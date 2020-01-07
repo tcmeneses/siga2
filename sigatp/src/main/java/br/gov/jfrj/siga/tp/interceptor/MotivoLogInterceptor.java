@@ -12,11 +12,11 @@ import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.controller.ControllerMethod;
 import br.com.caelum.vraptor.interceptor.InterceptorExecutor;
 import br.com.caelum.vraptor.interceptor.SimpleInterceptorStack;
+import br.com.caelum.vraptor.jpa.JPATransactionCustomInterceptor;
 import br.com.caelum.vraptor.jpa.JPATransactionInterceptor;
 import br.gov.jfrj.siga.tp.auth.annotation.DadosAuditoria;
 import br.gov.jfrj.siga.tp.auth.annotation.LogMotivo;
 import br.gov.jfrj.siga.tp.util.ContextoRequest;
-import br.gov.jfrj.siga.vraptor.JPATransactionCustomInterceptor;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
 
 /**

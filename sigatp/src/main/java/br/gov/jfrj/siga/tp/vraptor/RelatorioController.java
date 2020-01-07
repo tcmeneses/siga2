@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
@@ -59,7 +60,7 @@ public class RelatorioController extends TpController {
 	}
 	
 	@Inject
-    public RelatorioController(HttpServletRequest request, Result result,  Validator validator, SigaObjects so,  EntityManager em) {
+    public RelatorioController(HttpServletRequest request, Result result,   Validator validator, SigaObjects so,  EntityManager em) {
         super(request, result, TpDao.getInstance(), validator, so, em);
     }
 

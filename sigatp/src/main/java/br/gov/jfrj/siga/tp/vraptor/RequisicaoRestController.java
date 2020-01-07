@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
@@ -49,7 +50,7 @@ public class RequisicaoRestController extends TpController {
 	}
 	
 	@Inject
-    public RequisicaoRestController(HttpServletRequest request, Result result,  Validator validator, SigaObjects so,  EntityManager em) {
+    public RequisicaoRestController(HttpServletRequest request, Result result,   Validator validator, SigaObjects so,  EntityManager em) {
         super(request, result, TpDao.getInstance(), validator, so, em);
     }
 

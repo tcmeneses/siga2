@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -105,7 +106,7 @@ public class ApplicationController extends TpController {
 	}
 	
 	@Inject	
-	public ApplicationController(HttpServletRequest request, Result result, Validator validator, SigaObjects so,  EntityManager em, AutorizacaoGI autorizacaoGI) {
+	public ApplicationController(HttpServletRequest request, Result result,  Validator validator, SigaObjects so,  EntityManager em, AutorizacaoGI autorizacaoGI) {
         super(request, result, TpDao.getInstance(), validator, so, em);
         this.autorizacaoGI = autorizacaoGI;
         this.totalDiasARecuperar = retornaDias();

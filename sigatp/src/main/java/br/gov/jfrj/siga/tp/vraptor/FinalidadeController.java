@@ -3,11 +3,11 @@ package br.gov.jfrj.siga.tp.vraptor;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Path;
@@ -38,7 +38,7 @@ public class FinalidadeController extends TpController {
 	}
 	
 	@Inject
-	public FinalidadeController(HttpServletRequest request, Result result, Validator validator, SigaObjects so,  EntityManager em) {
+	public FinalidadeController(HttpServletRequest request, Result result,  Validator validator, SigaObjects so,  EntityManager em) {
 		super(request, result, TpDao.getInstance(), validator, so, em);
 	}
 
@@ -92,9 +92,9 @@ public class FinalidadeController extends TpController {
 	@RoleAdminMissaoComplexo
 	@Transacional
 	@Path("/salvar")
-	public void salvar(@Valid FinalidadeRequisicao finalidade) throws Exception {
+	public void salvar(FinalidadeRequisicao finalidade) throws Exception {
 		
-		//validator.validate(finalidade);
+		validator.validate(finalidade);
 		
 		FinalidadeRequisicao finalidadeBuscada = buscar(finalidade.getId());
 		finalidadeBuscada.setDescricao(finalidade.getDescricao());

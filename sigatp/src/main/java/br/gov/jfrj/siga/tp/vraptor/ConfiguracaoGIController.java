@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
@@ -45,7 +46,7 @@ public class ConfiguracaoGIController extends TpController {
 	}
 	
 	@Inject	
-    public ConfiguracaoGIController(HttpServletRequest request, Result result, Validator validator, SigaObjects so,  EntityManager em) {
+    public ConfiguracaoGIController(HttpServletRequest request, Result result,  Validator validator, SigaObjects so,  EntityManager em) {
         super(request, result, TpDao.getInstance(), validator, so, em);
     }
 

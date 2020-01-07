@@ -3,6 +3,7 @@ package br.gov.jfrj.siga.tp.vraptor;
 import java.text.ParseException;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
@@ -28,7 +29,7 @@ public class AgendaController extends TpController {
 	}
 	
 	@Inject
-    public AgendaController(HttpServletRequest request, Result result,Validator validator, SigaObjects so,  EntityManager em) {
+    public AgendaController(HttpServletRequest request, Result result, Validator validator, SigaObjects so,  EntityManager em) {
         super(request, result, TpDao.getInstance(), validator, so, em);
 
     }
