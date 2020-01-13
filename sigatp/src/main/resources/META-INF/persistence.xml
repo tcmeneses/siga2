@@ -69,6 +69,9 @@
 		<class>br.gov.jfrj.siga.tp.model.ServicoVeiculo</class>
 		<class>br.gov.jfrj.siga.tp.model.Veiculo</class>
 
+      <validation-mode>NONE</validation-mode>
+ 
+
 		<properties>
 		    <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.JBossAppServerJtaPlatform"/>
 			<property name="hibernate.jpa.compliance.global_id_generators" value="false"/>

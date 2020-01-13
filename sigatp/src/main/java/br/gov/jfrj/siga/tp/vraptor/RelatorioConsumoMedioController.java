@@ -2,8 +2,10 @@ package br.gov.jfrj.siga.tp.vraptor;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -118,16 +120,15 @@ public class RelatorioConsumoMedioController extends TpController {
             Calendar dataFinal = Calendar.getInstance();
             relatorio.setAbastecimentoFinal(Abastecimento.AR.findById(relatorio.getAbastecimentoFinal().getId()));
             dataFinal.setTime(relatorio.getAbastecimentoFinal().getDataHora().getTime());
-
-            String qrl = "SELECT m.id, m.consumoEmLitros, m.odometroSaidaEmKm, m.odometroRetornoEmKm " + "FROM  Missao m " + "WHERE m.veiculo.id = ? " + "AND   m.dataHora BETWEEN ? AND ? "
-                    + "AND   m.cpOrgaoUsuario.idOrgaoUsu = ? " + "AND   m.estadoMissao = ? ";
+            String qrl = "SELECT m.id, m.consumoEmLitros, m.odometroSaidaEmKm, m.odometroRetornoEmKm " + "FROM  Missao m " + "WHERE m.veiculo.id = :idVeiculo " + "AND   m.dataHora BETWEEN :dataInicial AND :dataFinal "
+                    + "AND   m.cpOrgaoUsuario.idOrgaoUsu = :idOrgaoUsu " + "AND   m.estadoMissao = :estadoMissao ";
 
             Query qry = Missao.AR.em().createQuery(qrl);
-            qry.setParameter(1, relatorio.getVeiculo().getId());
-            qry.setParameter(2, dataInicial);
-            qry.setParameter(3, dataFinal);
-            qry.setParameter(4, cpOrgaoUsuario.getIdOrgaoUsu());
-            qry.setParameter(5, EstadoMissao.FINALIZADA);
+            qry.setParameter("idVeiculo", relatorio.getVeiculo().getId());
+            qry.setParameter("dataInicial", dataInicial);
+            qry.setParameter("dataFinal", dataFinal);
+            qry.setParameter("idOrgaoUsu", cpOrgaoUsuario.getIdOrgaoUsu());
+            qry.setParameter("estadoMissao", EstadoMissao.FINALIZADA);
 
             lista = (List<Object[]>) qry.getResultList();
 

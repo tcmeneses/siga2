@@ -3,8 +3,10 @@ package br.gov.jfrj.siga.tp.vraptor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -149,14 +151,14 @@ public class RelatorioRankingController extends TpController {
                         + "FROM Condutor c, Missao m "
                         + "INNER JOIN m.requisicoesTransporte r "
                         + "WHERE c.id = m.condutor.id "
-                        + "and dataHoraRetorno BETWEEN ? AND ? "
-                        + "AND   r.cpOrgaoUsuario.idOrgaoUsu = ? "
+                        + "and dataHoraRetorno BETWEEN :dataInicio AND :dataFinal "
+                        + "AND   r.cpOrgaoUsuario.idOrgaoUsu = :idOrgaoUsu "
                         + "ORDER BY c.id, m.id, r.id";
 
         Query qry = ContextoPersistencia.em().createQuery(qrl);
-        qry.setParameter(1, relatorio.getDataInicio());
-        qry.setParameter(2, relatorio.getDataFim());
-        qry.setParameter(3, cpOrgaoUsuario.getIdOrgaoUsu());
+        qry.setParameter("dataInicio", relatorio.getDataInicio());
+        qry.setParameter("dataFinal", relatorio.getDataFim());
+        qry.setParameter("idOrgaoUsu", cpOrgaoUsuario.getIdOrgaoUsu());
 
         lista = (List<Object[]>) qry.getResultList();
         Long idProximoCondutor = 0L;
@@ -218,14 +220,14 @@ public class RelatorioRankingController extends TpController {
                         + "FROM Veiculo v, Missao m "
                         + "INNER JOIN m.requisicoesTransporte r "
                         + "WHERE v.id = m.veiculo.id "
-                        + "and   dataHoraRetorno BETWEEN ? AND ? "
-                        + "AND   r.cpOrgaoUsuario.idOrgaoUsu = ? "
+                        + "and   dataHoraRetorno BETWEEN :dataInicio AND :dataFinal "
+                        + "AND   r.cpOrgaoUsuario.idOrgaoUsu = :idOrgaoUsu "
                         + "ORDER BY v.id, r.id";
 
         Query qry = ContextoPersistencia.em().createQuery(qrl);
-        qry.setParameter(1, relatorio.getDataInicio());
-        qry.setParameter(2, relatorio.getDataFim());
-        qry.setParameter(3, cpOrgaoUsuario.getIdOrgaoUsu());
+        qry.setParameter("dataInicio", relatorio.getDataInicio());
+        qry.setParameter("dataFinal", relatorio.getDataFim());
+        qry.setParameter("idOrgaoUsu", cpOrgaoUsuario.getIdOrgaoUsu());
         lista = (List<Object[]>) qry.getResultList();
 
         Long idProximoVeiculo = 0L;
@@ -279,15 +281,15 @@ public class RelatorioRankingController extends TpController {
         String qrl = "SELECT f.id, count(f.id) as total_finalidade "
                         + "FROM  FinalidadeRequisicao f, RequisicaoTransporte r "
                         + "WHERE r.tipoFinalidade.id = f.id "
-                        + "and   r.dataHora BETWEEN ? AND ? "
-                        + "AND   r.cpOrgaoUsuario.idOrgaoUsu = ? "
+                        + "and   r.dataHora BETWEEN :dataInicio AND :dataFinal "
+                        + "AND   r.cpOrgaoUsuario.idOrgaoUsu = :idOrgaoUsu "
                         + "GROUP BY f.id "
                         + "ORDER BY total_finalidade DESC";
 
         Query qry = ContextoPersistencia.em().createQuery(qrl);
-        qry.setParameter(1, relatorio.getDataInicio());
-        qry.setParameter(2, relatorio.getDataFim());
-        qry.setParameter(3, cpOrgaoUsuario.getIdOrgaoUsu());
+        qry.setParameter("dataInicio", relatorio.getDataInicio());
+        qry.setParameter("dataFinal", relatorio.getDataFim());
+        qry.setParameter("idOrgaoUsu", cpOrgaoUsuario.getIdOrgaoUsu());
 
         lista = (List<Object[]>) qry.getResultList();
         RankingFinalidadeRequisicao itemRf = null;
@@ -314,7 +316,11 @@ public class RelatorioRankingController extends TpController {
 
         relatorio.getDataInicio().setTime(FormatarDataHora.formatarDataHora(relatorio.getDataInicio(), START_00_00_00));
         relatorio.getDataFim().setTime(FormatarDataHora.formatarDataHora(relatorio.getDataFim(), END_23_59_59));
-        lista = RequisicaoTransporte.AR.find("dataHora BETWEEN ? AND ? " + "AND cpOrgaoUsuario.idOrgaoUsu = ? ", relatorio.getDataInicio(), relatorio.getDataFim(), cpOrgaoUsuario.getIdOrgaoUsu()).fetch();
+		Map<String, Object> parametros = new HashMap<String,Object>();
+		parametros.put("idOrgaoUsu", cpOrgaoUsuario.getIdOrgaoUsu());
+		parametros.put("dataInicial", relatorio.getDataInicio());
+		parametros.put("dataFinal", relatorio.getDataFim());
+        lista = RequisicaoTransporte.AR.find("dataHora BETWEEN :dataInicial AND :dataFinal " + "AND cpOrgaoUsuario.idOrgaoUsu = :idOrgaoUsu ", parametros).fetch();
         RankingTipoPassageiroRequisicao itemRp = null;
 
         for (int i = 0; i < listaTipoDePassageiro.size(); i++) {

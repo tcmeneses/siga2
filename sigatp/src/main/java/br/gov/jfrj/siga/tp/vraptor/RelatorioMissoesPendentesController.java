@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
@@ -51,14 +50,14 @@ public class RelatorioMissoesPendentesController extends TpController {
         String qrl = "SELECT     c.id, COUNT(m.id) AS TotalMissoes "
                    + "FROM       Condutor c, Missao m "
                    + "WHERE      c.id = m.condutor.id "
-				   + "AND        m.cpOrgaoUsuario.idOrgaoUsu = ? "
-				   + "AND        m.estadoMissao = ? "
+				   + "AND        m.cpOrgaoUsuario.idOrgaoUsu = :idOrgaoUsu "
+				   + "AND        m.estadoMissao = :estado "
 				   + "GROUP BY   c.id "
                    + "ORDER BY   c.id";
 
         Query qry = ContextoPersistencia.em().createQuery(qrl);
-        qry.setParameter(1, cpOrgaoUsuario.getIdOrgaoUsu());
-        qry.setParameter(2, EstadoMissao.PROGRAMADA);
+        qry.setParameter("idOrgaoUsu", cpOrgaoUsuario.getIdOrgaoUsu());
+        qry.setParameter("estado", EstadoMissao.PROGRAMADA);
 
         lista = (List<Object[]>) qry.getResultList();
         RelatorioMissoesPendentes missaoPendente = null;

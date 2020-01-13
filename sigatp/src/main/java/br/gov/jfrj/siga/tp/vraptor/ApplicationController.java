@@ -5,7 +5,9 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -232,8 +234,12 @@ public class ApplicationController extends TpController {
 
     private void adicionarServicosAdministradorFrota(Long idOrgaoUsu, List<String[]> lista) {
         EstadoServico[] estados = { EstadoServico.AGENDADO, EstadoServico.INICIADO };
-        String query = "cpOrgaoUsuario.idOrgaoUsu=? and (situacaoServico = ? or situacaoServico = ?)";
-        List<ServicoVeiculo> servicos = ServicoVeiculo.AR.find(query, idOrgaoUsu, estados[0], estados[1]).fetch();
+		Map<String, Object> parametros = new HashMap<String,Object>();
+		parametros.put("idOrgaoUsu",idOrgaoUsu);
+		parametros.put("estado1",estados[0]);
+		parametros.put("estado2",estados[1]);
+        String query = "cpOrgaoUsuario.idOrgaoUsu=:idOrgaoUsu and (situacaoServico = :estado1 or situacaoServico = :estado2)";
+        List<ServicoVeiculo> servicos = ServicoVeiculo.AR.find(query, parametros).fetch();
 
         for (EstadoServico item : estados) {
             String titulo = "Servi&ccedil;os " + (item.equals(EstadoServico.AGENDADO) ? "agendados" : "iniciados");
@@ -257,8 +263,13 @@ public class ApplicationController extends TpController {
         int total;
         Long idCondutor = Condutor.recuperarLogado(getTitular(), getTitular().getOrgaoUsuario()).getId();
         EstadoMissao[] estados = { EstadoMissao.PROGRAMADA, EstadoMissao.INICIADA };
-        String query = "condutor.id = ? and cpOrgaoUsuario.idOrgaoUsu = ? and (estadoMissao = ? or estadoMissao = ?)";
-        List<Missao> missoes = Missao.AR.find(query, idCondutor, idOrgaoUsu, estados[0], estados[1]).fetch();
+		Map<String, Object> parametros = new HashMap<String,Object>();
+		parametros.put("idOrgaoUsu",idOrgaoUsu);
+		parametros.put("idCondutor",idCondutor);
+		parametros.put("estado1",estados[0]);
+		parametros.put("estado2",estados[1]);
+        String query = "condutor.id = :idCondutor and cpOrgaoUsuario.idOrgaoUsu = :idOrgaoUsu and (estadoMissao = :estado1 or estadoMissao = :estado2)";
+        List<Missao> missoes = Missao.AR.find(query, parametros).fetch();
 
         for (EstadoMissao item : estados) {
             titulo = "Miss&otilde;es " + (item.equals(EstadoMissao.PROGRAMADA) ? "programadas" : "iniciadas");

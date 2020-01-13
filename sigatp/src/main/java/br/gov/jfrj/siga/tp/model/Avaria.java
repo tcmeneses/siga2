@@ -2,13 +2,13 @@ package br.gov.jfrj.siga.tp.model;
 
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
@@ -17,13 +17,13 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.envers.Audited;
 
+import com.google.gson.Gson;
+
 import br.gov.jfrj.siga.feature.converter.entity.vraptor.ConvertableEntity;
 import br.gov.jfrj.siga.model.ActiveRecord;
 import br.gov.jfrj.siga.tp.util.PerguntaSimNao;
+import br.gov.jfrj.siga.tp.validation.annotation.Data;
 import br.gov.jfrj.siga.tp.validation.annotation.UpperCase;
-import br.gov.jfrj.siga.validation.ValidarAnoData;
-
-import com.google.gson.Gson;
 
 @Entity
 @Audited
@@ -43,10 +43,10 @@ public class Avaria extends TpModel implements ConvertableEntity<Long>, Comparab
 	private Veiculo veiculo;
 
 	@NotNull(message = "{avaria.data.registro}")
-	@ValidarAnoData(descricaoCampo = "Data de Registro", nullable=false)
+	@Data(descricaoCampo = "Data de Registro", nullable=false)
 	private Calendar dataDeRegistro;
 
-	@ValidarAnoData(descricaoCampo = "Data de Solucao")
+	@Data(descricaoCampo = "Data de Solucao")
 	private Calendar dataDeSolucao;
 
 	@NotNull(message = "{avaria.descricao}")
@@ -136,7 +136,9 @@ public class Avaria extends TpModel implements ConvertableEntity<Long>, Comparab
 	}
 
 	public static List<Avaria> buscarPendentesPorVeiculo(Veiculo veiculo) {
-		List<Avaria> avarias = Avaria.AR.find("veiculo = ? AND dataDeSolucao is null ", veiculo).fetch();
+        HashMap<String, Object> parametros = new HashMap<String, Object>();
+        parametros.put("veiculo",  veiculo);
+		List<Avaria> avarias = Avaria.AR.find("veiculo = :veiculo AND dataDeSolucao is null ", parametros).fetch();
 		Collections.sort(avarias);
 		return avarias;
 	}

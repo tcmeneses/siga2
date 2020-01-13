@@ -2,7 +2,9 @@ package br.gov.jfrj.siga.tp.vraptor;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -73,16 +75,19 @@ public class ConfiguracaoGIController extends TpController {
             CpServico cpServico = CpServico.AR.find("siglaServico", servicoComplexoAdministrador).first();
             Long tipoConfigComplexoPadrao = 400L;
             CpTipoConfiguracao tpConf = CpTipoConfiguracao.AR.findById(tipoConfigComplexoPadrao);
-            Object[] parametros = { idOrgaoUsu, cpServico };
-            List<CpConfiguracao> cpConfiguracoesCp = CpConfiguracao.AR.find("(dpPessoa in (select d from DpPessoa d where d.orgaoUsuario.idOrgaoUsu = ?) and cpServico = ? and hisIdcFim is null )",
+    		Map<String, Object> parametros = new HashMap<String,Object>();
+    		parametros.put("idOrgaoUsu",idOrgaoUsu);
+    		parametros.put("cpServico",cpServico);
+            List<CpConfiguracao> cpConfiguracoesCp = CpConfiguracao.AR.find("(dpPessoa in (select d from DpPessoa d where d.orgaoUsuario.idOrgaoUsu = :idOrgaoUsu) and cpServico = :cpServico and hisIdcFim is null )",
                     parametros).fetch();
             // Recuperando configuracao pode para uma lotacao especifica
-            Object[] parametros1 = { idOrgaoUsu, tpConf };
-            List<CpConfiguracao> cpConfiguracoesCl = CpConfiguracao.AR.find("((lotacao is not null) and orgaoUsuario.idOrgaoUsu = ?  and cpTipoConfiguracao = ? and hisIdcFim is null  )", parametros1)
+    		parametros.clear();
+            parametros.put("idOrgaoUsu",idOrgaoUsu);
+    		parametros.put("tpConf",tpConf);
+            List<CpConfiguracao> cpConfiguracoesCl = CpConfiguracao.AR.find("((lotacao is not null) and orgaoUsuario.idOrgaoUsu = :idOrgaoUsu  and cpTipoConfiguracao = :tpConf and hisIdcFim is null  )", parametros)
                     .fetch();
             // Recuperando configuracao default para um  orgao especifico
-            Object[] parametros2 = { idOrgaoUsu, tpConf };
-            List<CpConfiguracao> cpConfiguracoesCo = CpConfiguracao.AR.find("( lotacao is null and orgaoUsuario.idOrgaoUsu = ?  and cpTipoConfiguracao = ? and hisIdcFim is null )", parametros2)
+            List<CpConfiguracao> cpConfiguracoesCo = CpConfiguracao.AR.find("( lotacao is null and orgaoUsuario.idOrgaoUsu = :idOrgaoUsu  and cpTipoConfiguracao = :tpConf and hisIdcFim is null )", parametros)
                     .fetch();
             List<CpConfiguracao> cpConfiguracoes = new ArrayList<CpConfiguracao>();
             cpConfiguracoes.addAll(cpConfiguracoesCp);
@@ -149,7 +154,9 @@ public class ConfiguracaoGIController extends TpController {
             cpTiposConfiguracao.add(tpConf1);
 
             List<CpSituacaoConfiguracao> cpSituacoesConfiguracao = CpSituacaoConfiguracao.AR.findAll();
-            List<CpComplexo> cpComplexos = CpComplexo.AR.find(" orgaoUsuario.idOrgaoUsu = ? ", idOrgaoUsu).fetch();
+    		Map<String, Object> parametros = new HashMap<String,Object>();
+    		parametros.put("idOrgaoUsu",idOrgaoUsu);
+            List<CpComplexo> cpComplexos = CpComplexo.AR.find(" orgaoUsuario.idOrgaoUsu = :idOrgaoUsu ", parametros).fetch();
 
             result.include(CP_ORGAO_USUARIO, cpOrgaoUsuario);
             result.include(CP_TIPOS_CONFIGURACAO, cpTiposConfiguracao);

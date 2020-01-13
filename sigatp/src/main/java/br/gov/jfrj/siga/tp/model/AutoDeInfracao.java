@@ -15,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.envers.Audited;
@@ -78,6 +79,7 @@ public class AutoDeInfracao extends TpModel implements ConvertableEntity<Long>, 
 	private String enquadramento; */
 
 	@NotNull
+	@NotEmpty
 	@UpperCase
 	private String local;
 

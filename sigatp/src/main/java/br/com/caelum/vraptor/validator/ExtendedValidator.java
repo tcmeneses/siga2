@@ -130,7 +130,7 @@ public class ExtendedValidator extends DefaultValidator {
 				category = alias + "." + category;
 			}
 
-			add(new SimpleMessage(category, msg));
+			add(translate(new SimpleMessage(category, msg)));
 			logger.debug("added message {}={} for contraint violation", category, msg);
 		}
 		return this;
@@ -182,7 +182,7 @@ public class ExtendedValidator extends DefaultValidator {
 	}
 
 	private boolean isBundleMessageKey(String key) {
-		return key.startsWith("{") && key.endsWith("}");
+		return key.startsWith("{") && key.startsWith("}");
 	}
 	
 }

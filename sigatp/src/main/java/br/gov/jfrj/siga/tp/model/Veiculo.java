@@ -37,11 +37,11 @@ import br.gov.jfrj.siga.model.ActiveRecord;
 import br.gov.jfrj.siga.tp.util.PerguntaSimNao;
 import br.gov.jfrj.siga.tp.util.Situacao;
 import br.gov.jfrj.siga.tp.validation.annotation.Chassi;
+import br.gov.jfrj.siga.tp.validation.annotation.Data;
 import br.gov.jfrj.siga.tp.validation.annotation.Renavam;
 import br.gov.jfrj.siga.tp.validation.annotation.Unique;
 import br.gov.jfrj.siga.tp.validation.annotation.UpperCase;
 import br.gov.jfrj.siga.tp.vraptor.i18n.MessagesBundle;
-import br.gov.jfrj.siga.validation.ValidarAnoData;
 
 @Entity
 @Audited
@@ -57,7 +57,7 @@ public class Veiculo extends TpModel implements ConvertableEntity<Long>, Compara
 	@SequenceGenerator(name = "hibernate_sequence_generator", sequenceName = "SIGATP.hibernate_sequence")
 	private Long id;
 
-	@NotEmpty
+	@NotNull
 	@Size(max = 8, message = "{veiculo.placa.maxSize}")
 	@UpperCase
 	private String placa;
@@ -74,7 +74,7 @@ public class Veiculo extends TpModel implements ConvertableEntity<Long>, Compara
 	@Enumerated(EnumType.STRING)
 	private Situacao situacao;
 
-	@NotEmpty
+	@NotNull
 	@UpperCase
 	@Size(max = 11, message = "{veiculo.patrimonio.maxSize}")
 	private String patrimonio;
@@ -98,11 +98,11 @@ public class Veiculo extends TpModel implements ConvertableEntity<Long>, Compara
 	@Min(value = 1000, message = "{veiculo.anoModelo.minSize}")
 	private int anoModelo;
 
-	@NotEmpty
+	@NotNull
 	@UpperCase
 	private String marca;
 
-	@NotEmpty
+	@NotNull
 	@UpperCase
 	private String modelo;
 
@@ -135,11 +135,11 @@ public class Veiculo extends TpModel implements ConvertableEntity<Long>, Compara
 
 	private String pneuPressaoTraseira;
 
-	@NotEmpty
+	@NotNull
 	@Renavam
 	private String renavam;
 
-	@NotEmpty
+	@NotNull
 	@Chassi
 	@UpperCase
 	private String chassi;
@@ -188,12 +188,12 @@ public class Veiculo extends TpModel implements ConvertableEntity<Long>, Compara
 	@UpperCase
 	private String outros;
 
-	@ValidarAnoData(descricaoCampo = "Data de Aquisicao")
+	@Data(descricaoCampo = "Data de Aquisicao")
 	private Calendar dataAquisicao;
 
 	private Double valorAquisicao;
 
-	@ValidarAnoData(descricaoCampo = "Data de Garantia")
+	@Data(descricaoCampo = "Data de Garantia")
 	private Calendar dataGarantia;
 
 	@ManyToOne
@@ -201,15 +201,15 @@ public class Veiculo extends TpModel implements ConvertableEntity<Long>, Compara
 
 	private String numeroCartaoAbastecimento;
 
-	@ValidarAnoData(descricaoCampo = "Validade do Cartao de Abastecimento")
+	@Data(descricaoCampo = "Validade do Cartao de Abastecimento")
 	private Calendar validadeCartaoAbastecimento;
 
 	private String numeroCartaoSeguro;
 
-	@ValidarAnoData(intervalo = 10, descricaoCampo = "Validade do Cartao de Seguro")
+	@Data(intervalo = 10, descricaoCampo = "Validade do Cartao de Seguro")
 	private Calendar validadeCartaoSeguro;
 
-	@ValidarAnoData(descricaoCampo = "Data de Alienacao")
+	@Data(descricaoCampo = "Data de Alienacao")
 	private Calendar dataAlienacao;
 
 	@UpperCase

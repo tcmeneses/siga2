@@ -207,7 +207,9 @@ public class Parametro extends TpModel implements ConvertableEntity<Long> {
 	public static Parametro buscar(Long idBuscar) {
         Parametro retorno = null;
         try {
-            retorno = Parametro.AR.find("id = ?", idBuscar).first();
+    		Map<String, Object> parametros = new HashMap<String,Object>();
+    		parametros.put("id",idBuscar);
+            retorno = Parametro.AR.find("id = :id", parametros).first();
             configurarNivel(retorno);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);

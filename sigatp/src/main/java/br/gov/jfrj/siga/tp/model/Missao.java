@@ -280,7 +280,7 @@ public class Missao extends TpModel implements ConvertableEntity<Long>, Comparab
 		parametros.put("dataHoraInicio", dataHoraInicio);
 		parametros.put("estadoMissao1", EstadoMissao.CANCELADA);
 		parametros.put("estadoMissao2", EstadoMissao.FINALIZADA);
-		return Missao.AR.find("condutor.id = :idCondutor AND dataHoraSaida <= ? AND (dataHoraRetorno is null OR dataHoraRetorno >= :dataHoraInicio) AND estadoMissao NOT IN (:estadoMissao1,:estadoMissao2) order by dataHoraSaida", parametros ).fetch();
+		return Missao.AR.find("condutor.id = :idCondutor AND dataHoraSaida <= :dataHoraInicio AND (dataHoraRetorno is null OR dataHoraRetorno >= :dataHoraInicio) AND estadoMissao NOT IN (:estadoMissao1,:estadoMissao2) order by dataHoraSaida", parametros ).fetch();
 	}
 
 	public static List<Missao> buscarMissoesEmAbertoPorCondutor(Condutor condutor) {

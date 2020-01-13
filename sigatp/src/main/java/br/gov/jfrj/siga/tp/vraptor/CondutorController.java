@@ -1,7 +1,9 @@
 package br.gov.jfrj.siga.tp.vraptor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -173,8 +175,10 @@ public class CondutorController extends TpController {
 	}
 	
 	private DpPessoa recuperaPessoa(DpPessoa dpPessoa) throws Exception {
-		return 	DpPessoa.AR.find("idPessoaIni = ? and dataFimPessoa = null", 
-				dpPessoa.getIdInicial()).first();
+		Map<String, Object> parametros = new HashMap<String,Object>();
+		parametros.put("idPessoaIni",dpPessoa.getIdInicial());
+		return 	DpPessoa.AR.find("idPessoaIni = :idPessoaIni and dataFimPessoa = null", 
+				parametros).first();
 	}
 
 	private List<Condutor> getCondutores() {

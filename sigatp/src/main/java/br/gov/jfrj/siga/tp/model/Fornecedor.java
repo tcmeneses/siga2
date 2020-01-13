@@ -7,13 +7,13 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.envers.Audited;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import br.gov.jfrj.siga.feature.converter.entity.vraptor.ConvertableEntity;
 import br.gov.jfrj.siga.model.ActiveRecord;
@@ -38,10 +38,10 @@ public class Fornecedor extends TpModel implements ConvertableEntity<Long>, Comp
 	@Enumerated(EnumType.STRING)
 	private RamoDeAtividade ramoDeAtividade;
 
-	@NotEmpty
+	@NotNull
 	private String cnpj;
 
-	@NotEmpty
+	@NotNull
 	@UpperCase
 	private String razaoSocial;
 

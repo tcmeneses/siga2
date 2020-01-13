@@ -95,13 +95,13 @@ public class RelatorioUsoVeiculosController extends TpController {
         String qrl = "SELECT v.id, r.id "
                         + "FROM Veiculo v, Missao m "
                         + "INNER JOIN m.requisicoesTransporte r "
-                        + "WHERE m.dataHoraRetorno BETWEEN ? AND ? "
+                        + "WHERE m.dataHoraRetorno BETWEEN :dataInicio AND :dataFinal "
                         + "ORDER BY v.id, r.id";
 
         Query qry = ContextoPersistencia.em().createQuery(qrl);
-        qry.setParameter(1, relatorio.getDataInicio());
-        qry.setParameter(2, relatorio.getDataFim());
-        qry.setParameter(3, cpOrgaoUsuario.getIdOrgaoUsu());
+        qry.setParameter("dataInicio", relatorio.getDataInicio());
+        qry.setParameter("dataFinal", relatorio.getDataFim());
+
          lista = (List<Object[]>) qry.getResultList();
 
         Long idProximoVeiculo = 0L;

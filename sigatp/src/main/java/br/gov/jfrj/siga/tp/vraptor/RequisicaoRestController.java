@@ -238,7 +238,9 @@ public class RequisicaoRestController extends TpController {
     private DpPessoa recuperaPessoa(Long idSolicitante) throws RestControllerException {
         try {
             DpPessoa dpPessoa = DpPessoa.AR.findById(idSolicitante);
-            return DpPessoa.AR.find("idPessoaIni = ? and dataFimPessoa = null", dpPessoa.getIdInicial()).first();
+    		Map<String, Object> parametros = new HashMap<String,Object>();
+    		parametros.put("idPessoaIni",dpPessoa.getIdInicial());
+            return DpPessoa.AR.find("idPessoaIni = :idPessoaIni and dataFimPessoa = null", parametros).first();
         } catch (Exception e) {
             throw new RestControllerException(e);
         }

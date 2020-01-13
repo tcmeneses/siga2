@@ -25,6 +25,7 @@ import br.gov.jfrj.siga.tp.model.TipoDeNotificacao;
 import br.gov.jfrj.siga.tp.model.TpDao;
 import br.gov.jfrj.siga.tp.model.Veiculo;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
+import br.gov.jfrj.siga.vraptor.Transacional;
 
 @Controller
 @Path("/app/autoDeInfracao")
@@ -101,6 +102,7 @@ public class AutoDeInfracaoController extends TpController{
 		result.include("tipoNotificacao", tipoNotificacao);
 	}
 
+	@Transacional
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
@@ -128,6 +130,7 @@ public class AutoDeInfracaoController extends TpController{
 		}
 	}
 
+	@Transacional
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo

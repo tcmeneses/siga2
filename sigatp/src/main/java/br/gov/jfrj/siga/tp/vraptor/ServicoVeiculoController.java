@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -204,7 +206,10 @@ public class ServicoVeiculoController extends TpController {
     public void listarFiltrado(String parametroEstado) {
         EstadoServico estado = null != parametroEstado ? EstadoServico.valueOf(parametroEstado) : EstadoServico.AGENDADO;
         CpOrgaoUsuario cpOrgaoUsuario = getTitular().getOrgaoUsuario();
-        List<ServicoVeiculo> servicos = ServicoVeiculo.AR.find("cpOrgaoUsuario=? and situacaoServico = ?", cpOrgaoUsuario, estado).fetch();
+		Map<String, Object> parametros = new HashMap<String,Object>();
+		parametros.put("cpOrgaoUsuario", cpOrgaoUsuario);
+		parametros.put("estado", estado);
+        List<ServicoVeiculo> servicos = ServicoVeiculo.AR.find("cpOrgaoUsuario=:cpOrgaoUsuario and situacaoServico = :estado", parametros).fetch();
         EstadoServico situacaoServico = EstadoServico.AGENDADO;
         MenuMontador.instance(result).recuperarMenuServicosVeiculo(estado);
         result.include("servicos", servicos);

@@ -69,7 +69,6 @@ public class Abastecimento extends TpModel implements Comparable<Abastecimento>,
 	private Double valorTotalDaNotaFiscal;
 
 	@NotNull
-	@NotEmpty
 	private String numeroDaNotaFiscal;
 
 	@ManyToOne

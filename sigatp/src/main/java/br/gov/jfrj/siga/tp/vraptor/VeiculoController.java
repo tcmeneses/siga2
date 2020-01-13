@@ -1,6 +1,7 @@
 package br.gov.jfrj.siga.tp.vraptor;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -130,8 +131,10 @@ public class VeiculoController extends TpController {
 	}
 
 	private List<DpLotacao> buscarDpLotacoes() {
+        HashMap<String, Object> parametros = new HashMap<String, Object>();
 		CpOrgaoUsuario cpOrgaoUsuario = getTitular().getOrgaoUsuario();
-		List<DpLotacao> dpLotacoes = DpLotacao.AR.find("orgaoUsuario = ? and DATA_FIM_LOT is null order by NOME_LOTACAO", cpOrgaoUsuario).fetch();
+        parametros.put("orgaoUsuario",  cpOrgaoUsuario);
+		List<DpLotacao> dpLotacoes = DpLotacao.AR.find("orgaoUsuario = :orgaoUsuario and DATA_FIM_LOT is null order by NOME_LOTACAO", parametros).fetch();
 		return dpLotacoes;
 	}
 

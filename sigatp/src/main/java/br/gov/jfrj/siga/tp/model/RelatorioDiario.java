@@ -18,8 +18,8 @@ import org.hibernate.envers.Audited;
 import br.gov.jfrj.siga.feature.converter.entity.vraptor.ConvertableEntity;
 import br.gov.jfrj.siga.model.ActiveRecord;
 import br.gov.jfrj.siga.tp.util.PerguntaSimNao;
+import br.gov.jfrj.siga.tp.validation.annotation.Data;
 import br.gov.jfrj.siga.tp.validation.annotation.UpperCase;
-import br.gov.jfrj.siga.validation.ValidarAnoData;
 
 @SuppressWarnings("serial")
 @Entity
@@ -34,7 +34,7 @@ public class RelatorioDiario extends TpModel implements ConvertableEntity<Long> 
 	private Long id;
 	
 	@NotNull
-	@ValidarAnoData(descricaoCampo="Data", nullable=false)
+	@Data(descricaoCampo="Data", nullable=false)
 	private Calendar data;
 	
 	@ManyToOne

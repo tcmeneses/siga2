@@ -4,8 +4,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
@@ -254,17 +256,20 @@ public class Condutor extends TpModel implements ConvertableEntity<Long>, Compar
 
 	public Boolean estaEscalado(String dataMissao) throws Exception {
 		Condutor condutor = this;
+        
+		Map<String, Object> parametros = new HashMap<String,Object>();
+		parametros.put("condutor",condutor);
 		EscalaDeTrabalho escalaVigente;
 		String dataFormatadaOracle = "to_date('" + dataMissao + "', 'DD/MM/YYYY HH24:mi')";
 		StringBuffer hqlVigentes = new StringBuffer();
-		hqlVigentes.append("condutor = ? and ");
+		hqlVigentes.append("condutor = :condutor and ");
 		hqlVigentes.append("dataVigenciaInicio < ");
 		hqlVigentes.append(dataFormatadaOracle);
 		hqlVigentes.append(" and ((dataVigenciaFim is null) or (dataVigenciaFim > ");
 		hqlVigentes.append(dataFormatadaOracle);
 		hqlVigentes.append(")) ");
 		hqlVigentes.append("order by dataVigenciaInicio desc ");
-		List<EscalaDeTrabalho> escalasDeTrabalho = EscalaDeTrabalho.AR.find(hqlVigentes.toString(), condutor).fetch();
+		List<EscalaDeTrabalho> escalasDeTrabalho = EscalaDeTrabalho.AR.find(hqlVigentes.toString(), parametros).fetch();
 		if (escalasDeTrabalho.isEmpty()) {
 			return false;
 		}
@@ -327,13 +332,19 @@ public class Condutor extends TpModel implements ConvertableEntity<Long>, Compar
 	}
 
 	public static List<Condutor> listarFiltradoPor(CpOrgaoUsuario orgaoUsuario, DpLotacao lotacao) throws Exception {
-		List<Condutor> condutores = Condutor.AR.find("cpOrgaoUsuario=? and dpPessoa.lotacao.idLotacaoIni = ?", orgaoUsuario, lotacao.getIdInicial()).fetch();
+		Map<String, Object> parametros = new HashMap<String,Object>();
+		parametros.put("cpOrgaoUsuario",orgaoUsuario);
+		parametros.put("idLotacaoIni",lotacao.getIdInicial());
+		List<Condutor> condutores = Condutor.AR.find("cpOrgaoUsuario=:cpOrgaoUsuario and dpPessoa.lotacao.idLotacaoIni = :idLotacaoIni", parametros).fetch();
 		Collections.sort(condutores);
 		return condutores;
 	}
 
 	public static Condutor recuperarLogado(DpPessoa titular, CpOrgaoUsuario orgaoUsuario) {
-		return Condutor.AR.find("dpPessoa.idPessoaIni=? and cpOrgaoUsuario=?", titular.getIdInicial(), orgaoUsuario).first();
+		Map<String, Object> parametros = new HashMap<String,Object>();
+		parametros.put("cpOrgaoUsuario",orgaoUsuario);
+		parametros.put("idLotacaoIni",titular.getIdInicial());
+		return Condutor.AR.find("dpPessoa.idPessoaIni=:idPessoaIni and cpOrgaoUsuario=:cpOrgaoUsuario", parametros).first();
 	}
 
 	public CategoriaCNH[] getCategorias() {

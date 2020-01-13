@@ -47,6 +47,7 @@ import br.gov.jfrj.siga.tp.util.Reflexao;
 import br.gov.jfrj.siga.tp.util.SigaTpException;
 import br.gov.jfrj.siga.tp.validation.annotation.Data;
 import br.gov.jfrj.siga.tp.validation.annotation.Sequence;
+import br.gov.jfrj.siga.tp.validation.annotation.UpperCase;
 import br.gov.jfrj.siga.tp.vraptor.ServicoVeiculoController;
 import br.gov.jfrj.siga.tp.vraptor.i18n.MessagesBundle;
 import br.gov.jfrj.siga.uteis.SiglaDocumentoType;
@@ -100,11 +101,14 @@ public class RequisicaoTransporte extends TpModel implements Comparable<Requisic
     private FinalidadeRequisicao tipoFinalidade;
 
     //Campo detalheFinalidade no form Requisicoes
+    @UpperCase
     private String finalidade;
 
+    @UpperCase
     private String passageiros;
 
     @NotEmpty
+    @UpperCase
     private String itinerarios;
 
     @OneToMany(orphanRemoval = true, mappedBy = "requisicaoTransporte")
