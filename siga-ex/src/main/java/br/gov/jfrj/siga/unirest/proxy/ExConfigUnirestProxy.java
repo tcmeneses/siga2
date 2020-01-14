@@ -4,12 +4,6 @@ import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 
-import org.apache.http.HttpHost;
-
-import br.gov.jfrj.siga.base.SigaBaseProperties;
-import br.gov.jfrj.siga.ex.SigaExProperties;
-
-import com.mashape.unirest.http.Unirest;
 
 @Startup
 @Singleton
