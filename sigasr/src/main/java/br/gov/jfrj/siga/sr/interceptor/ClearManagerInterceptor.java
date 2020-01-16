@@ -1,35 +1,44 @@
 package br.gov.jfrj.siga.sr.interceptor;
 
+import javax.enterprise.context.RequestScoped;
 import javax.persistence.EntityManager;
 
 import org.hibernate.Session;
 
-import br.com.caelum.vraptor.InterceptionException;
+import br.com.caelum.vraptor.Accepts;
+import br.com.caelum.vraptor.AroundCall;
 import br.com.caelum.vraptor.Intercepts;
-import br.com.caelum.vraptor.core.InterceptorStack;
-import br.com.caelum.vraptor.interceptor.Interceptor;
-import br.com.caelum.vraptor.ioc.Component;
-import br.com.caelum.vraptor.resource.ResourceMethod;
-import br.com.caelum.vraptor.util.jpa.JPATransactionInterceptor;
+import br.com.caelum.vraptor.controller.ControllerMethod;
+import br.com.caelum.vraptor.interceptor.SimpleInterceptorStack;
+import br.com.caelum.vraptor.jpa.JPATransactionCustomInterceptor;
 
-@Component
-@Intercepts(after = JPATransactionInterceptor.class)
-public class ClearManagerInterceptor implements Interceptor {
+
+@RequestScoped
+@Intercepts(after = JPATransactionCustomInterceptor.class)
+public class ClearManagerInterceptor  {
 
 	private EntityManager em;
+	
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public ClearManagerInterceptor() {
+		super();
+		em = null;
+	}
 
 	public ClearManagerInterceptor(EntityManager em) {
 		this.em = em;
 	}
 
-	@Override
-	public void intercept(InterceptorStack stack, ResourceMethod method, Object resourceInstance) throws InterceptionException {
-		stack.next(method, resourceInstance);
+	@AroundCall
+	public void intercept(SimpleInterceptorStack stack)  {
+		stack.next();
 		((Session) em.getDelegate()).clear(); // to avoid automatic flushing
 	}
 
-	@Override
-	public boolean accepts(ResourceMethod method) {
+	@Accepts
+	public boolean accepts(ControllerMethod method) {
 		return Boolean.TRUE;
 	}
 }

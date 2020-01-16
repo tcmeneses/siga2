@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
@@ -27,9 +28,9 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.observer.download.ByteArrayDownload;
+import br.com.caelum.vraptor.observer.download.Download;
 import br.com.caelum.vraptor.validator.Validator;
-import br.com.caelum.vraptor.interceptor.download.ByteArrayDownload;
-import br.com.caelum.vraptor.interceptor.download.Download;
 import br.gov.jfrj.siga.base.Contexto;
 import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.sr.model.DadosRH;
@@ -45,6 +46,14 @@ import br.gov.jfrj.siga.vraptor.SigaObjects;
 @Controller
 public class CorporativoController extends SrController {
 
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public CorporativoController() {
+		super();
+	}
+	
+	@Inject
 	public CorporativoController(HttpServletRequest request, Result result, CpDao dao, SigaObjects so, EntityManager em,
 			SrValidator srValidator, Validator validator) {
 		super(request, result, dao, so, em, srValidator);

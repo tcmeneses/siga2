@@ -4,6 +4,7 @@ import static br.gov.jfrj.siga.sr.util.SrSigaPermissaoPerfil.ADM_ADMINISTRAR;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
@@ -37,6 +38,14 @@ public class AcordoController extends SrController {
 
     private static final String ACORDOS = "acordos";
 
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public AcordoController() {
+		super();
+	}
+	
+	@Inject
     public AcordoController(HttpServletRequest request, Result result, CpDao dao, SigaObjects so, EntityManager em, SrValidator srValidator) {
         super(request, result, dao, so, em, srValidator);
         result.on(AplicacaoException.class).forwardTo(this).appexception();

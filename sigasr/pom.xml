@@ -21,29 +21,18 @@
 			<artifactId>joda-time</artifactId>
 			<version>2.3</version>
 		</dependency>
-		<!-- Demais dependencias -->
-		<!-- <dependency>
-			<groupId>ar.com.fdvs</groupId>
-			<artifactId>DynamicJasper</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>bouncycastle</groupId>
-					<artifactId>bcmail-jdk14</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>bouncycastle</groupId>
-					<artifactId>bcprov-jdk14</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>xml-apis</groupId>
-					<artifactId>xml-apis</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>eclipse</groupId>
-					<artifactId>jdtcore</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>-->
+				<!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
+<dependency>
+    <groupId>javax.validation</groupId>
+    <artifactId>validation-api</artifactId>
+</dependency>
+
+		<dependency>
+			<groupId>javax.enterprise</groupId>
+			<artifactId>cdi-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>siga-rel</artifactId>
@@ -85,11 +74,6 @@
 
 		<!-- DEPENDENCIAS PARA VRAPTORE JSP -->
 		<dependency>
-			<groupId>org.apache.tomcat</groupId>
-			<artifactId>jsp-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>jsptags</groupId>
 			<artifactId>pager-taglib</artifactId>
 		</dependency>
@@ -103,12 +87,12 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
-			<version>1.1.2</version>
+			<version>1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>br.com.caelum.vraptor</groupId>
 			<artifactId>vraptor-jpa</artifactId>
-			<version>1.0.2</version>
+			<version>4.0.5</version>
 			<exclusions>
 				<exclusion>  <!-- declare the exclusion here -->
 					<groupId>org.eclipse.persistence</groupId>
@@ -119,59 +103,6 @@
 		<!-- FIM DEPENDENCIAS PARA VRAPTORE JSP -->
 		
 		<dependency>
-	 		<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>5.3.7.Final</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.derby</groupId>
-			<artifactId>derby</artifactId>
-			<version>10.11.1.1</version>
-			<scope>test</scope>
-		</dependency>
-
-
-		<!-- INICIO POM-PLAY -->
-		<!-- Dependencias obrigatorias caso contrario lançará classnotfound na 
-			aplicação -->
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.jamonapi</groupId>
-			<artifactId>jamon</artifactId>
-			<version>2.75</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.oval</groupId>
-			<artifactId>oval</artifactId>
-			<version>1.84</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.code.maven-play-plugin.org.apache.commons</groupId>
-			<artifactId>commons-javaflow</artifactId>
-			<version>1590792</version>
-		</dependency>
-		<dependency>
-			<groupId>com.thoughtworks.xstream</groupId>
-			<artifactId>xstream</artifactId>
-			<version>1.4.7</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-email</artifactId>
-			<version>1.3.1</version>
-		</dependency>
-
-		<dependency>
 			<groupId>br.com.caelum.vraptor</groupId>
 			<artifactId>vraptor-freemarker</artifactId>
 			<version>1.1.3</version>
@@ -180,58 +111,6 @@
 	</dependencies>
 	<build>
 		<plugins>
-			<!-- vraptor static scan -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.7</version>
-				<dependencies>
-					<dependency>
-						<groupId>org.javassist</groupId>
-						<artifactId>javassist</artifactId>
-						<version>3.15.0-GA</version>
-					</dependency>
-				</dependencies>
-				<executions>
-					<execution>
-						<id>static-scanning</id>
-						<phase>package</phase>
-						<configuration>
-							<target>
-								<echo message="Starting static scanning process..." />
-								<path id="build.classpath">
-									<fileset
-										dir="${project.build.directory}/${project.build.finalName}/WEB-INF/lib"
-										includes="*.jar" />
-									<fileset
-										dir="${project.build.directory}/../../lib/static_scan_vraptor/"
-										includes="*.jar" />
-								</path>
-								<java classpathref="build.classpath"
-									classname="br.com.caelum.vraptor.scan.VRaptorStaticScanning"
-									fork="true">
-									<arg
-										value="${project.build.directory}/${project.build.finalName}/WEB-INF/web.xml" />
-									<classpath refid="build.classpath" />
-									<classpath
-										path="${project.build.directory}/${project.build.finalName}/WEB-INF/classes" />
-								</java>
-								<war destfile="${project.build.directory}/${project.build.finalName}.war"
-									webxml="${project.build.directory}/${project.build.finalName}/WEB-INF/web.xml">
-									<fileset
-										dir="${project.build.directory}/${project.build.finalName}" />
-								</war>
-								<echo message="Static scanning process finished!" />
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- end vraptor static scan -->
-		
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>

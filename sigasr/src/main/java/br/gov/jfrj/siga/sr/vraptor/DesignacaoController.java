@@ -4,6 +4,7 @@ import static br.gov.jfrj.siga.sr.util.SrSigaPermissaoPerfil.ADM_ADMINISTRAR;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
@@ -28,6 +29,14 @@ import br.gov.jfrj.siga.vraptor.SigaObjects;
 @Path("app/designacao")
 public class DesignacaoController extends SrController {
 
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public DesignacaoController() {
+		super();
+	}
+	
+	@Inject
 	public DesignacaoController(HttpServletRequest request, Result result,
 			SigaObjects so, EntityManager em, SrValidator srValidator) {
 		super(request, result, CpDao.getInstance(), so, em, srValidator);

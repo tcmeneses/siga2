@@ -3,7 +3,6 @@ package br.gov.jfrj.siga.tp.vraptor;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;

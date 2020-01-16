@@ -5,6 +5,7 @@ import static br.gov.jfrj.siga.sr.util.SrSigaPermissaoPerfil.ADM_ADMINISTRAR;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
@@ -49,6 +50,14 @@ public class ItemConfiguracaoController extends SrController {
 	private static final String PESQUISA_SATISFACAO = "pesquisaSatisfacao";
 	private final static Logger log = Logger.getLogger(ItemConfiguracaoController.class);
 
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public ItemConfiguracaoController() {
+		super();
+	}
+	
+	@Inject
 	public ItemConfiguracaoController(HttpServletRequest request,
 			Result result, CpDao dao, SigaObjects so, EntityManager em,
 			SrValidator srValidator) {

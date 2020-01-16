@@ -23,6 +23,13 @@ public class SrController extends SigaController {
 
 	protected SrValidator srValidator;
 
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public SrController() {
+		super();
+	}
+	
 	public SrController(HttpServletRequest request, Result result, CpDao dao, SigaObjects so, EntityManager em, SrValidator srValidator) {
 		super(request, result, dao, so, em);
 		this.srValidator = srValidator;

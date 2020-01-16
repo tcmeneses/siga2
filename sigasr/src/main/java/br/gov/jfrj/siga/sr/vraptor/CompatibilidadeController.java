@@ -1,5 +1,6 @@
 package br.gov.jfrj.siga.sr.vraptor;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,7 +18,15 @@ import br.gov.jfrj.siga.vraptor.SigaObjects;
 @Path("solicitacao")
 public class CompatibilidadeController extends SrController {
 
-    public CompatibilidadeController(HttpServletRequest request, Result result, CpDao dao, SigaObjects so, EntityManager em, SrValidator srValidator) {
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public CompatibilidadeController() {
+		super();
+	}
+	
+	@Inject
+	public CompatibilidadeController(HttpServletRequest request, Result result, CpDao dao, SigaObjects so, EntityManager em, SrValidator srValidator) {
         super(request, result, dao, so, em, srValidator);
         result.on(AplicacaoException.class).forwardTo(this).appexception();
         result.on(Exception.class).forwardTo(this).exception();

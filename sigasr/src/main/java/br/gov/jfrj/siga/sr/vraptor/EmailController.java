@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import javax.inject.Inject;
+
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Result;
@@ -25,6 +27,14 @@ public class EmailController {
 	
 	private Result result;
 
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public EmailController() {
+		super();
+	}
+	
+	@Inject
 	public EmailController(Result result) {
 		this.result = result;
 	}
