@@ -179,3 +179,7 @@ p.gt-table-action-list a.link-tag {
 }
 
 
+.btn-outline-success:disabled {
+	cursor: not-allowed;
+}
+
