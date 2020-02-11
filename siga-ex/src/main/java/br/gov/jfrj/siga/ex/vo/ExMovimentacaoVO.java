@@ -52,6 +52,7 @@ import static br.gov.jfrj.siga.ex.ExTipoMovimentacao.TIPO_MOVIMENTACAO_REFERENCI
 import static br.gov.jfrj.siga.ex.ExTipoMovimentacao.TIPO_MOVIMENTACAO_TRANSFERENCIA;
 import static br.gov.jfrj.siga.ex.ExTipoMovimentacao.TIPO_MOVIMENTACAO_TRANSFERENCIA_EXTERNA;
 import static br.gov.jfrj.siga.ex.ExTipoMovimentacao.TIPO_MOVIMENTACAO_VINCULACAO_PAPEL;
+import static br.gov.jfrj.siga.ex.ExTipoMovimentacao.TIPO_MOVIMENTACAO_GERAR_PROTOCOLO;
 import static br.gov.jfrj.siga.ex.ExTipoMovimentacao.hasDespacho;
 
 import java.util.HashMap;
@@ -63,6 +64,7 @@ import com.auth0.jwt.JWTVerifier;
 
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Data;
+import br.gov.jfrj.siga.base.SigaMessages;
 import br.gov.jfrj.siga.base.Texto;
 import br.gov.jfrj.siga.dp.DpLotacao;
 import br.gov.jfrj.siga.dp.DpPessoa;
@@ -343,9 +345,15 @@ public class ExMovimentacaoVO extends ExVO {
 					String mensagemPos = null;
 
 					if (!mov.getExMobilRef().getExDocumento().getDescrDocumento()
-							.equals(mov.getExMobil().getExDocumento().getDescrDocumento()))
-						mensagemPos = " Descrição: " + mov.getExMobilRef().getExDocumento().getDescrDocumento();
-
+							.equals(mov.getExMobil().getExDocumento().getDescrDocumento())) {
+						
+						String motivo = "";
+						if (SigaMessages.isSigaSP() && mov.getDescrMov() != null && mov.getDescrMov().length() > 0) 
+							motivo = ". Motivo: " + mov.getDescrMov();
+																	
+						mensagemPos = " Descrição: " + mov.getExMobilRef().getExDocumento().getDescrDocumento() + motivo;
+					}
+						
 					addAcao(null, mov.getExMobilRef().getSigla(), "/app/expediente/doc", "exibir", true, null,
 							"sigla=" + mov.getExMobilRef().getSigla(), "Desentranhado do documento: ", mensagemPos,
 							null);
@@ -424,6 +432,14 @@ public class ExMovimentacaoVO extends ExVO {
 			} else {
 				descricao = mov.getExMobil().getSigla();
 			}
+		}
+		
+		if(idTpMov == TIPO_MOVIMENTACAO_GERAR_PROTOCOLO) {
+			if (!mov.isCancelada())
+				addAcao(null, "Gerar Protocolo", "/app/expediente/doc", "gerarProtocolo", true,
+						null,  "sigla=" + mov.getExMobil().getSigla()
+							+ "&popup=true",
+						null, null, null);
 		}
 
 		if (idTpMov == TIPO_MOVIMENTACAO_ARQUIVAMENTO_CORRENTE

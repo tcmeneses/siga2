@@ -73,6 +73,8 @@
 		<class>br.gov.jfrj.siga.ex.ExMarca</class>
 		<class>br.gov.jfrj.siga.ex.ExConfiguracao</class>
 		<class>br.gov.jfrj.siga.ex.ExDocumentoNumeracao</class>
+		<class>br.gov.jfrj.siga.ex.ExSequencia</class>
+		<class>br.gov.jfrj.siga.ex.ExProtocolo</class>
 
 		<properties>
 		<property name="hibernate.jpa.compliance.global_id_generators" value="false"/>
@@ -94,12 +96,12 @@
 			<property name="hibernate.cache.region.factory_class"
 				value="org.jboss.as.jpa.hibernate4.infinispan.InfinispanRegionFactory" />
 			<property name="hibernate.dialect" value="org.hibernate.dialect.OracleDialect" />
- -->
+			<property name="hibernate.show_sql" value="false" />
 
 			<property name="hibernate.max_fetch_depth" value="3" />
 			<property name="hibernate.default_batch_fetch_size" value="1000" />
 			<property name="hibernate.hbm2ddl.auto" value="none" />
-			<property name="hibernate.show_sql" value="false" />
+			<property name="hibernate.show_sql" value="false" /> -->
 			
 			<!-- Desabilita o novo gerador de IDs para manter a compatibilidade -->
 			<property name="hibernate.id.new_generator_mappings" value="false"/>
@@ -210,7 +212,6 @@
 			<property
 				name="hibernate.cache.infinispan.ex.expiration.max_idle"
 				value="300000" />
-				
 		</properties>
 	</persistence-unit>
 </persistence>

@@ -36,6 +36,7 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.Data;
+import br.gov.jfrj.siga.base.SigaBaseProperties;
 import br.gov.jfrj.siga.cp.CpAcesso;
 import br.gov.jfrj.siga.cp.CpTipoConfiguracao;
 import br.gov.jfrj.siga.cp.bl.Cp;
@@ -61,6 +62,9 @@ public class ExMesaController extends ExController {
 
 	@Get("app/mesa")
 	public void lista(Boolean exibirAcessoAnterior, Long idVisualizacao) {
+		if (SigaBaseProperties.getString("siga.mesa.versao") != null) 
+			result.redirectTo("/app/mesa" + SigaBaseProperties.getString("siga.mesa.versao"));
+		
 		if (exibirAcessoAnterior != null && exibirAcessoAnterior) {
 			CpAcesso a = dao.consultarAcessoAnterior(so.getCadastrante());
 			if (a == null)

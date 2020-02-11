@@ -92,6 +92,9 @@ public class ExDocumento extends AbstractExDocumento implements Serializable,
 
 	@Transient
 	private byte[] cacheConteudoBlobDoc;
+	
+	@Transient
+	private List<ExMovimentacao> listaMovimentacaoPorRestricaoAcesso;
 
 	@Formula("REMOVE_ACENTO(DESCR_DOCUMENTO)")
 	private String descrDocumentoAI;
@@ -100,7 +103,7 @@ public class ExDocumento extends AbstractExDocumento implements Serializable,
 	 * Simple constructor of ExDocumento instances.
 	 */
 	public ExDocumento() {
-	}
+	}	
 
 	@Override
 	public Long getIdDoc() {
@@ -615,6 +618,19 @@ public class ExDocumento extends AbstractExDocumento implements Serializable,
 		}
 		return "";
 	}
+	
+	
+	/**
+	 * Retorna a data do documento no formato dd/mm/aa, por exemplo, 01/02/10.
+	 */
+	public String getDtPrimeiraAssinaturaDDMMYY() {
+		if (getDtPrimeiraAssinatura()!= null) {
+			final SimpleDateFormat df = new SimpleDateFormat("dd/MM/yy");
+			return df.format(getDtPrimeiraAssinatura());
+		}
+		return "";
+	}
+	
 
 	/**
 	 * Retorna a data original do documento externo no formato dd/mm/aa, por
@@ -665,6 +681,9 @@ public class ExDocumento extends AbstractExDocumento implements Serializable,
 		return "";
 	}
 
+	
+	
+	
 	/**
 	 * Retorna o nome da localidade (município) onde se encontra a lotação em
 	 * que o documento foi produzido, caso não tenha sido digitado valor para a
@@ -896,7 +915,7 @@ public class ExDocumento extends AbstractExDocumento implements Serializable,
 	 * Verifica se um documento é composto
 	 */
 	public Boolean isComposto() {
-		return getExFormaDocumento().isComposto() || getExModelo().getModeloAtual().isComposto();
+		return getExFormaDocumento().isComposto();
 	}
 
 	/**
@@ -905,6 +924,11 @@ public class ExDocumento extends AbstractExDocumento implements Serializable,
 	 */
 	public Boolean isIndexavel() {
 		return !isPendenteDeAssinatura() && !isCancelado();
+	}
+	
+	public String getMarcaDagua() {
+		String marcaDagua = getExModelo().getModeloAtual().getMarcaDagua();				
+		return marcaDagua == null ? "" : marcaDagua.trim();
 	}
 
 	/**
@@ -2670,5 +2694,24 @@ public class ExDocumento extends AbstractExDocumento implements Serializable,
 					return mov;
 			}
 		return null;
+	}
+	
+	public boolean isDocFilhoJuntadoAoPai() {
+		if (getExMobilPai() != null) {			
+			for (ExMobil mob : getExMobilPai().getJuntados()) {					
+				if (getIdDoc() == mob.doc().getIdDoc()) {
+					return true;
+				}									
+			}			
+		}	
+		return false;
+	}
+	
+	public void setListaMovimentacaoPorRestricaoAcesso(List<ExMovimentacao> listaMovs) {
+		this.listaMovimentacaoPorRestricaoAcesso = listaMovs;
+	}
+	
+	public List<ExMovimentacao> getListaMovimentacaoPorRestricaoAcesso() {
+		return this.listaMovimentacaoPorRestricaoAcesso;
 	}
 }

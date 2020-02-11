@@ -42,6 +42,8 @@ public class SigaMessages {
 			messages = "messages";
 			if (SigaBaseProperties.getString("siga.local") != null) {
 	    		messages += "_" + SigaBaseProperties.getString("siga.local");
+	    	} else {
+	    		messages = "messages_TRF2";
 	    	}
 		}
 		return messages;

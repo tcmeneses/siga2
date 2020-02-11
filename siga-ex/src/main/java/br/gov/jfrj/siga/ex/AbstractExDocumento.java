@@ -35,6 +35,7 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -261,6 +262,16 @@ public abstract class AbstractExDocumento extends ExArquivo implements
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "DT_FINALIZACAO", length = 19)
 	private Date dtFinalizacao;
+	
+	
+	/*
+	 * 16/01/2020 - Data da primeira assinatura
+	 */
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "DT_PRIMEIRAASSINATURA", length = 19)
+	private Date dtPrimeiraAssinatura;
+	
+	
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "DT_REG_DOC", nullable = false, length = 19)
@@ -396,7 +407,11 @@ public abstract class AbstractExDocumento extends ExArquivo implements
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ID_MOB_AUTUADO")
 	private ExMobil exMobilAutuado;
-
+	
+	@OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ID_PROTOCOLO")
+    private ExProtocolo exProtocolo;
+	
 	/**
 	 * Simple constructor of AbstractExDocumento instances.
 	 */
@@ -1065,4 +1080,26 @@ public abstract class AbstractExDocumento extends ExArquivo implements
 	public void setDtAltDoc(java.util.Date dtAltDoc) {
 		this.dtAltDoc = dtAltDoc;
 	}
+
+	public ExProtocolo getExProtocolo() {
+		return exProtocolo;
+	}
+
+	public void setExProtocolo(ExProtocolo exProtocolo) {
+		this.exProtocolo = exProtocolo;
+	}
+
+	public Date getDtPrimeiraAssinatura() {
+		return dtPrimeiraAssinatura;
+	}
+
+	public void setDtPrimeiraAssinatura(Date dtPrimeiraAssinatura) {
+		this.dtPrimeiraAssinatura = dtPrimeiraAssinatura;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+	
+	
 }

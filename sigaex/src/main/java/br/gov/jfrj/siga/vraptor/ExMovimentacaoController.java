@@ -1,5 +1,8 @@
 package br.gov.jfrj.siga.vraptor;
 
+import static br.gov.jfrj.siga.ex.ExMobil.adicionarIndicativoDeMovimentacaoComOrigemPeloBotaoDeRestricaoDeAcesso;
+import static br.gov.jfrj.siga.ex.ExMobil.removerIndicativoDeMovimentacaoComOrigemPeloBotaoDeRestricaoDeAcesso;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -567,7 +570,7 @@ public class ExMovimentacaoController extends ExController {
 						mov.getSubscritor());
 		ExDocumentoController.redirecionarParaExibir(result, sigla);
 	}
-
+		
 	@Get("app/expediente/mov/assinar")
 	public void aAssinar(String sigla, Boolean autenticando) throws Exception {
 		BuscaDocumentoBuilder builder = BuscaDocumentoBuilder.novaInstancia()
@@ -583,6 +586,20 @@ public class ExMovimentacaoController extends ExController {
 			autenticando = false;
 		boolean previamenteAssinado = !doc.isPendenteDeAssinatura();
 		boolean assinando = !autenticando;
+		
+		if (autenticando && !permiteAutenticar(doc)) {				
+			throw new AplicacaoException(
+					"Não é permitido autenticar o documento, favor rever as configurações para o modelo: "
+					+ doc.getExModelo().getDescMod() + ". "
+					+ "Tipo de Configuração: Movimentar. "
+					+ "Tipo de Movimentação: Autenticação de Documento.");			
+		}
+					
+		/*
+		 * 16/01/2020 - recebendo a data da assinatura
+		 */
+		if(doc.getDtPrimeiraAssinatura() == null)
+			doc.setDtPrimeiraAssinatura(dao.dt());
 
 		if (devePreAssinar(doc, previamenteAssinado)) {
 			Ex.getInstance().getBL()
@@ -613,6 +630,10 @@ public class ExMovimentacaoController extends ExController {
 		result.include("juntarFixo", doc.getPai() != null && afJuntada.fixo ? false : null);
 		result.include("tramitarAtivo", afTramite.ativo);
 		result.include("tramitarFixo", afTramite.fixo);
+	}
+	
+	public boolean permiteAutenticar(ExDocumento doc) {
+		return Ex.getInstance().getComp().podeAutenticarDocumento(getTitular(), getLotaTitular(), doc);
 	}
 	
 	public static class AtivoEFixo {
@@ -745,15 +766,17 @@ public class ExMovimentacaoController extends ExController {
 			throw new AplicacaoException(
 					"Não é possível restringir acesso");
 		}
+					
+		adicionarIndicativoDeMovimentacaoComOrigemPeloBotaoDeRestricaoDeAcesso();			
 		
-		
-
 		Ex.getInstance()
 				.getBL()
 				.restringirAcesso(getCadastrante(), getLotaTitular(), doc,
 						null, mov.getLotaResp(), mov.getResp(),
 						listaSubscritor, mov.getTitular(),
 						mov.getNmFuncaoSubscritor(), exTipoSig);
+		
+		removerIndicativoDeMovimentacaoComOrigemPeloBotaoDeRestricaoDeAcesso();
 
 		result.include("msgCabecClass", "alert-warning");
 		result.include("mensagemCabec", "Somente os usuários definidos, terão acesso aos documentos. Os usuários que já tiveram acesso ao documento, por tramitações anteriores ou por definição de acompanhamento deixam de ter acesso/visualização ao documento. Inclusive o cadastrante dos documentos, responsáveis pela assinatura e cossignatário");
@@ -929,10 +952,10 @@ public class ExMovimentacaoController extends ExController {
 		ArrayList<Object> lista = new ArrayList<Object>();
 		final Object[] ao = { doc, mov };
 		lista.add(ao);
-		result.include("cadastrante", getCadastrante());
+		result.include("cadastrante", mov.getCadastrante());
 		result.include("mov", mov);
 		result.include("itens", lista);
-		result.include("lotaTitular", getLotaTitular());
+		result.include("lotaTitular", mov.getLotaTitular());
 		result.include("popup", popup);
 	}
 	
@@ -952,10 +975,10 @@ public class ExMovimentacaoController extends ExController {
 		ArrayList<Object> lista = new ArrayList<Object>();
 		final Object[] ao = { doc, mov };
 		lista.add(ao);
-		result.include("cadastrante", getCadastrante());
+		result.include("cadastrante", mov.getCadastrante());
 		result.include("mov", mov);
 		result.include("itens", lista);
-		result.include("lotaTitular", getLotaTitular());
+		result.include("lotaTitular", mov.getLotaTitular());
 		result.include("popup", popup);
 	}
 
@@ -1037,9 +1060,15 @@ public class ExMovimentacaoController extends ExController {
 			/*result.use(Results.page()).forwardTo(
 					"/WEB-INF/page/exMovimentacao/aGerarProtocolo.jsp");*/
 		} else
-			result.redirectTo("/app/expediente/mov/protocolo_unitario?popup="
-					+ popup + "&sigla=" + mov.getExMobil().getDoc().getSigla()
-					+ "&id=" + mov.getIdMov());
+			if(SigaMessages.isSigaSP()) {
+				result.redirectTo("/app/expediente/mov/protocolo_unitario_sp?popup="
+						+ popup + "&sigla=" + mov.getExMobil().getDoc().getSigla()
+						+ "&id=" + mov.getIdMov());
+			} else {
+				result.redirectTo("/app/expediente/mov/protocolo_unitario?popup="
+						+ popup + "&sigla=" + mov.getExMobil().getDoc().getSigla()
+						+ "&id=" + mov.getIdMov());
+			}
 	}
 
 	@Get("app/expediente/mov/juntar")
@@ -3118,6 +3147,7 @@ public class ExMovimentacaoController extends ExController {
 		result.include("substituicao", Boolean.FALSE);
 		result.include("subscritorSel", new DpPessoaSelecao());
 		result.include("titularSel", new DpPessoaSelecao());
+		result.include("validarCamposObrigatoriosForm", SigaMessages.isSigaSP());
 	}
 
 	@Get("/app/expediente/mov/cancelar_ciencia")

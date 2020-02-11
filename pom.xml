@@ -153,6 +153,11 @@
 			<id>swetake</id>
 			<url>http://itrc.jju.edu.cn/nexus-2.0.6/content/repositories/thirdparty/</url>
 		</repository>
+		
+		<repository>
+			<id>sonatype</id>
+			<url>https://oss.sonatype.org/content/repositories/releases/</url>
+		</repository>
 
 		<!-- repositorio adicionado para a simplecaptcha -->
 		<!-- Edson: removendo pois está quebrado -->
@@ -161,10 +166,10 @@
 			<url>http://maven.nfms4redd.org/</url>
 		</repository>-->
 		<!-- repositorio adicionado para o dynamic jasper -->
-		<repository>
+	<!-- 	<repository>
 	    	<id>fdvsolution.public</id>
 	    	<url>http://nexus.fdvs.com.ar/content/groups/public/</url>
-	    </repository>
+	    </repository>   -->
 	</repositories>
 
 	<dependencyManagement>
