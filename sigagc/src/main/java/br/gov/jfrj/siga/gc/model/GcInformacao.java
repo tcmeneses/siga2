@@ -27,13 +27,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.PostLoad;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import org.hibernate.annotations.Sort;
-import org.hibernate.annotations.SortType;
 
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.SigaCalendar;
@@ -133,7 +131,7 @@ public class GcInformacao extends Objeto {
 	@JoinColumn(name = "ID_GRUPO")
 	private CpPerfil grupo;
 
-	@Sort(type = SortType.NATURAL)
+	@OrderBy("sort")
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(name = "GC_TAG_X_INFORMACAO", schema = "SIGAGC", joinColumns = @JoinColumn(name = "id_informacao"), inverseJoinColumns = @JoinColumn(name = "id_tag"))
 	public SortedSet<GcTag> tags;
@@ -160,7 +158,7 @@ public class GcInformacao extends Objeto {
 	public java.util.List<GcMarca> marcas;
 	// public java.util.Set<GcMarca> marcas;
 
-	@Sort(type = SortType.NATURAL)
+	@OrderBy("sort")
 	@OneToMany(mappedBy = "inf")
 	public SortedSet<GcMovimentacao> movs;
 

@@ -29,8 +29,8 @@
 		<module>siga-ex-sinc</module>
 		<module>siga-gc-gsa</module>
 		<module>sigasr</module>
-	<!--	<module>sigagc</module>
- 		<module>sigapp</module> -->
+ 		<module>sigagc</module>
+ 	<!--  <module>sigapp</module> -->
 		<!--<module>sigari</module>
  		<module>siga-cp-sinc</module> 
  		<module>siga-dump</module>

@@ -15,10 +15,11 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import br.com.caelum.vraptor.ioc.Component;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Par;
 import br.gov.jfrj.siga.cp.CpConfiguracao;
@@ -45,7 +46,7 @@ import br.gov.jfrj.siga.model.Historico;
 import br.gov.jfrj.siga.model.Objeto;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
 
-@Component
+@RequestScoped
 public class GcBL {
 	private static final long TEMPO_NOVIDADE = 7 * 24 * 60 * 60 * 1000L;
 
@@ -53,6 +54,17 @@ public class GcBL {
 	private SigaObjects so;
 	private Date dt;
 
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public GcBL() {
+		super();
+		this.em = null;
+		this.so = null;
+
+	}
+	
+	@Inject
 	public GcBL(EntityManager em, SigaObjects so) {
 		super();
 		this.em = em;

@@ -1,22 +1,24 @@
 package br.gov.jfrj.siga.gc.vraptor;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import br.com.caelum.vraptor.Accepts;
+import br.com.caelum.vraptor.AroundCall;
 import br.com.caelum.vraptor.Intercepts;
+import br.com.caelum.vraptor.controller.ControllerMethod;
 import br.com.caelum.vraptor.validator.Validator;
 import br.com.caelum.vraptor.core.InterceptorStack;
 import br.com.caelum.vraptor.interceptor.Interceptor;
-import br.com.caelum.vraptor.ioc.Component;
-import br.com.caelum.vraptor.resource.ResourceMethod;
-import br.com.caelum.vraptor.util.jpa.JPATransactionInterceptor;
+import br.com.caelum.vraptor.interceptor.SimpleInterceptorStack;
+import br.com.caelum.vraptor.jpa.JPATransactionCustomInterceptor;
 import br.gov.jfrj.siga.model.ContextoPersistencia;
 
-@Component
-@Intercepts(before = JPATransactionInterceptor.class)
-public class GcInterceptor implements Interceptor {
+@Intercepts(before = JPATransactionCustomInterceptor.class)
+public class GcInterceptor  {
 
 	private final EntityManager manager;
 	private final Validator validator;
@@ -24,6 +26,19 @@ public class GcInterceptor implements Interceptor {
 	private HttpServletResponse response;
 	private ServletContext context;
 
+	/**
+	 * @deprecated CDI eyes only
+	 */
+	public GcInterceptor() {
+		super();
+		this.manager = null;
+		this.validator = null;
+		this.request = null;
+		this.response = null;
+		this.context = null;
+	}
+	
+	@Inject
 	public GcInterceptor(EntityManager manager, Validator validator,
 			ServletContext context, HttpServletRequest request,
 			HttpServletResponse response) {
@@ -34,19 +49,20 @@ public class GcInterceptor implements Interceptor {
 		this.context = context;
 	}
 
-	public void intercept(InterceptorStack stack, ResourceMethod method,
-			Object instance) {
+	@AroundCall
+	public void intercept(SimpleInterceptorStack stack)  {
 
 		ContextoPersistencia.setEntityManager(this.manager);
 
 		try {
-			stack.next(method, instance);
+			stack.next();
 		} finally {
 			ContextoPersistencia.setEntityManager(null);
 		}
 	}
 
-	public boolean accepts(ResourceMethod method) {
+	@Accepts
+	public boolean accepts(ControllerMethod method) {
 		return true; // Will intercept all requests
 	}
 }

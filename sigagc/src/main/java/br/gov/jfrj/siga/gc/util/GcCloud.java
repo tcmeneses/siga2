@@ -38,9 +38,9 @@ public class GcCloud extends Cloud {
 		filtro.pesquisa = true;
 
 		StringBuilder sb = new StringBuilder();
-//		SigaLogicResult router = ContextInterceptor.result().use(
-//				SigaLogicResult.class);
-//		router.getRedirectURL(sb, AppController.class).listar(filtro, 0);
+ 		SigaLogicResult router = ContextInterceptor.result().use(
+ 				SigaLogicResult.class);
+ 		router.getRedirectURL(sb, AppController.class).listar(filtro, 0,false, null, null);
 		sb.append("/sigagc/app/listar");
 		sb.append("?filtro.pesquisa=true");
 		sb.append("&filtro.tag.id=" + filtro.getTag().getId());
