@@ -91,7 +91,7 @@
 											</ul>
 										</div>
 										<input class="hidden hidden-field" name="exDocumentoDTO.idMod" readonly="readonly" onchange="alterouModeloSelect()"
-											aria-hidden="true" type="text" value="${exDocumentoDTO.idMod}" />
+											aria-hidden="true" type="hidden" value="${exDocumentoDTO.idMod}" />
 									</div>
 									<small class="form-text text-muted"><fmt:message key="documento.help.modelo"/></small>
 								</div>

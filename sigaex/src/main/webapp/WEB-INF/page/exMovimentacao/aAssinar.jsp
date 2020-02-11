@@ -58,7 +58,7 @@
 			<c:if test="${doc.conteudoBlobHtmlStringComReferencias != null}">
 				<div id="divClassificacao" class="card-body bg-white border">
 					<div class="gt-content-box" style="padding: 10px;">
-						<table class="message" width="100%">
+						<table width="100%">
 							<tr>
 								<td colspan="2">
 									<div id="conteudo" style="padding-top: 10px;">

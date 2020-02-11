@@ -23,7 +23,8 @@
 			t = (Throwable) exception;
 		}
 	    Throwable cause = null; 
-	    while(null != (cause = t.getCause())  && (t != cause) ) {
+	    while((null != (cause = t.getCause())  && (t != cause)) 
+	    		|| t.getClass().getSimpleName().equals("AplicacaoException") ) {
 	        t = cause;
 	    }
 	    String tipoException = "Geral";

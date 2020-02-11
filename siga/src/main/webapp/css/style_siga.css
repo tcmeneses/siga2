@@ -1,5 +1,29 @@
 /*Identidade Visual do SIGA.doc para todos locais */
+.btn-light {
+    border-color: #dee2e6;
+}
+.table .thead-dark th {
+    background-color: #009682;
+    border-color: #009682;
+}
+.cursor-pointer{
+  cursor: pointer;
+}
 
+/* Para funcionar o hierarchy-select com inspinia */
+
+#modelos-select.btn-group, #modelos-select.btn-group-vertical {
+    position: relative;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    vertical-align: middle;
+}
+#modelos-select .dropdown-menu {
+	display: none;
+}
+#modelos-select .dropdown-menu.show {
+    display: block !important;
+}
 /* Elementos para collapse de cards */  
 
 .collapse-header .collapse-toggle:after, .card-header .card-toggle:after {
@@ -12,7 +36,7 @@
 .collapse-header .collapse-toggle.collapsed:after, .card-header .card-toggle.collapsed:after {
     content: "\f0da"; 
 }
-/* Botï¿½o circular */
+/* Botão circular */
 .btn-circle {
     width: 30px;
     height: 30px;
@@ -23,16 +47,11 @@
     line-height: 1.42857;
 }
 #radioBtn .notActive{
-    color: #3276b1;
+    color: #18a588;
     background-color: #fff;
 }
 
 /* Sidebar */
-
-.wrapper {
-    display: flex;
-    align-items: stretch;
-}
 
 #sidebar {
     transition: all 0.3s;    
@@ -56,13 +75,12 @@ html body, .table-group-separator {
 
 
 .table-group-separator, .table-group-title {
-	background-color: #dae9ec !important;
 	border: 1px solid #dae9ec !important;
-	background-color: #dae9ec !important;
+	background-color: #d7e6e3 !important;
 }
-table.table {
-	background-color: white;
-}
+/* table.table { */
+/* 	background-color: white; */
+/* } */
 
 p.gt-table-action-list a.link-tag {
 	margin-top: 0.4em;
@@ -137,9 +155,10 @@ p.gt-table-action-list a.link-tag {
 }
 
 .mesa-config {
-    position: absolute;
+    position: fixed;
     right: -220px;
     width: 250px;
+    top: 80px;	
 }
 .btn-mesa-config {
 	width: 30px;
@@ -166,6 +185,25 @@ p.gt-table-action-list a.link-tag {
     transition: 1s;
     right: -220px;
 }
+.badge-mesa {
+	font-size: 0.8em;
+    padding: 0px 5px;
+}
+.hover-mesa {
+  opacity: 0.8;
+  transition: 0.3s;
+}
+.hover-mesa:hover {
+	opacity: 1;
+}	
+.scroll-arrows {
+	position: fixed;
+	bottom: 5px;
+	right: 5px;
+	z-index: 99;
+	cursor: pointer;
+	opacity: 0.8;	
+}
 .bd-carregando-modal-lg .modal-dialog{
     display: table;
     position: relative;
@@ -179,7 +217,48 @@ p.gt-table-action-list a.link-tag {
 }
 
 
-.btn-outline-success:disabled {
-	cursor: not-allowed;
+/* Override inspinia  */
+h1 {font-size: 30px;}
+h2 {font-size: 24px;}
+h3 {font-size: 18px;}
+h4 {font-size: 16px;}
+h5 {font-size: 14px;}
+h6 {font-size: 12px;}
+.wrapper-content {
+    padding: 10px 0px 10px 0px;
 }
-
+.bg-info {
+  background-color: #1ab394 !important;
+  color: #ffffff;
+}
+.bg-sp {
+  background-color: #009682 !important;
+  color: #ffffff;
+}
+.bg-sp-light {
+  background-color: #b3d4cf !important;
+  color: #ffffff;
+}
+.bg-sp-hard {
+  background-color: #006d5e !important;
+  color: #ffffff;
+}
+.nav > li > a {
+    color: #e9ecef !important;
+}
+.nav > li.active {
+    background: #006d5e;
+}
+ul.nav-second-level {
+    background: #006d5e;
+}
+.navbar-default .nav > li > a:hover, .navbar-default .nav > li > a:focus {
+    background-color: #005247;
+}
+.mini-navbar .nav .nav-second-level {
+    background-color: #006d5e;
+}
+.label-info, .badge-info {
+    background-color: #009682;
+    color: #FFFFFF;
+}

@@ -55,6 +55,16 @@ public class ExMesa2Controller extends ExController {
 		super(request, response, context, result, ExDao.getInstance(), so, em);
 	}
 
+	@Get("app/mesa4")
+	public void lista3(Boolean exibirAcessoAnterior, Long idVisualizacao) {
+		lista(exibirAcessoAnterior, idVisualizacao);
+	}
+	
+	@Get("app/mesa3")
+	public void lista2(Boolean exibirAcessoAnterior, Long idVisualizacao) {
+		lista(exibirAcessoAnterior, idVisualizacao);
+	}
+	
 	@Get("app/mesa2")
 	public void lista(Boolean exibirAcessoAnterior, Long idVisualizacao) {
 		if (exibirAcessoAnterior != null && exibirAcessoAnterior) {

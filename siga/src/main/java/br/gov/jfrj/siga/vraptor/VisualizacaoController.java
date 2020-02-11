@@ -197,8 +197,12 @@ public class VisualizacaoController extends SigaController {
 		if (idVisualizacao == null)
 			throw new AplicacaoException("Dados não informados");
 			
-		result.redirectTo(Contexto.urlBase(request) + "/sigaex/app/mesa" 
-				+ SigaBaseProperties.getString("siga.mesa.versao") + "?idVisualizacao="+idVisualizacao);
+		if (SigaBaseProperties.getString("siga.mesa.versao") != null) {
+			result.redirectTo(Contexto.urlBase(request) + "/sigaex/app/mesa" 
+					+ SigaBaseProperties.getString("siga.mesa.versao") + "?idVisualizacao=" + idVisualizacao);
+		} else {
+			result.redirectTo(Contexto.urlBase(request) + "/sigaex/app/mesa?idVisualizacao=" + idVisualizacao);
+		}
 	}	
 	
 	public void exclui(Long id) throws Exception {

@@ -112,14 +112,18 @@
 			</p>
 		</div>
 	</c:if>
-	<div class="row mt-3">
-		<div class="col">
+	<div class="row my-2">
+		<div class="col-6">
 			<form name="frm" action="exibir" theme="simple" method="POST"></form>
-			<h2>
+			<h2 class="m-0">
 				<c:if test="${empty ocultarCodigo}">${docVO.sigla}
 				</c:if>
-				<button type="button" name="voltar" onclick="${(empty param.linkVolta) ? 'javascript:window.location.href=\'/siga\';' : 'javascript:'.concat(param.linkVolta) }" class="btn btn-secondary float-right ${hide_only_TRF2}" accesskey="r">Volta<u>r</u></button>
 			</h2>
+		</div>
+		<div class="col-6">
+			<button type="button" name="voltar" onclick="${(empty param.linkVolta) ? 'javascript:window.location.href=\'/siga\';' : 'javascript:'.concat(param.linkVolta) }" class="btn btn-secondary float-right ${hide_only_TRF2}" 
+					class="float-right" accesskey="r">
+				Volta<u>r</u></button>
 		</div>
 	</div>
 	<c:set var="primeiroMobil" value="${true}" />
