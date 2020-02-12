@@ -195,7 +195,8 @@
 							</div>
 							<div class="col-3 col-md-2">
 								<span v-if="f.anotacao != null">
-									<a tabindex="0" class="anotacao fas fa-sticky-note text-warning popover-dismiss" role="button" 
+									<a tabindex="0" class="anotacao fas fa-sticky-note text-warning popover-dismiss" role="button"
+											@click="event.stopPropagation();" 
 											data-toggle="popover" data-trigger="focus" title="Anotação" :data-content="f.anotacao"></a>
 								</span>
 								<c:if test="${siga_cliente == 'GOVSP'}">
@@ -455,7 +456,7 @@
 		    selecionaGrupo: function(grupoOrdem, grupoNome) {
 		  	    var parmGrupos = JSON.parse(getParmUser('gruposMesa'));
 		  	    for (var g in parmGrupos) {
-		    		if (g === grupoNome) {
+		    		if (g == grupoNome) {
 			    		setValueGrupo(grupoNome, 'collapsed', false);
 		    		} else {
 			    		setValueGrupo(grupoNome, 'collapsed', true);
@@ -463,14 +464,18 @@
 		  	    }
 		  	    this.grupoAtual = grupoNome;
 	    		
-	    		if (parmGrupos[grupoNome].qtd === 0) {
+	    		if (parmGrupos[grupoNome].qtd == 0) {
 	    			setValueGrupo(grupoNome, 'qtd', parmGrupos[grupoNome].qtdPag)
 	    		} else {
 		  	    	setValueGrupo(grupoNome, 'qtd', parseInt(parmGrupos[grupoNome].qtd));
 	    		}
-	    		if (this.grupos[grupoNome].grupoDocs.length = 0) {
-		    		this.carregarMesa(grupoNome, 0);
-	    		}
+	    	    for (var grp in this.grupos) {
+	    	        if (this.grupos[grp].grupoNome == grupoNome) {
+	    	    		if (this.grupos[grp].grupoDocs == undefined || this.grupos[grp].grupoDocs.length == 0) {
+	    		    		this.carregarMesa(grupoNome, 0);
+	    	    		}
+	    	        }
+	    	     }
 		    },
 		    showDoc: function(siglaDoc, idVisualizacao) {
 		    	location.href='expediente/doc/visualizar?sigla=' + siglaDoc + '&idVisualizacao=' + idVisualizacao;
@@ -478,7 +483,7 @@
 		    getLastRefreshTime: function() {
 		    	var dt = new Date(sessionStorage.getItem('timeout' + getUser()));
 		    	return ("0" + dt.getDate()).slice (-2) + "/" + ("0" + (dt.getMonth() + 1)).slice (-2) + " " 
-		    		+ dt.getHours() + ":" + dt.getMinutes();
+		    		+ dt.getHours() + ":" + ("0" + (dt.getMinutes() + 1)).slice (-2);
 		    },
 		    toggleMenuConfig: function() {
 		    	if (this.toggleConfig === 'show-config') {
@@ -677,6 +682,9 @@ function carregaFromJson (json, appMesa) {
     atualizaGrupos(appMesa.grupos);
     appMesa.primeiraCarga = false;
 	appMesa.carregando = false;
+}
+function evitaClique(e) {
+   e.preventDefault();
 }
 function getUser () {
 	return document.getElementById('cadastrante').title + ${idVisualizacao == 0 ? '""' : idVisualizacao };

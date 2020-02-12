@@ -19,48 +19,48 @@
 			</div>
 		</div>
 	</c:if>
-			<div id="configMenu" class="mesa-config ml-auto sticky-top" :class="toggleConfig">
-				<button type="button" class="btn-mesa-config btn btn-secondary btn-sm h-100" @click="toggleMenuConfig();">
-					<i class="fas fa-cog"></i>
-				</button>
-				<div class="form-config border-bottom p-3">
-					<h4>Configurações da Mesa Virtual</h4>
-		            <i><small>Quanto menos informações forem solicitadas, mais rapidamente a mesa carregará.</small></i>
+	<div id="configMenu" class="mesa-config ml-auto sticky-top" :class="toggleConfig">
+		<button type="button" class="btn-mesa-config btn btn-secondary btn-sm h-100" @click="toggleMenuConfig();">
+			<i class="fas fa-cog"></i>
+		</button>
+		<div class="form-config border-bottom p-3">
+			<h4>Configurações da Mesa Virtual</h4>
+            <i><small>Quanto menos informações forem solicitadas, mais rapidamente a mesa carregará.</small></i>
 <!-- 		            <div class="form-group py-2 mt-2 border-top border-bottom"> -->
 <!-- 						<div class="form-check"> -->
 <!-- 							<input type="checkbox" class="form-check-input" v-model="versaoMesa"> -->
 <!-- 							<label class="form-check-label" for="versaoMesa"><small>Utilizar versão antiga da Mesa</small></label> -->
 <!-- 						</div>             -->
 <!-- 		            </div> -->
-		            <div class="form-group py-2 mt-2 border-top border-bottom">
-						<div class="form-check">
-							<input type="checkbox" class="form-check-input" id="trazerAnotacoes" v-model="trazerAnotacoes">
-							<label class="form-check-label" for="trazerAnotacoes"><small>Trazer anotações nos documentos</small></label>
-						</div>            
-		            </div>
-		            <div class="form-group py-2 mt-2 border-top border-bottom">
-						<div class="form-check">
-							<input type="checkbox" class="form-check-input" id="trazerCancelados" v-model="trazerCancelados">
-							<label class="form-check-label" for="trazerCancelados"><small>Mostrar cancelados</small></label>
-						</div>            
-		            </div>
-					<div class="form-group pb-2 mb-1 border-bottom">
-						<label for="selQtdPagId"><small>Qtd. de documentos a trazer (botão Mais)</small></label>
-						<select class="form-control form-control-sm" v-model="selQtdPag">
-							  <option value="5">5</option>
-							  <option value="10">10</option>
-							  <option value="15">15</option>
-							  <option value="50">50</option>
-							  <option value="100">100</option>
-							  <option value="500">500</option>
-						</select>
-					</div>
-					<div class="form-group pt-2">
-				    	<button class="btn btn-secondary btn-sm h-60" @click="resetaStorage();">Resetar Mesa</button>
-				    	<p><small>Retorna as configurações iniciais da mesa.</small></p>
-				    </div>
-	        	</div>
-	        </div>
+            <div class="form-group py-2 mt-2 border-top border-bottom">
+				<div class="form-check">
+					<input type="checkbox" class="form-check-input" id="trazerAnotacoes" v-model="trazerAnotacoes">
+					<label class="form-check-label" for="trazerAnotacoes"><small>Trazer anotações nos documentos</small></label>
+				</div>            
+            </div>
+            <div class="form-group py-2 mt-2 border-top border-bottom">
+				<div class="form-check">
+					<input type="checkbox" class="form-check-input" id="trazerCancelados" v-model="trazerCancelados">
+					<label class="form-check-label" for="trazerCancelados"><small>Mostrar cancelados</small></label>
+				</div>            
+            </div>
+			<div class="form-group pb-2 mb-1 border-bottom">
+				<label for="selQtdPagId"><small>Qtd. de documentos a trazer (botão Mais)</small></label>
+				<select class="form-control form-control-sm" v-model="selQtdPag">
+					  <option value="5">5</option>
+					  <option value="10">10</option>
+					  <option value="15">15</option>
+					  <option value="50">50</option>
+					  <option value="100">100</option>
+					  <option value="500">500</option>
+				</select>
+			</div>
+			<div class="form-group pt-2">
+		    	<button class="btn btn-secondary btn-sm h-60" @click="resetaStorage();">Resetar Mesa</button>
+		    	<p><small>Retorna as configurações iniciais da mesa.</small></p>
+		    </div>
+       	</div>
+    </div>
 
 	<div class="row" id="inicio">		
 	    <div class="col-lg-3">
@@ -299,6 +299,7 @@
 					</p>
 				</div>
 				<div id="final"></div>		
+			</div>
 		</div>
 	</div>
 </div>
@@ -528,7 +529,7 @@
 		    getLastRefreshTime: function() {
 		    	var dt = new Date(sessionStorage.getItem('timeout' + getUser()));
 		    	return ("0" + dt.getDate()).slice (-2) + "/" + ("0" + (dt.getMonth() + 1)).slice (-2) + " " 
-		    		+ dt.getHours() + ":" + dt.getMinutes();
+	    			+ dt.getHours() + ":" + ("0" + (dt.getMinutes() + 1)).slice (-2);
 		    },
 		    toggleMenuConfig: function() {
 		    	if (this.toggleConfig === 'show-config') {

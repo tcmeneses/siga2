@@ -11,7 +11,9 @@
 }
 
 /* Para funcionar o hierarchy-select com inspinia */
-
+.dropdown-item.hidden {
+	display: none;
+}
 #modelos-select.btn-group, #modelos-select.btn-group-vertical {
     position: relative;
     display: -ms-inline-flexbox;
