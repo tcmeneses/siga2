@@ -21,7 +21,8 @@ import br.gov.jfrj.siga.vraptor.ParameterOptionalLoaderInterceptor;
 @RequestScoped
 @Intercepts(before = { 	ParameterOptionalLoaderInterceptor.class })
 public class ContextInterceptor  {
-
+	private EntityManager em;
+	
 	/**
 	 * @deprecated CDI eyes only
 	 */
@@ -30,21 +31,22 @@ public class ContextInterceptor  {
 	}
 	
 	@Inject
-	public ContextInterceptor(EntityManager em, Result result) throws Exception {
-		ContextoPersistencia.setEntityManager(em);
-		CpDao.freeInstance();
-		CpDao.getInstance();
-		Sr.getInstance().getConf().limparCacheSeNecessario();
+	public ContextInterceptor(EntityManager em, Result result)  {
+		this.em = em;
 	}
 
 	@Accepts
 	public boolean accepts(ControllerMethod method) {
-		return false;
+		return true;
 	}
 
 	@AroundCall
-	public void intercept(SimpleInterceptorStack stack)  {
-		return;
+	public void intercept(SimpleInterceptorStack stack) throws Exception  {
+		ContextoPersistencia.setEntityManager(em);
+		CpDao.freeInstance();
+		CpDao.getInstance();
+		Sr.getInstance().getConf().limparCacheSeNecessario();
+		stack.next();
 	}
 
 }

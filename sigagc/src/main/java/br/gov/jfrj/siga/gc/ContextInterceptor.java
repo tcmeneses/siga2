@@ -1,6 +1,7 @@
 package br.gov.jfrj.siga.gc;
 
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import br.com.caelum.vraptor.Accepts;
@@ -29,6 +30,7 @@ public class ContextInterceptor  {
 		super();
 	}
 	
+	@Inject
 	public ContextInterceptor(EntityManager em, Result result) throws Exception {
 		ContextoPersistencia.setEntityManager(em);
 		resultByThread.set(result);

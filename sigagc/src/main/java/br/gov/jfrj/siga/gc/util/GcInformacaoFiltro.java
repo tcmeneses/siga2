@@ -74,8 +74,8 @@ public class GcInformacaoFiltro {
 			query += " and inf.lotacao.idLotacaoIni = "
 					+ lotacao.getIdInicial();
 
-		if (tipo != null && tipo.id != 0L)
-			query += " and inf.tipo = " + tipo.id;
+		if (tipo != null && tipo.getId() != 0L)
+			query += " and inf.tipo = " + tipo.getId();
 
 		if (ano != null)
 			query += " and inf.ano = " + Integer.parseInt(ano.toString());

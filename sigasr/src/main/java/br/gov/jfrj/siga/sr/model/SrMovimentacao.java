@@ -112,7 +112,7 @@ public class SrMovimentacao extends Objeto {
     private Long numSequencia;
 
     @Enumerated
-    public SrPrioridade prioridade;
+    private SrPrioridade prioridade;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_PESQUISA")

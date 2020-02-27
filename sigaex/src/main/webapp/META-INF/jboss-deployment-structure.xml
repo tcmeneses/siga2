@@ -19,7 +19,7 @@
 			<module name="javax.wsdl4j.api" />
 			<module name="asm.asm" />
 
-			<module name="sigadoc.org.bouncycastle" export="true" />
+			<module name="org.bouncycastle" export="true" />
 			<module name="sigadoc.ext" />
 
 			<module name="org.javassist" />

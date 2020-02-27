@@ -1,6 +1,5 @@
 package br.gov.jfrj.siga.sr.model;
 
-import java.beans.Transient;
 import java.io.IOException;
 
 import javax.persistence.Column;
@@ -46,7 +45,7 @@ public class SrArquivo extends Objeto implements Comparable<SrArquivo>{
     @javax.persistence.Transient
     private String descricaoComplementar;
 
-    private SrArquivo() {
+    protected SrArquivo() {
 
     }
 
