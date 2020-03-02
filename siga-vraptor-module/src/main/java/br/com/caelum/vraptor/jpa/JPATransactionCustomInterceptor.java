@@ -74,7 +74,7 @@ public class JPATransactionCustomInterceptor extends br.com.caelum.vraptor.jpa.J
 	@AroundCall
 	public void intercept(SimpleInterceptorStack stack) {
 		addRedirectListener();
-		
+
 		try {
 			if (this.method.containsAnnotation(Transacional.class)
 					&& !(this.request.getRequestURI().startsWith("app/sigawf"))) {

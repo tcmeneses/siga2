@@ -8,6 +8,7 @@ public class ContextoPersistencia {
 	private final static ThreadLocal<String> userPrincipalByThread = new ThreadLocal<String>();
 
 	static public void setEntityManager(EntityManager em) {
+		System.out.println("Passei por aqui 2");
 		emByThread.set(em);
 	}
 

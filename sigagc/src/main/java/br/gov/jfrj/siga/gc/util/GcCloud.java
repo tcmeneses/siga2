@@ -3,12 +3,13 @@ package br.gov.jfrj.siga.gc.util;
 import org.mcavallo.opencloud.Cloud;
 import org.mcavallo.opencloud.Tag;
 
+import br.com.caelum.vraptor.view.LogicResult;
 import br.gov.jfrj.siga.dp.CpMarcador;
 import br.gov.jfrj.siga.dp.DpLotacao;
-import br.gov.jfrj.siga.gc.ContextInterceptor;
 import br.gov.jfrj.siga.gc.model.GcTag;
 import br.gov.jfrj.siga.gc.vraptor.AppController;
-import br.gov.jfrj.siga.vraptor.SigaLogicResult;
+import br.gov.jfrj.siga.gc.vraptor.GcInterceptor;
+import br.gov.jfrj.siga.gc.vraptor.SigaLogicResult;
 
 public class GcCloud extends Cloud {
 
@@ -38,8 +39,8 @@ public class GcCloud extends Cloud {
 		filtro.pesquisa = true;
 
 		StringBuilder sb = new StringBuilder();
- 		SigaLogicResult router = ContextInterceptor.result().use(
- 				SigaLogicResult.class);
+ 	 	SigaLogicResult router = GcInterceptor.result().use(
+ 	 			SigaLogicResult.class);
  		router.getRedirectURL(sb, AppController.class).listar(filtro, 0,false, null, null);
 		sb.append("/sigagc/app/listar");
 		sb.append("?filtro.pesquisa=true");

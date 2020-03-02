@@ -1,4 +1,4 @@
-package br.gov.jfrj.siga.vraptor;
+package br.gov.jfrj.siga.gc.vraptor;
 
 /***
  * Copyright (c) 2009 Caelum - www.caelum.com.br/opensource
@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.net.URLEncoder;
 
+import javax.enterprise.inject.Specializes;
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
@@ -44,7 +45,7 @@ import br.com.caelum.vraptor.proxy.SuperMethod;
 import br.com.caelum.vraptor.util.Stringnifier;
 import br.com.caelum.vraptor.view.DefaultLogicResult;
 import br.com.caelum.vraptor.view.FlashScope;
-import br.com.caelum.vraptor.view.LogicResult;
+import br.gov.jfrj.siga.vraptor.PathResolver;
 
 /**
  * The default implementation of LogicResult.<br>
@@ -52,9 +53,10 @@ import br.com.caelum.vraptor.view.LogicResult;
  *
  * @author Guilherme Silveira
  */
-public class SigaLogicResult implements LogicResult {
+@Specializes
+public class SigaLogicResult extends DefaultLogicResult {
 
-	private static final Logger logger = LoggerFactory.getLogger(DefaultLogicResult.class);
+	private static final Logger logger = LoggerFactory.getLogger(SigaLogicResult.class);
 
 	private final Proxifier proxifier;
 	private final Router router;
@@ -136,7 +138,7 @@ public class SigaLogicResult implements LogicResult {
 		});
 	}
 
-	private <T> void includeParametersInFlash(final Class<T> type, Method method, Object[] args) {
+	protected <T> void includeParametersInFlash(final Class<T> type, Method method, Object[] args) {
 		if (args != null && args.length != 0) {
 			flash.includeParameters(DefaultControllerMethod.instanceFor(type, method), args);
 		}
@@ -209,7 +211,7 @@ public class SigaLogicResult implements LogicResult {
 		});
 	}
 
-	private boolean acceptsHttpGet(Method method) {
+	protected boolean acceptsHttpGet(Method method) {
 		if (method.isAnnotationPresent(Get.class)) {
 			return true;
 		}

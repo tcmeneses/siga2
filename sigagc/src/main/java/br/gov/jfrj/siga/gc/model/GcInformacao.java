@@ -27,12 +27,15 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.PostLoad;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
+
+import br.com.caelum.vraptor.view.LogicResult;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.SigaCalendar;
 import br.gov.jfrj.siga.cp.CpIdentidade;
@@ -43,12 +46,12 @@ import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
 import br.gov.jfrj.siga.dp.DpLotacao;
 import br.gov.jfrj.siga.dp.DpPessoa;
 import br.gov.jfrj.siga.dp.dao.CpDao;
-import br.gov.jfrj.siga.gc.ContextInterceptor;
 import br.gov.jfrj.siga.gc.util.WikiParser;
 import br.gov.jfrj.siga.gc.vraptor.AppController;
+import br.gov.jfrj.siga.gc.vraptor.GcInterceptor;
+import br.gov.jfrj.siga.gc.vraptor.SigaLogicResult;
 import br.gov.jfrj.siga.model.ActiveRecord;
 import br.gov.jfrj.siga.model.Objeto;
-import br.gov.jfrj.siga.vraptor.SigaLogicResult;
 
 @Entity
 @Table(name = "GC_INFORMACAO", schema = "SIGAGC")
@@ -131,7 +134,7 @@ public class GcInformacao extends Objeto {
 	@JoinColumn(name = "ID_GRUPO")
 	private CpPerfil grupo;
 
-	@OrderBy("sort")
+	@Sort(type = SortType.NATURAL)
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(name = "GC_TAG_X_INFORMACAO", schema = "SIGAGC", joinColumns = @JoinColumn(name = "id_informacao"), inverseJoinColumns = @JoinColumn(name = "id_tag"))
 	private SortedSet<GcTag> tags;
@@ -158,7 +161,7 @@ public class GcInformacao extends Objeto {
 	private java.util.List<GcMarca> marcas;
 	// public java.util.Set<GcMarca> marcas;
 
-	@OrderBy("sort")
+	@Sort(type = SortType.NATURAL)
 	@OneToMany(mappedBy = "inf")
 	private SortedSet<GcMovimentacao> movs;
 
@@ -446,7 +449,7 @@ public class GcInformacao extends Objeto {
 		SortedSet<GcAcaoVO> acoes = new TreeSet<GcAcaoVO>();
 
 		StringBuilder sb = new StringBuilder();
-		SigaLogicResult router = ContextInterceptor.result().use(
+		SigaLogicResult router = GcInterceptor.result().use(
 				SigaLogicResult.class);
 
 		router.getRedirectURL(sb, AppController.class).editar(

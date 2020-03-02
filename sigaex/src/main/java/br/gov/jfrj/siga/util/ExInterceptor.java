@@ -13,6 +13,7 @@ import br.com.caelum.vraptor.InterceptionException;
 import br.com.caelum.vraptor.Intercepts;
 import br.com.caelum.vraptor.controller.ControllerMethod;
 import br.com.caelum.vraptor.interceptor.SimpleInterceptorStack;
+import br.com.caelum.vraptor.jpa.JPATransactionCustomInterceptor;
 import br.com.caelum.vraptor.jpa.JPATransactionInterceptor;
 import br.com.caelum.vraptor.validator.Validator;
 import br.gov.jfrj.siga.ex.bl.CurrentRequest;
@@ -23,7 +24,7 @@ import br.gov.jfrj.siga.model.ContextoPersistencia;
 import br.gov.jfrj.siga.model.dao.ModeloDao;
 
 @RequestScoped
-@Intercepts(before = JPATransactionInterceptor.class)
+@Intercepts(before = JPATransactionCustomInterceptor.class)
 public class ExInterceptor {
 
 	private final EntityManager manager;

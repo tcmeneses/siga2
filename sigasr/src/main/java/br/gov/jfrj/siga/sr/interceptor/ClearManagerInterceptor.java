@@ -34,7 +34,8 @@ public class ClearManagerInterceptor  {
 	@AroundCall
 	public void intercept(SimpleInterceptorStack stack)  {
 		stack.next();
-		((Session) em.getDelegate()).clear(); // to avoid automatic flushing
+		em.clear();
+		((Session) em.unwrap(org.hibernate.Session.class)).clear(); // to avoid automatic flushing
 	}
 
 	@Accepts

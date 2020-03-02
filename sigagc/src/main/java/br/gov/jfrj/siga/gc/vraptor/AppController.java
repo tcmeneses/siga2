@@ -67,13 +67,15 @@ import br.gov.jfrj.siga.model.DadosRI;
 import br.gov.jfrj.siga.vraptor.LoadOptional;
 import br.gov.jfrj.siga.vraptor.SigaIdDescr;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
+import br.gov.jfrj.siga.vraptor.Transacional;
 
 @Controller
+@Path("/app")
 public class AppController extends GcController {
 
 	private GcBL bl;
 	private Correio correio;
-
+	
 	/**
 	 * @deprecated CDI eyes only
 	 */
@@ -95,6 +97,7 @@ public class AppController extends GcController {
 	private static final String HTTP_LOCALHOST_8080 = "http://localhost:8080";
 	private static final int CONTROLE_HASH_TAG = 1;
 
+	@Path("/gadget")
 	public void gadget() {
 		Query query = em().createNamedQuery("contarGcMarcas");
 		query.setParameter("idPessoaIni", getCadastrante().getIdInicial());
@@ -367,9 +370,11 @@ public class AppController extends GcController {
 		result.redirectTo(this).estatisticaGeral();
 	}
 
+	@Path("/estatisticaGeral")
 	public void estatisticaGeral() throws Exception {
 		// List<GcInformacao> lista = GcInformacao.all().fetch();
 
+	
 		Query query1 = em().createNamedQuery("maisRecentes");
 		query1.setMaxResults(5);
 		List<Object[]> listaMaisRecentes = query1.getResultList();
@@ -427,6 +432,8 @@ public class AppController extends GcController {
 		result.include("listaPrincipaisTags", listaPrincipaisTags);
 		result.include("cloud", cloud);
 		result.include("evolucao", evolucao);
+
+		result.forwardTo(this).estatisticaGeral();
 	}
 
 	public void estatisticaLotacao() throws Exception {
@@ -764,6 +771,7 @@ public class AppController extends GcController {
 		int a = 0;
 	}
 
+	@Transacional
 	@Path({ "/app/exibir/{sigla}", "/app/exibir" })
 	public void exibir(String sigla, String mensagem, boolean historico,
 			boolean movimentacoes) throws Exception {
@@ -896,6 +904,7 @@ public class AppController extends GcController {
 		result.forwardTo(this).exibir(sigla, null, false, true);
 	}
 
+	@Transacional
 	@Path("/app/fechar/{sigla}")
 	public void fechar(String sigla) throws Exception {
 		GcInformacao inf = GcInformacao.findBySigla(sigla);
@@ -913,6 +922,7 @@ public class AppController extends GcController {
 							+ ") : O usuário não tem permissão para finalizar o conhecimento solicitado.");
 	}
 
+	@Transacional
 	@Path("/app/duplicar/{sigla}")
 	public void duplicar(String sigla) throws Exception {
 		GcInformacao infDuplicada = GcInformacao.findBySigla(sigla);
@@ -966,6 +976,7 @@ public class AppController extends GcController {
 				false);
 	}
 
+	@Transacional
 	public void gravar(@LoadOptional GcInformacao informacao, String inftitulo,
 			String conteudo, String classificacao, String origem,
 			GcTipoInformacao tipo, GcAcesso visualizacao, GcAcesso edicao,
@@ -1052,6 +1063,7 @@ public class AppController extends GcController {
 		result.include("informacao", informacao);
 	}
 
+	@Transacional
 	public void notificarGravar(GcInformacao informacao, DpPessoa pessoa,
 			DpLotacao lotacao, String email) throws Exception {
 		// Nato: precisei fazer isso pq não vem attached e depois será feito um
@@ -1107,6 +1119,7 @@ public class AppController extends GcController {
 	    result.include("grupoSel", new CpPerfilSelecao());
 	}
 	
+	@Transacional
 	public void vincularPapelGravar(GcInformacao informacao, DpPessoaSelecao pessoaSel, DpLotacaoSelecao lotacaoSel, CpPerfilSelecao grupoSel,
 			GcPapel papel) throws Exception {
 		informacao = GcInformacao.AR.findById(informacao.getId());
@@ -1125,6 +1138,7 @@ public class AppController extends GcController {
 		result.include("informacao", informacao);
 	}
 
+	@Transacional
 	public void solicitarRevisaoGravar(GcInformacao informacao,
 			DpPessoa pessoa, DpLotacao lotacao) throws Exception {
 
@@ -1166,6 +1180,7 @@ public class AppController extends GcController {
 		result.include("informacao", informacao);
 	}
 
+	@Transacional
 	public void gravarArquivo(GcInformacao informacao, String titulo,
 			UploadedFile upload, UploadedFile file, String CKEditorFuncNum,
 			String origem) throws Exception {
@@ -1208,6 +1223,7 @@ public class AppController extends GcController {
 		}
 	}
 
+	@Transacional
 	@Path("/app/removerAnexo")
 	public void removerAnexo(String sigla, long idArq, long idMov)
 			throws Exception {
@@ -1240,6 +1256,7 @@ public class AppController extends GcController {
 		throw new Exception("Arquivo não encontrado.");
 	}
 
+	@Transacional
 	@Path("/app/revisado/{sigla}")
 	public void revisado(String sigla) throws Exception {
 		GcInformacao informacao = GcInformacao.findBySigla(sigla);

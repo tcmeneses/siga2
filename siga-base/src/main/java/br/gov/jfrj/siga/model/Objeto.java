@@ -105,32 +105,36 @@ public class Objeto extends ObjetoBase{
 		if (!em().contains(this)) {
 			em().persist(this);
 		}
-		avoidCascadeSaveLoops.set(new HashSet<Objeto>());
-		try {
-			saveAndCascade(true);
-		} catch (UnexpectedException e) {
-			throw new RuntimeException(e);
-		} finally {
-			avoidCascadeSaveLoops.get().clear();
-		}
-		try {
-			em().flush();
-		} catch (PersistenceException e) {
-			if (e.getCause() instanceof GenericJDBCException) {
-				throw new PersistenceException(
-						((GenericJDBCException) e.getCause()).getSQL(), e);
-			} else {
-				throw e;
+	
+	 	if (false) {
+			avoidCascadeSaveLoops.set(new HashSet<Objeto>());
+			try {
+				saveAndCascade(true);
+			} catch (UnexpectedException e) {
+				throw new RuntimeException(e);
+			} finally {
+				avoidCascadeSaveLoops.get().clear();
 			}
-		}
-		avoidCascadeSaveLoops.set(new HashSet<Objeto>());
-		try {
-			saveAndCascade(false);
-		} catch (UnexpectedException e) {
-			throw new RuntimeException(e);
-		} finally {
-			avoidCascadeSaveLoops.get().clear();
-		}
+		 	try {
+				em().flush();
+			} catch (PersistenceException e) {
+				if (e.getCause() instanceof GenericJDBCException) {
+					throw new PersistenceException(
+							((GenericJDBCException) e.getCause()).getSQL(), e);
+				} else {
+					throw e;
+				}
+			}  
+			avoidCascadeSaveLoops.set(new HashSet<Objeto>());
+			try {
+				saveAndCascade(false);
+			} catch (UnexpectedException e) {
+				throw new RuntimeException(e);
+			} finally {
+				avoidCascadeSaveLoops.get().clear();
+			}  
+	 	}
+
 	}
 	
 	public void refresh() {

@@ -42,6 +42,7 @@ import br.gov.jfrj.siga.gc.model.GcTag;
 import br.gov.jfrj.siga.gc.model.GcTipoMovimentacao;
 import br.gov.jfrj.siga.gc.model.GcTipoTag;
 import br.gov.jfrj.siga.gc.vraptor.Correio;
+import br.gov.jfrj.siga.model.ContextoPersistencia;
 import br.gov.jfrj.siga.model.Historico;
 import br.gov.jfrj.siga.model.Objeto;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
@@ -59,15 +60,13 @@ public class GcBL {
 	 */
 	public GcBL() {
 		super();
-		this.em = null;
 		this.so = null;
 
 	}
 	
 	@Inject
-	public GcBL(EntityManager em, SigaObjects so) {
+	public GcBL(SigaObjects so) {
 		super();
-		this.em = em;
 		this.so = so;
 	}
 
@@ -177,9 +176,9 @@ public class GcBL {
 	public GcInformacao gravar(GcInformacao inf, CpIdentidade idc,
 			DpPessoa titular, DpLotacao lotaTitular) throws Exception {
 		Date dt = dt();
-		// dao().iniciarTransacao();
-		// try {
-
+	//	em().getTransaction().begin();
+	//	try {
+			
 		// Atualiza o campo arq, pois este não pode ser nulo
 		if (inf.getMovs() != null) {
 			for (GcMovimentacao mov : inf.getMovs()) {
@@ -216,10 +215,10 @@ public class GcBL {
 		atualizarTags(inf);
 		inf.save();
 		atualizarMarcas(inf);
-		// dao().commitTransacao();
-		// } catch (Exception e) {
-		// dao().rollbackTransacao();
-		// }
+	//	em().getTransaction().commit();
+	//	 } catch (Exception e) {
+	//		 em().getTransaction().rollback();
+	//	 }
 		return inf;
 	}
 
@@ -333,13 +332,23 @@ public class GcBL {
 	public void atualizarMarcas(GcInformacao inf) throws Exception {
 		SortedSet<GcMarca> setA = new TreeSet<GcMarca>();
 		if (inf.getMarcas() != null) {
+			em().getTransaction().begin();
 			// Excluir marcas duplicadas
-			for (GcMarca m : inf.getMarcas()) {
-				if (setA.contains(m))
-					m.delete();
-				else
-					setA.add(m);
+			try {
+				for (GcMarca m : inf.getMarcas()) {
+					if (setA.contains(m))
+						m.delete();
+					else
+						setA.add(m);
+				}
+				em().getTransaction().commit();
+				
+			} catch (Exception Ex) {
+				em().getTransaction().rollback();
+				throw Ex;
 			}
+
+
 		}
 		SortedSet<GcMarca> setB = calcularMarcadores(inf);
 		Set<GcMarca> incluir = new TreeSet<GcMarca>();
@@ -357,14 +366,23 @@ public class GcBL {
 			i.save();
 			i.getInf().getMarcas().add(i);
 		}
-		for (GcMarca e : excluir) {
-			if (e.getInf().getMarcas() == null) {
-				// e.inf.marcas = new TreeSet<GcMarca>();
-				e.getInf().setMarcas(new ArrayList<GcMarca>());
+		em().getTransaction().begin();
+		try {
+			for (GcMarca e : excluir) {
+				if (e.getInf().getMarcas() == null) {
+					// e.inf.marcas = new TreeSet<GcMarca>();
+					e.getInf().setMarcas(new ArrayList<GcMarca>());
+				}
+				e.getInf().getMarcas().remove(e);
+				e.delete();
 			}
-			e.getInf().getMarcas().remove(e);
-			e.delete();
+			em().getTransaction().commit();
+			
+		} catch (Exception Ex) {
+			em().getTransaction().rollback();
+			throw Ex;
 		}
+
 
 	}
 
@@ -862,7 +880,7 @@ public class GcBL {
 	}
 
 	private EntityManager em() {
-		return this.em;
+		return ContextoPersistencia.em();
 	}
 
 	/**
