@@ -188,7 +188,7 @@
 			    <artifactId>vraptor</artifactId>
 			    <version>4.2.2</version>
 			</dependency>
-
+			
 			<dependency>
 				<groupId>siga</groupId>
 				<artifactId>siga-cp</artifactId>

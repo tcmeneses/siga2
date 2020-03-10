@@ -432,8 +432,6 @@ public class AppController extends GcController {
 		result.include("listaPrincipaisTags", listaPrincipaisTags);
 		result.include("cloud", cloud);
 		result.include("evolucao", evolucao);
-
-		result.forwardTo(this).estatisticaGeral();
 	}
 
 	public void estatisticaLotacao() throws Exception {

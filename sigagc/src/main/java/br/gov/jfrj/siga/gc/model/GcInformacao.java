@@ -35,7 +35,6 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 
-import br.com.caelum.vraptor.view.LogicResult;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.SigaCalendar;
 import br.gov.jfrj.siga.cp.CpIdentidade;
@@ -46,9 +45,9 @@ import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
 import br.gov.jfrj.siga.dp.DpLotacao;
 import br.gov.jfrj.siga.dp.DpPessoa;
 import br.gov.jfrj.siga.dp.dao.CpDao;
+import br.gov.jfrj.siga.gc.ContextInterceptor;
 import br.gov.jfrj.siga.gc.util.WikiParser;
 import br.gov.jfrj.siga.gc.vraptor.AppController;
-import br.gov.jfrj.siga.gc.vraptor.GcInterceptor;
 import br.gov.jfrj.siga.gc.vraptor.SigaLogicResult;
 import br.gov.jfrj.siga.model.ActiveRecord;
 import br.gov.jfrj.siga.model.Objeto;
@@ -449,7 +448,7 @@ public class GcInformacao extends Objeto {
 		SortedSet<GcAcaoVO> acoes = new TreeSet<GcAcaoVO>();
 
 		StringBuilder sb = new StringBuilder();
-		SigaLogicResult router = GcInterceptor.result().use(
+		SigaLogicResult router = ContextInterceptor.result().use(
 				SigaLogicResult.class);
 
 		router.getRedirectURL(sb, AppController.class).editar(
