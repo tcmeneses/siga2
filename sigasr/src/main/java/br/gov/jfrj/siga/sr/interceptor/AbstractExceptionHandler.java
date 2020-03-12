@@ -1,13 +1,12 @@
 package br.gov.jfrj.siga.sr.interceptor;
 
-import javax.enterprise.context.RequestScoped;
 import javax.servlet.http.HttpServletRequest;
 
 import br.com.caelum.vraptor.Accepts;
 import br.com.caelum.vraptor.controller.ControllerMethod;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
 
-@RequestScoped
+
 public abstract class AbstractExceptionHandler {
 
 	private SigaObjects so;

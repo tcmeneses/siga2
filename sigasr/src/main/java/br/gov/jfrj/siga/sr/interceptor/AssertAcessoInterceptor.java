@@ -4,6 +4,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
+import br.com.caelum.vraptor.Accepts;
 import br.com.caelum.vraptor.AroundCall;
 import br.com.caelum.vraptor.InterceptionException;
 import br.com.caelum.vraptor.Intercepts;
@@ -14,7 +15,7 @@ import br.gov.jfrj.siga.vraptor.SigaObjects;
 
 @RequestScoped
 @Intercepts(after = ContextInterceptor.class)
-public class AssertAcessoInterceptor extends AbstractExceptionHandler {
+public class AssertAcessoInterceptor  {
 
 	/**
 	 * @deprecated CDI eyes only
@@ -29,13 +30,38 @@ public class AssertAcessoInterceptor extends AbstractExceptionHandler {
 		setRequest(request);
 	}
 
+	
+	private SigaObjects so;
+	private HttpServletRequest request;
 
-	@Override
+	public SigaObjects getSo() {
+		return so;
+	}
+
+	public void setSo(SigaObjects so) {
+		this.so = so;
+	}
+
+	public HttpServletRequest getRequest() {
+		return request;
+	}
+
+	public void setRequest(HttpServletRequest request) {
+		this.request = request;
+	}
+
+
+	@Accepts
+	public boolean accepts(ControllerMethod method) {
+		return Boolean.TRUE;
+	}
+
+
 	protected void tratarExcecoes(Throwable e) {
 		redirecionarParaErro(e);
 	}
 
-	@Override
+
 	protected void redirecionarParaErro(Throwable e) {
 		getRequest().setAttribute("exception", criarExcecaoComMesmoStackTrace(e));
 		throw new InterceptionException(e);
