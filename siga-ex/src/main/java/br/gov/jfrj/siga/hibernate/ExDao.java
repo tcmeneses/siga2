@@ -1526,8 +1526,8 @@ public class ExDao extends CpDao {
 								+ " inner join marca.exMobil mobil"
 								+ " where (marca.dtIniMarca is null or marca.dtIniMarca < sysdate)"
 								+ " and (marca.dtFimMarca is null or marca.dtFimMarca > sysdate)"
-								+ (titular != null ? " and (marca.dpPessoaIni = :titular)"
-										: " and (marca.dpLotacaoIni.idLotacao = :lotaTitular)"));
+								+ (titular != null ? " and (marca.dpPessoaIni.idPessoaIni = :titular)"
+										: " and (marca.dpLotacaoIni.idLotacaoIni = :lotaTitular)"));
 
 		if (titular != null)
 			query.setParameter("titular", titular.getIdPessoaIni());
