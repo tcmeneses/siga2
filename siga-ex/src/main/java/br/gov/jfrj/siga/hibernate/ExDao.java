@@ -276,7 +276,7 @@ public class ExDao extends CpDao {
 		final Query query = em().createNamedQuery("ExSequencia.obterNumeroGerado");
 		query.setParameter("tipoSequencia", tipoSequencia);
 		query.setParameter("anoEmissao", anoEmissao);
-		query.setParameter("flAtivo", 1L);
+		query.setParameter("flAtivo", "1");
 		
 		return (Long) query.getSingleResult();		
 	}

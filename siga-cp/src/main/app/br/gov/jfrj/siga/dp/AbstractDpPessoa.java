@@ -22,12 +22,9 @@
  */
 package br.gov.jfrj.siga.dp;
 
-import static javax.persistence.GenerationType.SEQUENCE;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.persistence.Column;
 import javax.persistence.FetchType;
@@ -78,31 +75,31 @@ import br.gov.jfrj.siga.sinc.lib.Desconsiderar;
 				+ "   	order by pes.lotacao.nomeLotacao"),
 		@NamedQuery(name = "consultarPorFiltroDpPessoaSemIdentidade", query = "from DpPessoa pes "
 				+ "  where (upper(pes.nomePessoaAI) like upper('%' || :nome || '%'))"
-				+ " and (pes.cpfPessoa = :cpf or :cpf = 0)"
+				+ " and (pes.cpfPessoa = :cpf or :cpf = 0L)"
 				+ " and pes.orgaoUsuario.idOrgaoUsu = :idOrgaoUsu"
-				+ "	and (pes.lotacao.idLotacao = :lotacao or :lotacao = 0)"
+				+ "	and (pes.lotacao.idLotacao = :lotacao or :lotacao = 0L)"
 				+ " and pes.dataFimPessoa = null"
 				+ " and pes.id not in (select pes1.idPessoa from CpIdentidade i inner join i.dpPessoa pes1 where (upper(pes1.nomePessoaAI) like upper('%' || :nome || '%')) "
-				+ 			" and (pes1.cpfPessoa = :cpf or :cpf = 0) and pes1.orgaoUsuario.idOrgaoUsu = :idOrgaoUsu and (pes1.lotacao.idLotacao = :lotacao or :lotacao = 0) and pes1.dataFimPessoa = null)"
+				+ 			" and (pes1.cpfPessoa = :cpf or :cpf = 0L) and pes1.orgaoUsuario.idOrgaoUsu = :idOrgaoUsu and (pes1.lotacao.idLotacao = :lotacao or :lotacao = 0L) and pes1.dataFimPessoa = null)"
 				+ "   	order by pes.cpfPessoa"),					
 		@NamedQuery(name = "consultarQuantidadeDpPessoaSemIdentidade", query = "select count(pes) from DpPessoa pes "
 				+ "  where (upper(pes.nomePessoaAI) like upper('%' || :nome || '%'))"
-				+ " and (pes.cpfPessoa = :cpf or :cpf = 0)"
+				+ " and (pes.cpfPessoa = :cpf or :cpf = 0L)"
 				+ " and pes.orgaoUsuario.idOrgaoUsu = :idOrgaoUsu"
-				+ "	and (pes.lotacao.idLotacao = :lotacao or :lotacao = 0)"
+				+ "	and (pes.lotacao.idLotacao = :lotacao or :lotacao = 0L)"
 				+ " and pes.dataFimPessoa = null"
 				+ " and pes.id not in (select pes1.idPessoa from CpIdentidade i inner join i.dpPessoa pes1 where (upper(pes1.nomePessoaAI) like upper('%' || :nome || '%')) "
-				+ 			" and (pes1.cpfPessoa = :cpf or :cpf = 0) and pes1.orgaoUsuario.idOrgaoUsu = :idOrgaoUsu and (pes1.lotacao.idLotacao = :lotacao or :lotacao = 0) and pes1.dataFimPessoa = null)"
+				+ 			" and (pes1.cpfPessoa = :cpf or :cpf = 0) and pes1.orgaoUsuario.idOrgaoUsu = :idOrgaoUsu and (pes1.lotacao.idLotacao = :lotacao or :lotacao = 0L) and pes1.dataFimPessoa = null)"
 				+ "   	order by pes.nomePessoa"),		
 		@NamedQuery(name = "consultarQuantidadeDpPessoa", query = "select count(pes) from DpPessoa pes "
 				+ "  where ((upper(pes.nomePessoaAI) like upper('%' || :nome || '%')) or ((pes.sesbPessoa || pes.matricula) like upper('%' || :nome || '%'))) "
-				+ "  	and (:idOrgaoUsu = null or :idOrgaoUsu = 0 or pes.orgaoUsuario.idOrgaoUsu = :idOrgaoUsu)"
+				+ "  	and (:idOrgaoUsu = null or :idOrgaoUsu = 0L or pes.orgaoUsuario.idOrgaoUsu = :idOrgaoUsu)"
 				+ " and (:cpf = null or :cpf = 0L or pes.cpfPessoa = :cpf) "
 				+ " and (:email = null or (upper(pes.emailPessoa) like upper('%' || :email || '%')) ) "
 				+ "	and (:lotacao = null or :lotacao = 0L or pes.lotacao.idLotacao = :lotacao)"
 				+ " and (:cargo = null or :cargo = 0L or pes.cargo.idCargo = :cargo) "
 		      	+ " and (:funcao = null or :funcao = 0L or pes.funcaoConfianca.idFuncao = :funcao) "
-				+ " and (pes.id <> :id or :id = 0)"
+				+ " and (pes.id <> :id or :id = 0L)"
 				+ "	and (:situacaoFuncionalPessoa = null or :situacaoFuncionalPessoa = '' or pes.situacaoFuncionalPessoa = :situacaoFuncionalPessoa)"
 				+ "   	and pes.dataFimPessoa = null"
 				+ "   	order by pes.nomePessoa"),
@@ -125,17 +122,17 @@ import br.gov.jfrj.siga.sinc.lib.Desconsiderar;
 				+ "	select max(pes.idPessoa)"
 				+ "	from DpPessoa pes"
 				+ "	where ((upper(pes.nomePessoaAI) like upper('%' || :nome || '%')) or ((pes.sesbPessoa || pes.matricula) like upper('%' || :nome || '%')))"
-				+ "  	and (:idOrgaoUsu = null or :idOrgaoUsu = 0 or pes.orgaoUsuario.idOrgaoUsu = :idOrgaoUsu)"
-				+ " and (:cpf = null or :cpf = 0 or pes.cpfPessoa like '%' || :cpf || '%') "
-				+ "  	and (:lotacao = null or :lotacao = 0 or pes.lotacao.idLotacao = :lotacao)"
-				+ " and (:cargo = null or :cargo = 0 or pes.cargo.idCargo = :cargo) "
-				+ " and (:funcao = null or :funcao = 0 or pes.funcaoConfianca.idFuncao = :funcao) "
+				+ "  	and (:idOrgaoUsu = null or :idOrgaoUsu = 0L or pes.orgaoUsuario.idOrgaoUsu = :idOrgaoUsu)"
+				+ " and (:cpf = null or :cpf = 0L or pes.cpfPessoa like '%' || :cpf || '%') "
+				+ "  	and (:lotacao = null or :lotacao = 0L or pes.lotacao.idLotacao = :lotacao)"
+				+ " and (:cargo = null or :cargo = 0L or pes.cargo.idCargo = :cargo) "
+				+ " and (:funcao = null or :funcao = 0L or pes.funcaoConfianca.idFuncao = :funcao) "
 				+ " and (:email = null or (upper(pes.emailPessoa) like upper('%' || :email || '%'))) "
 				+ "	group by pes.idPessoaIni) order by upper(pes.nomePessoaAI)"),
 		@NamedQuery(name = "consultarQuantidadeDpPessoaInclusiveFechadas", query = "select count(distinct pes.idPessoaIni)"
 				+ "		from DpPessoa pes"
 				+ "		where ((upper(pes.nomePessoaAI) like upper('%' || :nome || '%')) or ((pes.sesbPessoa || pes.matricula) like upper('%' || :nome || '%')))"
-				+ "  			and (:idOrgaoUsu = null or :idOrgaoUsu = 0 or pes.orgaoUsuario.idOrgaoUsu = :idOrgaoUsu)"
+				+ "  			and (:idOrgaoUsu = null or :idOrgaoUsu = 0L or pes.orgaoUsuario.idOrgaoUsu = :idOrgaoUsu)"
 				+ " and (:cpf = null or :cpf = 0L or pes.cpfPessoa like '%' || :cpf || '%') "
 				+ "  			and (:lotacao = null or :lotacao = 0L or pes.lotacao.idLotacao = :lotacao)"
 				+ " and (:email = null or (upper(pes.emailPessoa) like upper('%' || :email || '%')) ) "
