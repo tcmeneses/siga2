@@ -19,13 +19,12 @@
 package br.gov.jfrj.siga.ex.bl;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.Set;
 
+import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.SigaBaseProperties;
 import br.gov.jfrj.siga.base.SigaMessages;
 import br.gov.jfrj.siga.cp.CpComplexo;
@@ -905,6 +904,52 @@ public class ExCompetenciaBL extends CpCompetenciaBL {
 								ExTipoMovimentacao.TIPO_MOVIMENTACAO_TORNAR_SEM_EFEITO,
 								CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR);
 	}
+	
+	
+	/**
+	 * Retorna se é possível cancelar documento pendente de assinatura, segundo as
+	 * regras a seguir:
+
+
+	 * <ul>
+	 * <li>Documento tem de estar pendente de assinatura</li>
+	 * <li>Móbil tem de ser via ou volume (não pode ser geral)</li>
+	 * <li><i>podeMovimentar()</i> tem de ser verdadeiro para o usuário / móbil</li>	 * 
+	 * <li>Não pode haver configuração impeditiva</li>
+	 * </ul>
+	 * 
+	 * @param titular
+	 * @param lotaTitular
+	 * @param mob
+	 * @return
+	 * @throws Exception
+	 */
+	public boolean podeCancelarDocumento(final DpPessoa titular,
+			final DpLotacao lotaTitular, final ExMobil mob) {		
+		
+		if (mob.doc().isCancelado() || !mob.doc().isFinalizado() 
+				|| (mob.doc().isEletronico() && !mob.doc().isPendenteDeAssinatura()) )
+			return false;
+			
+		if (mob.doc().isCapturado()) {				
+			
+			if (mob.doc().isDocFilhoJuntadoAoPai()) 
+				return false;		
+			
+			if (mob.doc().getSubscritor() == null || !mob.doc().getSubscritor().equivale(titular)) {
+				if (!mob.doc().getCadastrante().equivale(titular)) 
+					return false;
+			}			
+						
+		} else {
+			if(mob.doc().getSubscritor() == null || !mob.doc().getSubscritor().equivale(titular))
+				return false;
+		}
+			
+		return  true;
+	}
+	
+	
 	
 	public Boolean podeGerarProtocolo(final DpPessoa titular,
 			final DpLotacao lotaTitular, final ExMobil mob) {
@@ -4060,49 +4105,6 @@ public class ExCompetenciaBL extends CpCompetenciaBL {
 				&& (agora.get(Calendar.HOUR_OF_DAY) < 17 
 					|| podeGerenciarPublicacaoBoletimPorConfiguracao(titular, lotaTitular, mob));
 	}
-	
-	public boolean podeRestrigirAcesso(final DpPessoa cadastrante,
-			final DpLotacao lotaCadastrante, final ExMobil mob) {
-		
-		List<ExMovimentacao> listMovJuntada = new ArrayList<ExMovimentacao>();
-        if(mob.getDoc().getMobilDefaultParaReceberJuntada() != null) {
-            listMovJuntada.addAll(mob.getDoc().getMobilDefaultParaReceberJuntada().getMovsNaoCanceladas(ExTipoMovimentacao.TIPO_MOVIMENTACAO_JUNTADA));
-        }
-		
-		return (getConf()
-				.podePorConfiguracao(
-						cadastrante,
-						lotaCadastrante,
-						ExTipoMovimentacao.TIPO_MOVIMENTACAO_RESTRINGIR_ACESSO,
-						CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR)) &&
-				(!getConf().podePorConfiguracao(
-							cadastrante,
-							lotaCadastrante,
-							mob.doc().getExModelo(),
-							CpTipoConfiguracao.TIPO_CONFIG_INCLUIR_DOCUMENTO) || mob.getDoc().getPai()==null) && listMovJuntada.size() == 0;
-	}
-	
-	public boolean podeDesfazerRestricaoAcesso(final DpPessoa cadastrante,
-			final DpLotacao lotaCadastrante, final ExMobil mob) {
-		List<ExMovimentacao> listMovJuntada = new ArrayList<ExMovimentacao>();
-        if(mob.getDoc().getMobilDefaultParaReceberJuntada() != null) {
-            listMovJuntada.addAll(mob.getDoc().getMobilDefaultParaReceberJuntada().getMovsNaoCanceladas(ExTipoMovimentacao.TIPO_MOVIMENTACAO_JUNTADA));
-        }
-		List<ExMovimentacao> lista = new ArrayList<ExMovimentacao>();
-		lista.addAll(mob.getMovsNaoCanceladas(ExTipoMovimentacao.TIPO_MOVIMENTACAO_RESTRINGIR_ACESSO));
-		return (!lista.isEmpty() &&
-				getConf()
-				.podePorConfiguracao(
-						cadastrante,
-						lotaCadastrante,
-						ExTipoMovimentacao.TIPO_MOVIMENTACAO_RESTRINGIR_ACESSO,
-						CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR)) &&
-				(!getConf().podePorConfiguracao(
-							cadastrante,
-							lotaCadastrante,
-							mob.doc().getExModelo(),
-							CpTipoConfiguracao.TIPO_CONFIG_INCLUIR_DOCUMENTO) || mob.getDoc().getPai()==null) && listMovJuntada.size() == 0;
-	}
 
 	/**
 	 * Retorna se é possível exibir a opção para agendar publicação no Boletim.
@@ -4683,16 +4685,6 @@ public class ExCompetenciaBL extends CpCompetenciaBL {
 				&& !mob.doc().isPendenteDeAssinatura() && !mob.isEmTransito() && podeMovimentar && getConf().podePorConfiguracao(titular, lotaTitular,
 						ExTipoMovimentacao.TIPO_MOVIMENTACAO_AUTUAR,
 						CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR));
-	}
-	
-	public boolean podeAssinarPorComSenha(final DpPessoa cadastrante,
-			final DpLotacao lotaCadastrante) {
-		return (getConf()
-				.podePorConfiguracao(
-						cadastrante,
-						lotaCadastrante,
-						ExTipoMovimentacao.TIPO_MOVIMENTACAO_ASSINATURA_POR_COM_SENHA,
-						CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR)) ;
 	}
 
 }

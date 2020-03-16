@@ -92,9 +92,6 @@ public class ExDocumento extends AbstractExDocumento implements Serializable,
 
 	@Transient
 	private byte[] cacheConteudoBlobDoc;
-	
-	@Transient
-	private List<ExMovimentacao> listaMovimentacaoPorRestricaoAcesso;
 
 	@Formula("REMOVE_ACENTO(DESCR_DOCUMENTO)")
 	private String descrDocumentoAI;
@@ -103,7 +100,7 @@ public class ExDocumento extends AbstractExDocumento implements Serializable,
 	 * Simple constructor of ExDocumento instances.
 	 */
 	public ExDocumento() {
-	}	
+	}
 
 	@Override
 	public Long getIdDoc() {
@@ -927,7 +924,7 @@ public class ExDocumento extends AbstractExDocumento implements Serializable,
 	}
 	
 	public String getMarcaDagua() {
-		String marcaDagua = getExModelo().getModeloAtual().getMarcaDagua();				
+		String marcaDagua = getExModelo().getModeloAtual().getMarcaDagua();
 		return marcaDagua == null ? "" : marcaDagua.trim();
 	}
 
@@ -1710,13 +1707,6 @@ public class ExDocumento extends AbstractExDocumento implements Serializable,
 		return getMobilGeral().getMovsNaoCanceladas(
 				ExTipoMovimentacao.TIPO_MOVIMENTACAO_ASSINATURA_COM_SENHA);
 	}
-	
-	public Set<ExMovimentacao> getAssinaturasPorComSenha() {
-		if (getMobilGeral() == null)
-			return new TreeSet<ExMovimentacao>();
-		return getMobilGeral().getMovsNaoCanceladas(
-				ExTipoMovimentacao.TIPO_MOVIMENTACAO_ASSINATURA_POR_COM_SENHA);
-	}
 
 	public Set<ExMovimentacao> getAutenticacoesComSenha() {
 		if (getMobilGeral() == null)
@@ -1814,17 +1804,10 @@ public class ExDocumento extends AbstractExDocumento implements Serializable,
 				.getAssinantesString(getAssinaturasComToken());
 		String assinantesSenha = Documento
 				.getAssinantesString(getAssinaturasComSenha());
-		String assinantesPorSenha = Documento
-				.getAssinantesStringComMatricula(getAssinaturasPorComSenha());
-
 
 		if (assinantesToken.length() > 0)
 			retorno = "Assinado digitalmente por " + assinantesToken + ".\n";
-		
-		if (assinantesPorSenha.length() > 0) {
-			retorno = retorno + "Assinado com senha por " + assinantesPorSenha +".\n" ;
-		}
-		
+
 		if (assinantesSenha.length() > 0)
 			retorno = retorno + "Assinado com senha por " + assinantesSenha
 					+ ".\n";
@@ -2705,13 +2688,5 @@ public class ExDocumento extends AbstractExDocumento implements Serializable,
 			}			
 		}	
 		return false;
-	}
-	
-	public void setListaMovimentacaoPorRestricaoAcesso(List<ExMovimentacao> listaMovs) {
-		this.listaMovimentacaoPorRestricaoAcesso = listaMovs;
-	}
-	
-	public List<ExMovimentacao> getListaMovimentacaoPorRestricaoAcesso() {
-		return this.listaMovimentacaoPorRestricaoAcesso;
 	}
 }

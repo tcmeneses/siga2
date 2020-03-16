@@ -319,15 +319,95 @@ public class ExDao extends CpDao {
 		
 	}
 	
-	public ExProtocolo obterProtocoloPorDocumento(Long idDoc)
-			throws SQLException {
-	    
-		final Query query = em().createNamedQuery("ExProtocolo.obterProtocoloPorDocumento");
-		query.setParameter("idDoc", idDoc);
-		query.setParameter("rownum", 1L);
+	 	/*
+		 * Adicionado dia 23/01/2020
+		 */
+		public ExProtocolo obterProtocoloPorNumero(Long numero, Integer ano) {
+			final Query query = em().createNamedQuery("ExProtocolo.obterProtocoloPorNumeroAno");
+			query.setParameter("numero", numero);
+			query.setParameter("ano", ano);
+			return (ExProtocolo) query.getSingleResult();
+		}
+
+		public ExProtocolo obterProtocoloPorCodigo(String codigo) {
+			
+			CriteriaBuilder criteriaBuilder = em().getCriteriaBuilder();
+			CriteriaQuery<ExProtocolo> criteriaQuery = criteriaBuilder.createQuery(ExProtocolo.class);	
+			Root<ExProtocolo> cpExProtocoloRoot = criteriaQuery.from(ExProtocolo.class);
+
+			Predicate predicateAnd;
+			Predicate predicateEqualTipoMarcador  = criteriaBuilder.equal(cpExProtocoloRoot.get("codigo"), codigo);
+			
+			predicateAnd = criteriaBuilder.and(predicateEqualTipoMarcador);
+			criteriaQuery.where(predicateAnd);
+			return em().createQuery(criteriaQuery).getSingleResult();	
+			
+		}
+
+		public List<ExMobil> consultarMobilPorDocumento(ExDocumento doc){
+			
+			CriteriaBuilder criteriaBuilder = em().getCriteriaBuilder();
+			CriteriaQuery<ExMobil> criteriaQuery = criteriaBuilder.createQuery(ExMobil.class);	
+			Root<ExMobil> cpExMobilRoot = criteriaQuery.from(ExMobil.class);
+
+			Predicate predicateAnd;
+			Predicate predicateEqualTipoMarcador  = criteriaBuilder.equal(cpExMobilRoot.get("exDocumento"), doc);
+			
+			predicateAnd = criteriaBuilder.and(predicateEqualTipoMarcador);
+			criteriaQuery.where(predicateAnd);
+			return em().createQuery(criteriaQuery).getResultList();	
+		}
 		
-		return (ExProtocolo) query.getSingleResult();		
-	}
+		public List<ExMovimentacao> consultarMovimentoPorMobil(ExMobil mob){
+			CriteriaBuilder criteriaBuilder = em().getCriteriaBuilder();
+			CriteriaQuery<ExMovimentacao> criteriaQuery = criteriaBuilder.createQuery(ExMovimentacao.class);	
+			Root<ExMovimentacao> cpExMovimentacaoRoot = criteriaQuery.from(ExMovimentacao.class);
+			Predicate predicateAnd;
+			Predicate predicateEqualTipoMarcador  = criteriaBuilder.equal(cpExMovimentacaoRoot.get("exMobil"), mob);
+			
+			predicateAnd = criteriaBuilder.and(predicateEqualTipoMarcador);
+			criteriaQuery.where(predicateAnd);
+			return em().createQuery(criteriaQuery).getResultList();	
+		}
+		
+		public String gerarCodigoProtocolo() {
+			boolean existe = true;		
+			String codigo = "";
+			while(existe) {
+				codigo = randomAlfanumerico(10);
+				if(obterProtocoloPorCodigo(codigo) == null)
+					existe = false;
+			}			
+			return codigo;
+		}
+		
+		/*
+		 * Funcao para geracao de codigos alfanumericos randomicos
+		 * recebendo apenas a quantidade de caracteres que o codigo deve conter
+		 */
+		public static String randomAlfanumerico(int contador) {
+			final String STRING_ALFANUMERICA = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+			StringBuilder sb = new StringBuilder();
+			while (contador-- != 0) {	
+				int caracteres = (int)(Math.random()*STRING_ALFANUMERICA.length());	
+				sb.append(STRING_ALFANUMERICA.charAt(caracteres));	
+			}	
+			return sb.toString();
+		}
+		
+		
+		/*
+		 * Fim da adicao
+		 */
+
+		public ExProtocolo obterProtocoloPorDocumento(Long idDoc) throws SQLException {
+
+			final Query query = em().createNamedQuery("ExProtocolo.obterProtocoloPorDocumento");
+			query.setParameter("idDoc", idDoc);
+			query.setParameter("rownum", 1L);
+
+			return (ExProtocolo) query.getSingleResult();
+		}
 
 	public List consultarPorFiltro(final ExMobilDaoFiltro flt) {
 		return consultarPorFiltro(flt, 0, 0);
@@ -1576,13 +1656,6 @@ public class ExDao extends CpDao {
 
 	public List consultarTotaisPorMarcador(DpPessoa pes, DpLotacao lot, List<GrupoItem> grupos, 
 			boolean exibeLotacao, boolean trazerCancelados) {
-		String queryTMPCosignatario;
-		if (SigaMessages.isSigaSP()) {
-			queryTMPCosignatario = " LEFT JOIN corporativo.cp_marca marca2 ON (marca2.id_ref = marca.id_ref"
-					+ " AND marca2.id_marcador = " + String.valueOf(CpMarcador.MARCADOR_PENDENTE_DE_ASSINATURA) + " AND marca2.id_pessoa_ini <> :idPessoaIni ) "; 
-		} else {
-			queryTMPCosignatario = "";
-		}
 		String queryCancelados =  " LEFT JOIN corporativo.cp_marca marca3 ON (marca3.id_ref = marca.id_ref"
 				+ " AND marca3.id_marcador = " + String.valueOf(CpMarcador.MARCADOR_CANCELADO) + ") ";
 		try {
@@ -1597,17 +1670,13 @@ public class ExDao extends CpDao {
 						+ " 			SUM(CASE WHEN marca.id_pessoa_ini = :idPessoaIni THEN 1 ELSE 0 END) cont_pessoa,"
 						+ " 			SUM(CASE WHEN marca.id_lotacao_ini = :idLotacaoIni THEN 1 ELSE 0 END) cont_lota"
 						+ "	   			FROM corporativo.cp_marca marca"
-						+ (!exibeLotacao ? queryTMPCosignatario : "" )
 						+ (trazerCancelados ? "" : queryCancelados )
-						+ "				LEFT JOIN corporativo.cp_marca marca2 ON (marca2.id_ref = marca.id_ref"
-						+ "					AND marca2.id_marcador = 15 AND marca2.id_pessoa_ini <> :idPessoaIni ) " 
 						+ "	   			WHERE (marca.dt_ini_marca IS NULL OR marca.dt_ini_marca < sysdate)"
 						+ "	   				AND (marca.dt_fim_marca IS NULL OR marca.dt_fim_marca > sysdate)"
 						+ "	   				AND ((marca.id_pessoa_ini = :idPessoaIni) OR (marca.id_lotacao_ini = :idLotacaoIni))"
 						+ "	   				AND marca.id_tp_marca = 1"
 						+ "					AND marca.id_marcador in (" 
 						+ grupoItem.grupoMarcadores.toString().replaceAll("\\[|\\]", "") + ") "
-						+ (!exibeLotacao && SigaMessages.isSigaSP() ? " AND marca2.id_marca is null " : "" )
 						+ (trazerCancelados ? "" : " AND marca3.id_marca is null " )
 						+ "				GROUP BY marca.id_ref )"
 						+ " UNION ALL ";
@@ -1631,17 +1700,8 @@ public class ExDao extends CpDao {
 	public List listarMobilsPorMarcas(DpPessoa titular,
 			DpLotacao lotaTitular, boolean exibeLotacao, boolean trazerCancelados) {
 		String queryString;
-		String queryTMPCosignatario;
 		List<List<String>> l = new ArrayList<List<String>> ();
 //		long tempoIni = System.nanoTime();
-		if (SigaMessages.isSigaSP()) {
-			queryTMPCosignatario = " and (select marca2 from ExMarca marca2 "		
-					+ "		where marca2.cpMarcador.idMarcador = " + String.valueOf(CpMarcador.MARCADOR_PENDENTE_DE_ASSINATURA)  
-					+ " 	and marca2.exMobil = marca.exMobil "
-					+ "		and marca2.dpPessoaIni <> :titular ) is null ";
-		} else {
-			queryTMPCosignatario = "";
-		}
 		String queryCancelados = " and (select marca3 from ExMarca marca3 "		
 				+ "		where marca3.cpMarcador.idMarcador = "  + String.valueOf(CpMarcador.MARCADOR_CANCELADO) 
 				+ "		and marca3.exMobil = marca.exMobil) is null ";
@@ -1657,7 +1717,6 @@ public class ExDao extends CpDao {
 					+ " and (marca.dtFimMarca is null or marca.dtFimMarca > sysdate)"
 					+ (!exibeLotacao && titular != null ? " and (marca.dpPessoaIni = :titular)" : "") 
 					+ (exibeLotacao && lotaTitular != null ? " and (marca.dpLotacaoIni = :lotaTitular)" : "")
-					+ (!exibeLotacao && titular != null ? queryTMPCosignatario : "")
 					+ (trazerCancelados ? "" : queryCancelados)
 					+ " order by  doc.dtAltDoc desc, marca ";
 			

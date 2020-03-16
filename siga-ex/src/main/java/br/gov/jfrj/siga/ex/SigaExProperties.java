@@ -232,7 +232,8 @@ public class SigaExProperties extends ModeloPropriedade {
 	}
 
 	public static String getTextoSuperiorCarimbo() {
-		return getString("textoSuperiorCarimbo");
+		String textoSuperiorCarimbo = getString("textoSuperiorCarimbo");		
+		return textoSuperiorCarimbo != null ? textoSuperiorCarimbo : "";
 	}
 	
 	public static String getAssinadorExternoPassword() {
