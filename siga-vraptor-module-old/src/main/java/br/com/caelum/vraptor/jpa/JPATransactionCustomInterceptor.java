@@ -1,6 +1,5 @@
 package br.com.caelum.vraptor.jpa;
 
-import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Specializes;
 import javax.enterprise.inject.spi.BeanManager;
@@ -9,20 +8,20 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.servlet.http.HttpServletRequest;
 
-import org.hibernate.FlushMode;
-import org.hibernate.Session;
-
 import br.com.caelum.vraptor.Accepts;
 import br.com.caelum.vraptor.AroundCall;
+import br.com.caelum.vraptor.Delete;
 import br.com.caelum.vraptor.Intercepts;
+import br.com.caelum.vraptor.Post;
+import br.com.caelum.vraptor.Put;
 import br.com.caelum.vraptor.controller.ControllerMethod;
 import br.com.caelum.vraptor.http.MutableResponse;
 import br.com.caelum.vraptor.interceptor.SimpleInterceptorStack;
 import br.com.caelum.vraptor.jpa.event.AfterCommit;
 import br.com.caelum.vraptor.jpa.event.AfterRollback;
 import br.com.caelum.vraptor.jpa.event.BeforeCommit;
-import br.com.caelum.vraptor.proxy.CDIProxies;
 import br.com.caelum.vraptor.validator.Validator;
+import br.gov.jfrj.siga.model.ContextoPersistencia;
 import br.gov.jfrj.siga.vraptor.Transacional;
 
 /**
@@ -42,27 +41,24 @@ public class JPATransactionCustomInterceptor extends br.com.caelum.vraptor.jpa.J
 	private final MutableResponse response;
 	private HttpServletRequest request;
 	private ControllerMethod method;
-	EntityTransaction transaction = null;
 
-	private final static ThreadLocal<JPATransactionCustomInterceptor> current = new ThreadLocal<JPATransactionCustomInterceptor>();
 
 	/**
 	 * @deprecated CDI eyes only.
 	 */
 	protected JPATransactionCustomInterceptor() {
-		this(null, null, null, null, null);
+		this(null, null,  null, null);
 	}
 
 	@SuppressWarnings("deprecation")
 	@Inject
-	public JPATransactionCustomInterceptor(BeanManager beanManager, EntityManager manager,  @Any Validator validator,
+	public JPATransactionCustomInterceptor(BeanManager beanManager,   @Any Validator validator,
 			MutableResponse response, HttpServletRequest request) {
 		this.beanManager = beanManager;
-		this.manager = manager;
+		this.manager = ContextoPersistencia.em();
 		this.validator = validator;
 		this.response = response;
 		this.request = request;
-		current.set(this);
 	}
 
 	@Accepts
@@ -75,25 +71,28 @@ public class JPATransactionCustomInterceptor extends br.com.caelum.vraptor.jpa.J
 	public void intercept(SimpleInterceptorStack stack) {
 		addRedirectListener();
 		
+		EntityTransaction transaction = null;
+		
 		try {
-			if (this.method.containsAnnotation(Transacional.class)
-					&& !(this.request.getRequestURI().startsWith("app/sigawf"))) {
+	 		if ((this.method.containsAnnotation(Transacional.class) || 
+	 				this.method.containsAnnotation(Post.class) ||
+	 				this.method.containsAnnotation(Put.class)  ||
+	 				this.method.containsAnnotation(Delete.class))
+		 			&& !(this.request.getRequestURI().startsWith("app/sigawf"))) {
 				transaction = manager.getTransaction();
 				transaction.begin();
-			} else {
-				disableAutoFlush();
-			}
+		 	} 
 			
 			System.out.println("*** " + this.method.toString() + " - " + (transaction == null ? "NÃO" : "") + " Transacional");
 
 			stack.next();
 			
-			if (this.method.containsAnnotation(Transacional.class)
-					&& !(this.request.getRequestURI().startsWith("app/sigawf"))) {
-				commit(transaction);
-			}
+			commit(transaction);
 
-		} finally {
+
+		} 
+		
+		finally {
 			if (transaction != null && transaction.isActive()) {
 				transaction.rollback();
 				beanManager.fireEvent(new AfterRollback());
@@ -127,36 +126,5 @@ public class JPATransactionCustomInterceptor extends br.com.caelum.vraptor.jpa.J
 		});
 	}
 
-	public static void upgradeParaTransacional() {
-		JPATransactionCustomInterceptor thiz = current.get();
-		if (thiz != null && thiz.transaction == null) {
-			System.out.println("*** UPGRADE para Transacional - " + thiz.method.toString());
-			enableAutoFlush();
-			thiz.transaction = thiz.manager.getTransaction();
-			thiz.transaction.begin();
-		}
-	}
 
-	public static void downgradeParaNaoTransacional() {
-		JPATransactionCustomInterceptor thiz = current.get();
-		if (thiz != null && thiz.transaction != null) {
-			thiz.commit(thiz.transaction);
-			System.out.println("*** DOWNGRADE para NÃO Transacional - " + thiz.method.toString());
-			disableAutoFlush();
-			thiz.transaction = thiz.manager.getTransaction();
-			thiz.transaction.begin();
-		}
-	}
-
-	public static void disableAutoFlush() {
-		JPATransactionCustomInterceptor thiz = current.get();
-		Session session = CDIProxies.unproxifyIfPossible(thiz.manager).unwrap(org.hibernate.Session.class);
-		session.setFlushMode(FlushMode.MANUAL);
-	}
-
-	public static void enableAutoFlush() {
-		JPATransactionCustomInterceptor thiz = current.get();
-		Session session = CDIProxies.unproxifyIfPossible(thiz.manager).unwrap(org.hibernate.Session.class);
-		session.setFlushMode(FlushMode.AUTO);
-	}
 }

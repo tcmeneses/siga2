@@ -11,7 +11,7 @@ import br.com.caelum.vraptor.Intercepts;
 import br.com.caelum.vraptor.controller.ControllerMethod;
 import br.com.caelum.vraptor.core.InterceptorStack;
 import br.com.caelum.vraptor.interceptor.Interceptor;
-import br.com.caelum.vraptor.jpa.JPATransactionCustomInterceptor;
+import br.com.caelum.vraptor.jpa.SigaTransacionalnterceptor;
 import br.com.caelum.vraptor.validator.Validator;
 import br.gov.jfrj.siga.cp.bl.Cp;
 import br.gov.jfrj.siga.dp.dao.CpDao;
@@ -19,7 +19,7 @@ import br.gov.jfrj.siga.model.ContextoPersistencia;
 import br.gov.jfrj.siga.model.dao.ModeloDao;
 
 @RequestScoped
-@Intercepts(before = JPATransactionCustomInterceptor.class)
+@Intercepts(before = SigaTransacionalnterceptor.class)
 public class GiInterceptor implements Interceptor {
 
 	private final EntityManager manager;
