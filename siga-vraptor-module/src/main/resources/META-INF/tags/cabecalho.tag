@@ -75,6 +75,9 @@ ${meta}
 
 <c:set var="path" scope="request">${pageContext.request.contextPath}</c:set>
 
+<script src="/siga/javascript/picketlink.js" type="text/javascript"
+	charset="utf-8"></script>
+
 <link rel="stylesheet" href="/siga/bootstrap/css/bootstrap.min.css"	type="text/css" media="screen, projection" />
 
 <!--   <link rel="stylesheet" href="/siga/css/menuhover.css" type="text/css"/> -->
