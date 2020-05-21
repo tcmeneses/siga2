@@ -60,7 +60,7 @@
 					</c:if>
 
 					<!---->
-					<form role="form" method="post" action="j_security_check"
+					<form method="post" action="j_security_check"
 						enctype="application/x-www-form-urlencoded">
 						<div class="form-group">
 							<label for="username">Matrícula</label> 
@@ -69,7 +69,7 @@
 						      <div class="input-group-prepend">
 						        <span class="input-group-text" id="icon-user"><i class="fas fa-user"></i></span>
 						      </div>
-						      <input id="username" type="text" name="username" placeholder="Matrícula" onblur="javascript:converteUsuario(this)" autocorrect="off"
+						      <input id="username" type="text" name="j_username" placeholder="Matrícula" onblur="javascript:converteUsuario(this)" autocorrect="off"
 								autocapitalize="none" class="form-control" aria-label="Usuário" aria-describedby="icon-user">
 						    </div>
 	
@@ -80,7 +80,7 @@
 						      <div class="input-group-prepend">
 						        <span class="input-group-text" id="icon-pass"><i class="fas fa-lock"></i></span>
 						      </div>
-						      <input type="password" name="password" id="password" placeholder="Senha"
+						      <input type="password" name="j_password" id="password" placeholder="Senha"
 								class="form-control" aria-label="Usuário" aria-describedby="icon-pass">
 						    </div>
 						
@@ -132,7 +132,7 @@
 	    }
 		
 		//$('input, textarea').placeholder();
-		$("#username").focus();
+		$("#j_username").focus();
 
 		function getCookie(cname) {
 			var name = cname + "=";

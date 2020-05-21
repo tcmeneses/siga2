@@ -29,12 +29,6 @@
 		<filter-name>RequestLoggerFilter</filter-name>
 		<url-pattern>*</url-pattern>
 	</filter-mapping>
-	<security-constraint>
-		<web-resource-collection>
-			<web-resource-name>jwt</web-resource-name>
-			<url-pattern>/jwt/*</url-pattern>
-		</web-resource-collection>
-	</security-constraint>
 
 	<security-constraint>
 		<web-resource-collection>
@@ -81,37 +75,4 @@
 		<servlet-name>IDPServlet</servlet-name>
 		<url-pattern>/IDPServlet</url-pattern>
 	</servlet-mapping>
-	<servlet>
-		<description></description>
-		<display-name>SigaJwtProviderServlet</display-name>
-		<servlet-name>SigaJwtProviderServlet</servlet-name>
-		<servlet-class>br.gov.jfrj.siga.idp.jwt.servlet.SigaJwtProviderServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>SigaJwtProviderServlet</servlet-name>
-		<url-pattern>/jwt/api/*</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		<description></description>
-		<display-name>SigaJwtFormServlet</display-name>
-		<servlet-name>SigaJwtFormServlet</servlet-name>
-		<servlet-class>br.gov.jfrj.siga.idp.jwt.servlet.SigaJwtFormServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>SigaJwtFormServlet</servlet-name>
-		<url-pattern>/jwt/login</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		<description></description>
-		<display-name>SigaJwtFormLogoutServlet</display-name>
-		<servlet-name>SigaJwtFormLogoutServlet</servlet-name>
-		<servlet-class>br.gov.jfrj.siga.idp.jwt.servlet.SigaJwtFormLogoutServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>SigaJwtFormLogoutServlet</servlet-name>
-		<url-pattern>/jwt/logout</url-pattern>
-	</servlet-mapping>
-
 </web-app>
