@@ -58,7 +58,7 @@
 				</div>
 				<div class="form-group pt-2">
 			    	<button class="btn btn-secondary btn-sm h-60" @click="resetaStorage();" :class="{disabled: carregando}">Limpar configurações</button>
-			    	<p><small>Retorna as configurações iniciais da mesa.</small></p>
+			    	<p><small>Todas as configurações selecionadas serão desmarcadas.</small></p>
 			    </div>
         	</div>
         </div>	
@@ -302,6 +302,8 @@
 		$("#ultima-atualizacao").addClass("text-secondary");
 	}, 5000);
 	 
+	if (getParmUser('trazerAnotacoes') == null)
+		setParmUser('trazerAnotacoes', true)
 	var appMesa = new Vue({
 		  el: "#app",
 
@@ -414,7 +416,7 @@
 		  methods: {
 		    carregarMesa: function(grpNome, qtdPagina) {
 		      var self = this
-	      	  this.trazerAnotacoes = (getParmUser('trazerAnotacoes') == null ? true : getParmUser('trazerAnotacoes'));
+	      	  this.trazerAnotacoes = (getParmUser('trazerAnotacoes') == null ? false : getParmUser('trazerAnotacoes'));
 	      	  this.trazerComposto = (getParmUser('trazerComposto') == null ? false : getParmUser('trazerComposto'));
 	      	  this.trazerArquivados = (getParmUser('trazerArquivados') == null ? false : getParmUser('trazerArquivados'));
 			  setValueGrupo('Aguardando Ação de Temporalidade', 'hide', !this.trazerArquivados);
@@ -491,7 +493,7 @@
 		    resetaStorage: function() {
 		    	sessionStorage.removeItem('mesa' + getUser());
 		    	localStorage.removeItem('gruposMesa' + getUser());
-		    	this.trazerAnotacoes=true;
+		    	this.trazerAnotacoes=false;
 		    	this.trazerComposto=false;
 		    	this.trazerArquivados=false;
 		    	localStorage.removeItem('trazerAnotacoes' + getUser());
