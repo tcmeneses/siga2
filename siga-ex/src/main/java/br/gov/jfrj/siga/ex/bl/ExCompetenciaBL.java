@@ -1246,13 +1246,36 @@ public class ExCompetenciaBL extends CpCompetenciaBL {
 		
 		if (doc.getLotaSubscritor() == null)
 			return false;
+		
+		if (doc.getCosignatarios() == null) {
+			return false;
+		}
+		
+		if (doc.getCosignatarios().size() == 0) {
+			return false;
+		}
 				
 		ExTipoMovimentacao exTpMov = ExDao.getInstance().consultar(ExTipoMovimentacao.TIPO_MOVIMENTACAO_SOLICITACAO_DE_ASSINATURA,
 				ExTipoMovimentacao.class, false);
 		
-		return getConf().podePorConfiguracao(null, null, null, null, doc.getExFormaDocumento(), doc.getExModelo(), null,
-				null, exTpMov, null, null, null, lotaTitular, titular, null,null,
-				CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR, doc.getSubscritor(), null, null, null, null, null);
+		if (doc.isAssinadoPeloSubscritorComTokenOuSenha()) {
+		 boolean podeSolicitarAssinatura = false;
+		 for (DpPessoa cosignatario:doc.getCosignatarios()) {
+            			 
+			 podeSolicitarAssinatura = getConf().podePorConfiguracao(null, null, null, null, doc.getExFormaDocumento(), doc.getExModelo(), null,
+							null, exTpMov, null, null, null, lotaTitular, titular, null,null,
+							CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR, cosignatario, null, null, null, null, null);		
+			 if (podeSolicitarAssinatura) break;
+
+		 }
+		 return podeSolicitarAssinatura;
+		} else {
+			return getConf().podePorConfiguracao(null, null, null, null, doc.getExFormaDocumento(), doc.getExModelo(), null,
+					null, exTpMov, null, null, null, lotaTitular, titular, null,null,
+					CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR, doc.getSubscritor(), null, null, null, null, null);
+		}
+		
+
 	}
 	
 	/*
