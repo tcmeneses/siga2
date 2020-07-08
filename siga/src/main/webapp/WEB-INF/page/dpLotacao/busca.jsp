@@ -4,6 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://localhost/libstag" prefix="fx"%>
 
 <c:set var="propriedadeClean"
 	value="${fn:replace(param.propriedade,'.','')}" />
@@ -57,22 +58,24 @@
 						</div>
 					</div>
 				</div>
-				<div class="row">
-					<div class="col-sm">
-						<div class="form-group">
-							<label for="idOrgaoUsu">Órgão</label>
-							<select name="idOrgaoUsu" value="${idOrgaoUsu}" class="form-control  siga-select2" >
-									<option value="${item.idOrgaoUsu}" >[Todos]</option>
-									<c:forEach items="${orgaosUsu}" var="item">
-										<option value="${item.idOrgaoUsu}"
-											${item.idOrgaoUsu == idOrgaoUsu ? 'selected' : ''}>
-											${item.nmOrgaoUsu}
-										</option>
-									</c:forEach>
-							</select>
+				<c:if test="${!fx:ehPublicoExterno(titular)}">
+					<div class="row">
+						<div class="col-sm">
+							<div class="form-group">
+								<label for="idOrgaoUsu">Órgão</label>
+								<select name="idOrgaoUsu" value="${idOrgaoUsu}" class="form-control  siga-select2" >
+										<option value="${item.idOrgaoUsu}" >[Todos]</option>
+										<c:forEach items="${orgaosUsu}" var="item">
+											<option value="${item.idOrgaoUsu}"
+												${item.idOrgaoUsu == idOrgaoUsu ? 'selected' : ''}>
+												${item.nmOrgaoUsu}
+											</option>
+										</c:forEach>
+								</select>
+							</div>
 						</div>
 					</div>
-				</div>
+				</c:if>
 				<div class="row">
 					<div class="col-sm-2">
 						<div class="form-group">

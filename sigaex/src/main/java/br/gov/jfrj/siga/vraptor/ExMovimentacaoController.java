@@ -81,6 +81,7 @@ import br.gov.jfrj.siga.ex.ExTopicoDestinacao;
 import br.gov.jfrj.siga.ex.ItemDeProtocolo;
 import br.gov.jfrj.siga.ex.ItemDeProtocoloComparator;
 import br.gov.jfrj.siga.ex.SigaExProperties;
+import br.gov.jfrj.siga.ex.bl.AcessoConsulta;
 import br.gov.jfrj.siga.ex.bl.Ex;
 import br.gov.jfrj.siga.ex.bl.ExAssinavelDoc;
 import br.gov.jfrj.siga.ex.util.DatasPublicacaoDJE;
@@ -1841,6 +1842,7 @@ public class ExMovimentacaoController extends ExController {
 					"Não é possível fazer despacho nem transferência");
 		}
 
+		result.include("ehPublicoExterno", AcessoConsulta.ehPublicoExterno(getTitular()));
 		result.include("doc", doc);
 		result.include("mob", builder.getMob());
 		result.include("postback", this.getPostback());
@@ -4160,8 +4162,10 @@ public class ExMovimentacaoController extends ExController {
 	protected Map<Integer, String> getListaTipoResp() {
 		final Map<Integer, String> map = new TreeMap<Integer, String>();
 		map.put(1, "Órgão Integrado");
-		map.put(2, SigaMessages.getMessage("usuario.matricula"));
-		map.put(3, "Externo");
+		if(!AcessoConsulta.ehPublicoExterno(getTitular())) {
+			map.put(2, SigaMessages.getMessage("usuario.matricula"));
+			map.put(3, "Externo");
+		}
 		return map;
 	}
 

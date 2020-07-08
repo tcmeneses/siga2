@@ -468,5 +468,16 @@ public class SigaLibsEL {
 		return Cp.getInstance().getConf()
 				.podePorConfiguracao(cadastrante, lotacaoCadastrante, CpTipoConfiguracao.TIPO_CONFIG_DELEGAR_VISUALIZACAO);
 	}
-
+	
+	public static Boolean podeCriarComoNovo(DpPessoa cadastrante, DpLotacao lotacaoCadastrante) throws Exception {
+		return Cp.getInstance().getConf()
+				.podePorConfiguracao(cadastrante, lotacaoCadastrante, CpTipoConfiguracao.TIPO_CONFIG_CRIAR_COMO_NOVO);
+	}
+	
+	public static Boolean ehPublicoExterno(DpPessoa titular) {
+		return (
+			(titular.getOrgaoUsuario().getIsExternoOrgaoUsu() != null && titular.getOrgaoUsuario().getIsExternoOrgaoUsu() == 1)
+			|| (titular.getLotacao() != null && titular.getLotacao().getIsExternaLotacao() != null && titular.getLotacao().getIsExternaLotacao() == 1)
+			);
+	}
 }
