@@ -650,9 +650,18 @@ public class ExMovimentacaoController extends ExController {
 		ExDocumento doc = buscarDocumento(builder);
 		DpPessoa titular = this.getTitular();
 
+//		final ExMovimentacaoBuilder movimentacaoBuilder = ExMovimentacaoBuilder
+//				.novaInstancia();
+//		movimentacaoBuilder.setDocumentoRefSel(documentoRefSel)
+//				.setSubscritorSel(subscritorSel).setTitularSel(titularSel)
+//				.setDtMovString(dtMovString).setSubstituicao(substituicao)
+//				.setMob(builder.getMob());
+
 		LOGGER.debug(doc);
 		LOGGER.debug(titular);
 		LOGGER.debug(descrMotivo);
+
+		Ex.getInstance().getBL().recusarAssinatura(doc, titular, descrMotivo);
 
 		result.redirectTo("/app/expediente/doc/exibir?sigla=" + sigla);
 	}

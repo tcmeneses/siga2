@@ -51,6 +51,7 @@ import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
@@ -7119,4 +7120,19 @@ public class ExBL extends CpBL {
 			throw new AplicacaoException("Ocorreu um erro ao reordenar documentos.", 0, e);
 		}
 	}
+
+	public void recusarAssinatura(ExDocumento doc, final DpPessoa docTitular, final String motivo) {
+		DpPessoa subscritor = doc.getSubscritor();
+		DpPessoa cadastrante = doc.getCadastrante();
+		List<DpPessoa> cosignatarios = doc.getMovsCosignatario().stream().map(mov -> mov.getSubscritor()).collect(Collectors.toList());
+		
+		log.debug(docTitular);
+		log.debug(doc);
+		log.debug(subscritor);
+		log.debug(cadastrante);
+		log.debug(cosignatarios);
+		log.debug(motivo);
+
+	}
+
 }
