@@ -628,7 +628,35 @@ public class ExMovimentacaoController extends ExController {
 		result.include("tramitarAtivo", afTramite.ativo);
 		result.include("tramitarFixo", afTramite.fixo);
 	}
-	
+
+	@Get("app/expediente/mov/recusar_assinatura")
+	public void aRecusarAssinar(String sigla, Boolean autenticando) throws Exception {
+		BuscaDocumentoBuilder builder = BuscaDocumentoBuilder.novaInstancia().setSigla(sigla);
+
+		ExDocumento doc = buscarDocumento(builder);
+
+		LOGGER.debug(doc);
+
+		result.include("sigla", sigla);
+		result.include("doc", doc);
+	}
+
+	@Post("/app/expediente/mov/recusar_assinatura_gravar")
+	public void salvarRecusarAssinar(final Integer postback, final String sigla, final String descrMotivo) {
+		this.setPostback(postback);
+
+		BuscaDocumentoBuilder builder = BuscaDocumentoBuilder.novaInstancia().setSigla(sigla);
+
+		ExDocumento doc = buscarDocumento(builder);
+		DpPessoa titular = this.getTitular();
+
+		LOGGER.debug(doc);
+		LOGGER.debug(titular);
+		LOGGER.debug(descrMotivo);
+
+		result.redirectTo("/app/expediente/doc/exibir?sigla=" + sigla);
+	}
+
 	public boolean permiteAutenticar(ExDocumento doc) {
 		return Ex.getInstance().getComp().podeAutenticarDocumento(getTitular(), getLotaTitular(), doc);
 	}
