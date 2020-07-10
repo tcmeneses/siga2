@@ -41,9 +41,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -166,10 +168,48 @@ import br.gov.jfrj.siga.sinc.lib.SincronizavelSuporte;
 import br.gov.jfrj.siga.wf.service.WfService;
 
 public class ExBL extends CpBL {
+
+	private static class ResponsavelRecusa {
+
+		final DpPessoa pessoa;
+
+		final String descricao;
+
+		public ResponsavelRecusa(DpPessoa pessoa, String tipo) {
+			super();
+			this.pessoa = pessoa;
+			this.descricao = tipo;
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(pessoa);
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (!(obj instanceof ResponsavelRecusa)) {
+				return false;
+			}
+			ResponsavelRecusa other = (ResponsavelRecusa) obj;
+			return Objects.equals(pessoa, other.pessoa);
+		}
+
+	}
+
 	private static final String MODELO_FOLHA_DE_ROSTO_EXPEDIENTE_INTERNO = "Folha de Rosto - Expediente Interno";
 	private static final String MODELO_FOLHA_DE_ROSTO_PROCESSO_ADMINISTRATIVO_INTERNO = "Folha de Rosto - Processo Administrativo Interno";
 	private static final String SHA1 = "1.3.14.3.2.26";
 	private static final String MIME_TYPE_PKCS7 = "application/pkcs7-signature";
+
+	private static final String TEXTO_EMAIL_ASSINATURA_RECUSADA = "O usuário %s, "
+			+ "recusou assinar o documento %s em que você está como %s, "
+			+ "pelo motivo descrito abaixo:%n%s";
+
+	private static final String ASSUNTO_EMAIL_ASSINATURA_RECUSADA = "Assinatura recusada";
 
 	private final ThreadLocal<SortedSet<ExMobil>> threadAlteracaoParcial = new ThreadLocal<SortedSet<ExMobil>>();
 
@@ -7120,12 +7160,36 @@ public class ExBL extends CpBL {
 			throw new AplicacaoException("Ocorreu um erro ao reordenar documentos.", 0, e);
 		}
 	}
+	
+	
+	private void emitirEmailRecusa(ExDocumento doc, final String motivo, DpPessoa cadastrante,
+			ResponsavelRecusa responsavel) {
+		try {
+			String texto = String.format(TEXTO_EMAIL_ASSINATURA_RECUSADA, cadastrante.getNomePessoa(), doc.getCodigo(),
+					responsavel.descricao, motivo);
+			Correio.enviar(responsavel.pessoa.getEmailPessoa(), ASSUNTO_EMAIL_ASSINATURA_RECUSADA, texto);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void enviarEmailAssinaturaRecusada(ExDocumento doc, final String motivo, DpPessoa cadastrante,
+			DpPessoa subscritor, List<DpPessoa> cosignatarios) {
+		Set<ResponsavelRecusa> destinatarios = new LinkedHashSet<>();
+		destinatarios.add(new ResponsavelRecusa(subscritor, "responsável"));
+		destinatarios.add(new ResponsavelRecusa(cadastrante, "cadastrante"));
+		destinatarios.addAll(cosignatarios.stream().map(cs -> new ResponsavelRecusa(cs, "cossignatário"))
+				.collect(Collectors.toSet()));
+
+		destinatarios.forEach(responsavel -> emitirEmailRecusa(doc, motivo, cadastrante, responsavel));
+	}
 
 	public void recusarAssinatura(ExDocumento doc, final DpPessoa docTitular, final String motivo) {
 		DpPessoa subscritor = doc.getSubscritor();
 		DpPessoa cadastrante = doc.getCadastrante();
-		List<DpPessoa> cosignatarios = doc.getMovsCosignatario().stream().map(mov -> mov.getSubscritor()).collect(Collectors.toList());
-		
+		List<DpPessoa> cosignatarios = doc.getMovsCosignatario().stream().map(mov -> mov.getSubscritor())
+				.collect(Collectors.toList());
+
 		log.debug(docTitular);
 		log.debug(doc);
 		log.debug(subscritor);
@@ -7133,6 +7197,10 @@ public class ExBL extends CpBL {
 		log.debug(cosignatarios);
 		log.debug(motivo);
 
+		enviarEmailAssinaturaRecusada(doc, motivo, cadastrante, subscritor, cosignatarios);
+
+//		criarNovaMovimentacao(0L, cadastrante, cadastrante.getLotacao(), doc.getMobilGeral(), new Date(), subscritor,
+//				subscritor.getLotacao(), docTitular, docTitular.getLotacao(), new Date());
 	}
 
 }
