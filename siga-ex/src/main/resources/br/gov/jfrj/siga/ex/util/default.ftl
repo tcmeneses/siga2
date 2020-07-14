@@ -4062,6 +4062,48 @@ Pede deferimento.</span><br/><br/><br/>
    [/#if]
 [/#macro]
 
+[#macro destinatario]
+	[#if gerar_destinatario!false]
+    <!-- destinatario -->
+      [#nested]
+    <!-- /destinatario -->
+    [/#if]
+[/#macro]
+
+[#macro selectLotacaoDestinatario titulo="" var="" opcoes="" obrigatorio=false]
+	<input type="hidden" name="vars" value="${var}"/>
+	[#if obrigatorio]
+		[#local negrito = "font-weight:bold"]
+		<input type="hidden" name="obrigatorios" value="${var}" />
+    [/#if]
+	[#if titulo?? && titulo != ""]<span style="${negrito!};${vermelho!}">${titulo}</span>[/#if]
+ 	<select name="${var}" onclick class="form-control">
+ 		<option value="">Selecione</option>
+        [#list func.listarLotacoesPorIdInicial(opcoes) as lot]
+        	<option value="L${lot.idLotacaoIni}" [#if ("${doc.lotaDestinatario!}" !="" && "${doc.lotaDestinatario.idLotacaoIni}" == "${lot.idLotacaoIni}")] selected[/#if]>
+            	${lot.sigla} / ${lot.descricao}
+            </option>
+        [/#list]
+  	</select>
+[/#macro]
+
+[#macro selectPessoaDestinatario titulo="" var="" opcoes="" obrigatorio=false]
+  <input type="hidden" name="vars" value="${var}"/>
+  [#if obrigatorio]
+		[#local negrito = "font-weight:bold"]
+		<input type="hidden" name="obrigatorios" value="${var}" />
+  [/#if]
+  [#if titulo?? && titulo != ""]<span style="${negrito!};${vermelho!}">${titulo}</span>[/#if]
+  <select name="${var}" onclick class="form-control">
+ 		<option value="">Selecione</option>
+        [#list func.listarPessoasPorIdInicial(opcoes) as pes]
+        	<option value="P${pes.idPessoaIni}" [#if ("${doc.destinatario!}" !="" && "${doc.destinatario.idPessoaIni}" == "${pes.idPessoaIni}")] selected[/#if]>
+            	${pes.descricao}
+            </option>
+        [/#list]
+  </select>
+[/#macro]
+
 [#macro classificacao codigo]
    <input type="hidden" name="vars" value="codigoClassificacao" />
    <input type="hidden" id="codigoClassificacao" name="codigoClassificacao" value="${codigo}" />

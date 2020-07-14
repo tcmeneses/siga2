@@ -1752,7 +1752,24 @@ public class ExDocumentoController extends ExController {
 						exDocumentoDTO.getDoc());
 
 			lerEntrevista(exDocumentoDTO);
-
+			
+			String destinatario = exBL.processarComandosEmTag(exDocumentoDTO.getDoc(), "destinatario");
+			if(destinatario != null && !destinatario.trim().isEmpty()) {
+				destinatario = destinatario.trim();
+				if(destinatario.contains("L")) {
+					destinatario = destinatario.replace("L", "");
+					exDocumentoDTO.getDoc().setLotaDestinatario(CpDao.getInstance().consultarLotacaoPorId(Long.valueOf(destinatario.trim())));
+					exDocumentoDTO.getDoc().setDestinatario(null);
+				} else if(destinatario.contains("P")){
+					destinatario = destinatario.replace("P", "");
+					DpPessoa p = CpDao.getInstance().consultarPorIdInicial(Long.valueOf(destinatario.trim()));
+					if(p != null) {
+						exDocumentoDTO.getDoc().setDestinatario(p);
+						exDocumentoDTO.getDoc().setLotaDestinatario(p.getLotacao());
+					}
+				}
+			}
+			
 			if ("sim".equals(exDocumentoDTO.getDesativarDocPai())) {
 				exDocumentoDTO
 						.setDesativ("&exDocumentoDTO.desativarDocPai=sim");

@@ -1113,4 +1113,21 @@ public class FuncoesEL {
 		return retorno;
 	}	
 
+	public List<DpLotacao> listarLotacoesPorIdInicial(String ids) {
+		String[] idArray = ids.split(";");
+		List<Long> listaIds = new ArrayList<Long>();
+		for (int i = 0; i < idArray.length; i++) {
+			listaIds.add(Long.valueOf(idArray[i].trim()));
+		}
+		return dao().listarLotacoesPorIdInicial(listaIds);
+	}
+	
+	public List<DpPessoa> listarPessoasPorIdInicial(String ids) {
+		String[] idArray = ids.split(";");
+		List<Long> listaIds = new ArrayList<Long>();
+		for (int i = 0; i < idArray.length; i++) {
+			listaIds.add(Long.valueOf(idArray[i].trim()));
+		}
+		return dao().listarPessoasPorIdInicial(listaIds);
+	}
 }

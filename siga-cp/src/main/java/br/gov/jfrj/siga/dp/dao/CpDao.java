@@ -2140,6 +2140,22 @@ public class CpDao extends ModeloDao {
 		return em().createQuery(q).getSingleResult();
 	}
 	
+	public List<DpLotacao> listarLotacoesPorIdInicial(List<Long> listaIds) {
+		CriteriaQuery<DpLotacao> q = cb().createQuery(DpLotacao.class);
+		Root<DpLotacao> c = q.from(DpLotacao.class);
+		q.where(c.get("idLotacaoIni").in(listaIds),c.get("dataFimLotacao").isNull());
+		q.select(c);
+		return em().createQuery(q).getResultList();
+	}
+	
+	public List<DpPessoa> listarPessoasPorIdInicial(List<Long> listaIds) {
+		CriteriaQuery<DpPessoa> q = cb().createQuery(DpPessoa.class);
+		Root<DpPessoa> c = q.from(DpPessoa.class);
+		q.where(c.get("idPessoaIni").in(listaIds),c.get("dataFimPessoa").isNull());
+		q.select(c);
+		return em().createQuery(q).getResultList();
+	}
+	
 	public DpLotacao consultarLotacaoPorOrgaoEId(CpOrgaoUsuario orgaoUsuario, String siglaLotacao) {
 		CriteriaQuery<DpLotacao> q = cb().createQuery(DpLotacao.class);
 		Root<DpLotacao> c = q.from(DpLotacao.class);

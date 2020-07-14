@@ -97,6 +97,8 @@ public class ProcessadorModeloFreemarker implements ProcessadorModelo,
 			root.put("gerar_descricao", true);
 		if (attrs.containsKey("descricaodefault"))
 			root.put("gerar_descricaodefault", true);
+		if (attrs.containsKey("destinatario"))
+			root.put("gerar_destinatario", true);
 
 		String sTemplate = "[#compress]\n[#include \"DEFAULT\"][#include \"GERAL\"]\n";
 		if (ou != null) {
