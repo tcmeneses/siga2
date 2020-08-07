@@ -72,10 +72,12 @@ import br.gov.jfrj.siga.ex.ExTipoMobil;
 import br.gov.jfrj.siga.ex.ExTipoMovimentacao;
 import br.gov.jfrj.siga.ex.ExTpDocPublicacao;
 import br.gov.jfrj.siga.ex.ExVia;
+import br.gov.jfrj.siga.ex.SigaExProperties;
 import br.gov.jfrj.siga.ex.BIE.ExBoletimDoc;
 import br.gov.jfrj.siga.ex.util.MascaraUtil;
 import br.gov.jfrj.siga.hibernate.ext.IExMobilDaoFiltro;
 import br.gov.jfrj.siga.hibernate.ext.IMontadorQuery;
+import br.gov.jfrj.siga.hibernate.ext.MontadorQuery;
 import br.gov.jfrj.siga.model.Selecionavel;
 import br.gov.jfrj.siga.model.dao.ModeloDao;
 import br.gov.jfrj.siga.persistencia.ExClassificacaoDaoFiltro;
@@ -385,11 +387,15 @@ public class ExDao extends CpDao {
 	}
 
 	private IMontadorQuery carregarPlugin() {
-		CarregadorPlugin carregador = new CarregadorPlugin();
-		IMontadorQuery montadorQuery = carregador.getMontadorQueryImpl();
-		montadorQuery
-				.setMontadorPrincipal(carregador.getMontadorQueryDefault());
-		return montadorQuery;
+		String prop = SigaExProperties.getMontadorQuery();
+ 		if (prop != null) {
+			CarregadorPlugin carregador = new CarregadorPlugin();
+			IMontadorQuery montadorQuery = carregador.getMontadorQueryImpl();
+			montadorQuery
+					.setMontadorPrincipal(carregador.getMontadorQueryDefault());
+			return montadorQuery;
+ 		}
+ 		return new MontadorQuery();
 	}
 
 	public Integer consultarQuantidadePorFiltroOtimizado(
