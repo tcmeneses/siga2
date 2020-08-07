@@ -1005,10 +1005,22 @@ public class FuncoesEL {
 				.podeAssinarComSenha(titular, lotaTitular, mob);
 	}
 
+	public static Boolean deveAssinarComSenha(DpPessoa titular,
+			DpLotacao lotaTitular, ExMobil mob) throws Exception {
+		return Ex.getInstance().getComp()
+				.deveAssinarComSenha(titular, lotaTitular, mob);
+	}
+
 	public static Boolean podeAssinarMovimentacaoComSenha(DpPessoa titular,
 			DpLotacao lotaTitular, ExMovimentacao mov) throws Exception {
 		return Ex.getInstance().getComp()
 				.podeAssinarMovimentacaoComSenha(titular, lotaTitular, mov);
+	}
+
+	public static Boolean deveAssinarMovimentacaoComSenha(DpPessoa titular,
+			DpLotacao lotaTitular, ExMovimentacao mov) throws Exception {
+		return Ex.getInstance().getComp()
+				.deveAssinarMovimentacaoComSenha(titular, lotaTitular, mov);
 	}
 
 	public static Boolean podeAutenticarMovimentacaoComSenha(
@@ -1018,6 +1030,16 @@ public class FuncoesEL {
 				.getInstance()
 				.getComp()
 				.podeAutenticarMovimentacaoComSenha(titular, lotaTitular,
+						mov);
+	}
+
+	public static Boolean deveAutenticarMovimentacaoComSenha(
+			DpPessoa titular, DpLotacao lotaTitular, ExMovimentacao mov)
+			throws Exception {
+		return Ex
+				.getInstance()
+				.getComp()
+				.deveAutenticarMovimentacaoComSenha(titular, lotaTitular,
 						mov);
 	}
 

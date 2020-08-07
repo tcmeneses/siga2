@@ -1195,10 +1195,37 @@ public class ExCompetenciaBL extends CpCompetenciaBL {
 		
 		ExTipoMovimentacao exTpMov = ExDao.getInstance().consultar(ExTipoMovimentacao.TIPO_MOVIMENTACAO_ASSINATURA_COM_SENHA,
 				ExTipoMovimentacao.class, false);
-
+		
 		return getConf().podePorConfiguracao(null, null, null, null, mob.doc().getExFormaDocumento(), mob.doc().getExModelo(), null,
 				null, exTpMov, null, null, null, lotaTitular, titular, null,null,
 				CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR);
+	}
+	
+	/*
+	 * Retorna se é default assinar um documento com senha:
+	 * 
+	 * @param titular
+	 * @param lotaTitular
+	 * @param mob
+	 * @return
+	 * @throws Exception
+	 */
+	public boolean deveAssinarComSenha(final DpPessoa titular,
+			final DpLotacao lotaTitular, final ExMobil mob) {
+		
+		ExTipoMovimentacao exTpMov = ExDao.getInstance().consultar(ExTipoMovimentacao.TIPO_MOVIMENTACAO_ASSINATURA_COM_SENHA,
+				ExTipoMovimentacao.class, false);
+		
+		CpSituacaoConfiguracao situacao = getConf().situacaoPorConfiguracao(null, null, null, null, mob.doc().getExFormaDocumento(), mob.doc().getExModelo(), null,
+				null, exTpMov, null, null, null, lotaTitular, titular, null,null,
+				CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR);
+		
+		if (situacao != null
+				&& (situacao.getIdSitConfiguracao() == CpSituacaoConfiguracao.SITUACAO_DEFAULT ||
+						situacao.getIdSitConfiguracao() == CpSituacaoConfiguracao.SITUACAO_OBRIGATORIO))
+			return true;
+
+		return false; 
 	}
 	
 	/*
@@ -1294,6 +1321,26 @@ public class ExCompetenciaBL extends CpCompetenciaBL {
 				CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR);
 	}
 	
+	public boolean deveAssinarMovimentacaoComSenha(final DpPessoa titular,
+			final DpLotacao lotaTitular, final ExMovimentacao mov) {
+
+		ExTipoMovimentacao exTpMov = ExDao.getInstance().consultar(ExTipoMovimentacao.TIPO_MOVIMENTACAO_ASSINATURA_MOVIMENTACAO_COM_SENHA,
+				ExTipoMovimentacao.class, false);
+
+		CpSituacaoConfiguracao situacao = getConf().situacaoPorConfiguracao(null, null, null, null, mov.getExMobil().getExDocumento().getExFormaDocumento(), mov.getExMobil().getExDocumento().getExModelo(), null,
+				null, exTpMov, null, null, null, lotaTitular, titular, null,null,
+				CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR);
+		
+		if (situacao != null
+				&& (situacao.getIdSitConfiguracao() == CpSituacaoConfiguracao.SITUACAO_DEFAULT ||
+						situacao.getIdSitConfiguracao() == CpSituacaoConfiguracao.SITUACAO_OBRIGATORIO))
+			return true;
+
+		return false; 
+	}
+	
+
+	
 	/*
 	 * Retorna se é possível assinar movimentações do mobil com senha:
 	 * 
@@ -1338,6 +1385,30 @@ public class ExCompetenciaBL extends CpCompetenciaBL {
 		return getConf().podePorConfiguracao(null, null, null, null, mov.getExMobil().getExDocumento().getExFormaDocumento(), mov.getExMobil().getExDocumento().getExModelo(), null,
 				null, exTpMov, null, null, null, lotaTitular, titular, null,null,
 				CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR);
+	}	
+	
+	public boolean deveAutenticarMovimentacaoComSenha(final DpPessoa titular,
+			final DpLotacao lotaTitular, final ExMovimentacao mov) throws Exception {
+		
+		if(mov == null)
+			return false;
+		
+		if(!mov.getExTipoMovimentacao().getIdTpMov().equals(ExTipoMovimentacao.TIPO_MOVIMENTACAO_ANEXACAO))
+			return false;
+
+		ExTipoMovimentacao exTpMov = ExDao.getInstance().consultar(ExTipoMovimentacao.TIPO_MOVIMENTACAO_CONFERENCIA_COPIA_COM_SENHA,
+				ExTipoMovimentacao.class, false);
+		
+		CpSituacaoConfiguracao situacao = getConf().situacaoPorConfiguracao(null, null, null, null, mov.getExMobil().getExDocumento().getExFormaDocumento(), mov.getExMobil().getExDocumento().getExModelo(), null,
+				null, exTpMov, null, null, null, lotaTitular, titular, null,null,
+				CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR);
+		
+		if (situacao != null
+				&& (situacao.getIdSitConfiguracao() == CpSituacaoConfiguracao.SITUACAO_DEFAULT ||
+						situacao.getIdSitConfiguracao() == CpSituacaoConfiguracao.SITUACAO_OBRIGATORIO))
+			return true;
+
+		return false; 
 	}	
 	
 	/*

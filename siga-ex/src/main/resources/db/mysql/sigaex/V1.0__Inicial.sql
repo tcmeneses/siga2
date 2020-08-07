@@ -79,7 +79,18 @@ CREATE TABLE `ex_classificacao` (
 
 LOCK TABLES `ex_classificacao` WRITE;
 /*!40000 ALTER TABLE `ex_classificacao` DISABLE KEYS */;
-INSERT INTO `ex_classificacao` VALUES (1,'00.00.00.00','ORGANIZAÇÃO E FUNCIONAMENTO',NULL,NULL,NULL,1,1,'2009-03-13 00:00:00',NULL),(2,'00.01.00.00','REGULAMENTAÇÃO',NULL,NULL,NULL,1,2,'2009-03-13 00:00:00',NULL),(3,'00.01.01.00','ORGANIZAÇÃO ADMINISTRATIVA',NULL,NULL,NULL,1,3,'2009-03-13 00:00:00',NULL),(4,'00.01.01.01','Modernização Administrativa',NULL,NULL,NULL,1,4,'2009-03-13 00:00:00',NULL),(5,'00.06.00.00','FISCALIZAÇÃO CONTÁBIL, FINANCEIRA, ORÇAMENTÁRIA',NULL,NULL,NULL,1,5,'2009-03-13 00:00:00',NULL),(6,'00.06.01.00','AUDITORIA',NULL,NULL,NULL,1,6,'2009-03-13 00:00:00',NULL),(7,'00.06.01.01','Auditoria externa',NULL,NULL,NULL,1,7,'2009-03-13 00:00:00',NULL),(8,'00.06.01.02','Auditoria  interna',NULL,NULL,NULL,1,8,'2009-03-13 00:00:00',NULL),(10,'00.06.02.00','APRESTAÇÃO DE CONTAS',NULL,NULL,NULL,1,10,'2009-03-13 00:00:00',NULL),(11,'00.06.02.01','Tomada de contas especial',NULL,NULL,NULL,1,11,'2009-03-13 00:00:00',NULL),(12,'00.06.02.03','Decisão do TCU sobre as contas',NULL,NULL,NULL,1,12,'2009-03-13 00:00:00',NULL);
+INSERT INTO `ex_classificacao` VALUES 
+(1,'00.00.00.00','ORGANIZAÇÃO E FUNCIONAMENTO',NULL,NULL,NULL,1,1,'2009-03-13 00:00:00',NULL),
+(2,'00.01.00.00','REGULAMENTAÇÃO',NULL,NULL,NULL,1,2,'2009-03-13 00:00:00',NULL),
+(3,'00.01.01.00','ORGANIZAÇÃO ADMINISTRATIVA',NULL,NULL,NULL,1,3,'2009-03-13 00:00:00',NULL),
+(4,'00.01.01.01','Modernização Administrativa',NULL,NULL,NULL,1,4,'2009-03-13 00:00:00',NULL),
+(5,'00.06.00.00','FISCALIZAÇÃO CONTÁBIL, FINANCEIRA, ORÇAMENTÁRIA',NULL,NULL,NULL,1,5,'2009-03-13 00:00:00',NULL),
+(6,'00.06.01.00','AUDITORIA',NULL,NULL,NULL,1,6,'2009-03-13 00:00:00',NULL),
+(7,'00.06.01.01','Auditoria externa',NULL,NULL,NULL,1,7,'2009-03-13 00:00:00',NULL),
+(8,'00.06.01.02','Auditoria  interna',NULL,NULL,NULL,1,8,'2009-03-13 00:00:00',NULL),
+(10,'00.06.02.00','APRESTAÇÃO DE CONTAS',NULL,NULL,NULL,1,10,'2009-03-13 00:00:00',NULL),
+(11,'00.06.02.01','Tomada de contas especial',NULL,NULL,NULL,1,11,'2009-03-13 00:00:00',NULL),
+(12,'00.06.02.03','Decisão do TCU sobre as contas',NULL,NULL,NULL,1,12,'2009-03-13 00:00:00',NULL);
 /*!40000 ALTER TABLE `ex_classificacao` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -167,7 +178,31 @@ CREATE TABLE `ex_configuracao` (
 
 LOCK TABLES `ex_configuracao` WRITE;
 /*!40000 ALTER TABLE `ex_configuracao` DISABLE KEYS */;
-INSERT INTO `ex_configuracao` VALUES (27,NULL,NULL,NULL,NULL,NULL,NULL,NULL,5,NULL),(28,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(29,NULL,NULL,NULL,NULL,78,NULL,NULL,NULL,NULL),(30,NULL,NULL,NULL,NULL,519,NULL,NULL,NULL,NULL),(31,NULL,NULL,NULL,NULL,529,NULL,NULL,NULL,NULL),(32,NULL,NULL,NULL,57,NULL,NULL,NULL,NULL,NULL),(33,60,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(34,58,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(35,59,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(38,NULL,NULL,NULL,NULL,545,NULL,NULL,NULL,NULL),(39,NULL,NULL,NULL,NULL,665,NULL,NULL,NULL,NULL),(40,32,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(41,36,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(42,37,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(43,38,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(44,52,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(45,51,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(46,2,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(47,49,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(48,NULL,NULL,NULL,NULL,533,NULL,NULL,NULL,NULL),(49,28,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(50,9,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(51,46,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(52,44,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(53,29,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(54,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(55,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(56,62,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(57,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `ex_configuracao` VALUES 
+(27,NULL,NULL,NULL,NULL,NULL,NULL,NULL,5,NULL),
+(28,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(29,NULL,NULL,NULL,NULL,78,NULL,NULL,NULL,NULL),
+(30,NULL,NULL,NULL,NULL,519,NULL,NULL,NULL,NULL),
+(31,NULL,NULL,NULL,NULL,529,NULL,NULL,NULL,NULL),
+(32,NULL,NULL,NULL,57,NULL,NULL,NULL,NULL,NULL),
+(33,60,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(34,58,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(35,59,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(38,NULL,NULL,NULL,NULL,545,NULL,NULL,NULL,NULL),
+(39,NULL,NULL,NULL,NULL,665,NULL,NULL,NULL,NULL),
+(40,32,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(41,36,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(42,37,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(43,38,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(44,52,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(45,51,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(46,2,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(47,49,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(48,NULL,NULL,NULL,NULL,533,NULL,NULL,NULL,NULL),
+(54,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(55,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(56,62,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(57,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `ex_configuracao` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -552,7 +587,24 @@ CREATE TABLE `ex_forma_documento` (
 
 LOCK TABLES `ex_forma_documento` WRITE;
 /*!40000 ALTER TABLE `ex_forma_documento` DISABLE KEYS */;
-INSERT INTO `ex_forma_documento` VALUES (1,'Ofício','OFI',1),(2,'Memorando','MEM',1),(3,'Formulário','FOR',1),(4,'Informação','INF',1),(5,'Externo','EXT',1),(8,'Despacho','DES',1),(9,'Contrato','CON',1),(12,'Requerimento','REQ',1),(13,'Solicitação','SOL',1),(14,'Parecer','PAR',1),(15,'Certidão','CER',1),(54,'Boletim Interno','BIE',1),(55,'Processo Administrativo','ADM',2),(56,'Processo de Pessoal','RHU',2),(57,'Processo de Execução Orçamentária e Financeira','EOF',2),(97,'Memória de Reunião','MRU',1),(98,'Relatório','REL',1),(99,'Documento Capturado','CAP',1);
+INSERT INTO `ex_forma_documento` VALUES (1,'Ofício','OFI',1),
+(2,'Memorando','MEM',1),
+(3,'Formulário','FOR',1),
+(4,'Informação','INF',1),
+(5,'Externo','EXT',1),
+(8,'Despacho','DES',1),
+(9,'Contrato','CON',1),
+(12,'Requerimento','REQ',1),
+(13,'Solicitação','SOL',1),
+(14,'Parecer','PAR',1),
+(15,'Certidão','CER',1),
+(54,'Boletim Interno','BIE',1),
+(55,'Processo Administrativo','ADM',2),
+(56,'Processo de Pessoal','RHU',2),
+(57,'Processo de Execução Orçamentária e Financeira','EOF',2),
+(97,'Memória de Reunião','MRU',1),
+(98,'Relatório','REL',1),
+(99,'Documento Capturado','CAP',1);
 /*!40000 ALTER TABLE `ex_forma_documento` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -638,7 +690,23 @@ CREATE TABLE `ex_modelo` (
 
 LOCK TABLES `ex_modelo` WRITE;
 /*!40000 ALTER TABLE `ex_modelo` DISABLE KEYS */;
-INSERT INTO `ex_modelo` VALUES (2,'Ofício','Ofício',1,NULL,'template/freemarker','oficio.jsp',NULL,1,NULL,NULL,2,NULL,NULL,NULL,NULL,1,NULL,NULL),(26,'Memorando','Memorando',2,NULL,'template/freemarker','memorando.jsp',NULL,2,NULL,NULL,26,NULL,NULL,NULL,NULL,1,NULL,NULL),(27,'Informação','Informação',3,NULL,'template/freemarker',NULL,NULL,4,NULL,NULL,27,NULL,NULL,NULL,NULL,1,NULL,NULL),(28,'Documento Externo',NULL,NULL,NULL,NULL,'externo.jsp',NULL,5,NULL,NULL,28,NULL,NULL,NULL,NULL,1,NULL,NULL),(29,'Interno Importado',NULL,NULL,NULL,NULL,'interno_antigo.jsp',NULL,NULL,NULL,NULL,29,NULL,NULL,NULL,NULL,1,NULL,NULL),(78,'Despacho','Despacho',4,NULL,'template/freemarker',NULL,NULL,8,NULL,NULL,78,NULL,NULL,NULL,NULL,1,NULL,NULL),(181,'Contrato','Contrato',NULL,NULL,'template-file/jsp','contrato.jsp',NULL,9,NULL,NULL,181,NULL,'2020-02-12 14:52:59',NULL,NULL,0,NULL,NULL),(241,'Boletim Interno',NULL,5,NULL,'template/freemarker','boletimInterno.jsp',NULL,54,NULL,NULL,241,NULL,NULL,NULL,NULL,1,NULL,NULL),(519,'Parecer','Parecer',6,NULL,'template/freemarker',NULL,NULL,14,NULL,NULL,519,NULL,NULL,NULL,NULL,1,NULL,NULL),(529,'Certidão de desentranhamento',NULL,7,NULL,'template/freemarker','certidaoDesentranhamento.jsp',NULL,15,NULL,NULL,529,NULL,NULL,NULL,NULL,1,NULL,NULL),(533,'Processo de Pessoal',NULL,NULL,NULL,NULL,'processoAdministrativo.jsp',NULL,56,NULL,NULL,533,NULL,NULL,NULL,NULL,1,NULL,NULL),(534,'Processo de Execução Orçamentária e Financeira','Processo de Execução Orçamentária e Financeira',NULL,NULL,'template-file/jsp','processoAdministrativo.jsp',NULL,57,NULL,NULL,534,NULL,NULL,NULL,NULL,1,NULL,NULL),(545,'Certidão de encerramendo de volume',NULL,NULL,NULL,NULL,'certidaoEncerramentoVolume.jsp',NULL,15,NULL,NULL,545,NULL,NULL,NULL,NULL,1,NULL,NULL),(546,'Folha inicial de volume - EOF',NULL,NULL,NULL,NULL,'folhaInicialVolume.jsp',NULL,3,NULL,NULL,546,NULL,'2020-02-12 14:52:59',NULL,NULL,0,NULL,NULL),(663,'Memória de Reunião','Memória de Reunião',8,NULL,'template/freemarker',NULL,NULL,97,NULL,NULL,663,NULL,'2020-02-12 14:52:59',NULL,NULL,0,NULL,NULL),(665,'Despacho Automático','Despacho gerado automaticamente pela transferência',9,NULL,'template/freemarker',NULL,NULL,8,NULL,NULL,665,NULL,NULL,NULL,NULL,1,NULL,NULL),(666,'Planta','Planta',10,' ','template/freemarker',NULL,NULL,99,NULL,NULL,0,NULL,NULL,NULL,NULL,1,NULL,NULL);
+INSERT INTO `ex_modelo` VALUES (2,'Ofício','Ofício',1,NULL,'template/freemarker','oficio.jsp',NULL,1,NULL,NULL,2,NULL,NULL,NULL,NULL,1,NULL,NULL),
+(26,'Memorando','Memorando',2,NULL,'template/freemarker','memorando.jsp',NULL,2,NULL,NULL,26,NULL,NULL,NULL,NULL,1,NULL,NULL),
+(27,'Informação','Informação',3,NULL,'template/freemarker',NULL,NULL,4,NULL,NULL,27,NULL,NULL,NULL,NULL,1,NULL,NULL),
+(28,'Documento Externo',NULL,NULL,NULL,NULL,'externo.jsp',NULL,5,NULL,NULL,28,NULL,NULL,NULL,NULL,1,NULL,NULL),
+(29,'Interno Importado',NULL,NULL,NULL,NULL,'interno_antigo.jsp',NULL,NULL,NULL,NULL,29,NULL,NULL,NULL,NULL,1,NULL,NULL),
+(78,'Despacho','Despacho',4,NULL,'template/freemarker',NULL,NULL,8,NULL,NULL,78,NULL,NULL,NULL,NULL,1,NULL,NULL),
+(181,'Contrato','Contrato',NULL,NULL,'template-file/jsp','contrato.jsp',NULL,9,NULL,NULL,181,NULL,'2020-02-12 14:52:59',NULL,NULL,0,NULL,NULL),
+(241,'Boletim Interno',NULL,5,NULL,'template/freemarker','boletimInterno.jsp',NULL,54,NULL,NULL,241,NULL,NULL,NULL,NULL,1,NULL,NULL),
+(519,'Parecer','Parecer',6,NULL,'template/freemarker',NULL,NULL,14,NULL,NULL,519,NULL,NULL,NULL,NULL,1,NULL,NULL),
+(529,'Certidão de desentranhamento',NULL,7,NULL,'template/freemarker','certidaoDesentranhamento.jsp',NULL,15,NULL,NULL,529,NULL,NULL,NULL,NULL,1,NULL,NULL),
+(533,'Processo de Pessoal',NULL,NULL,NULL,NULL,'processoAdministrativo.jsp',NULL,56,NULL,NULL,533,NULL,NULL,NULL,NULL,1,NULL,NULL),
+(534,'Processo de Execução Orçamentária e Financeira','Processo de Execução Orçamentária e Financeira',NULL,NULL,'template-file/jsp','processoAdministrativo.jsp',NULL,57,NULL,NULL,534,NULL,NULL,NULL,NULL,1,NULL,NULL),
+(545,'Certidão de encerramendo de volume',NULL,NULL,NULL,NULL,'certidaoEncerramentoVolume.jsp',NULL,15,NULL,NULL,545,NULL,NULL,NULL,NULL,1,NULL,NULL),
+(546,'Folha inicial de volume - EOF',NULL,NULL,NULL,NULL,'folhaInicialVolume.jsp',NULL,3,NULL,NULL,546,NULL,'2020-02-12 14:52:59',NULL,NULL,0,NULL,NULL),
+(663,'Memória de Reunião','Memória de Reunião',8,NULL,'template/freemarker',NULL,NULL,97,NULL,NULL,663,NULL,'2020-02-12 14:52:59',NULL,NULL,0,NULL,NULL),
+(665,'Despacho Automático','Despacho gerado automaticamente pela transferência',9,NULL,'template/freemarker',NULL,NULL,8,NULL,NULL,665,NULL,NULL,NULL,NULL,1,NULL,NULL),
+(666,'Planta','Planta',10,' ','template/freemarker',NULL,NULL,99,NULL,NULL,0,NULL,NULL,NULL,NULL,1,NULL,NULL);
 /*!40000 ALTER TABLE `ex_modelo` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -816,7 +884,12 @@ CREATE TABLE `ex_nivel_acesso` (
 
 LOCK TABLES `ex_nivel_acesso` WRITE;
 /*!40000 ALTER TABLE `ex_nivel_acesso` DISABLE KEYS */;
-INSERT INTO `ex_nivel_acesso` VALUES (1,'Limitado ao órgão','Dá acesso a todos do órgão ao qual o documento pertence, bem como a toda a lotação de qualquer órgão para onde for enviado',20),(2,'Limitado de divisão para pessoa','Dá acesso a toda a divisão onde o documento foi criado e também a qualquer lotação (ou apenas pessoa específica) para onde for enviado',40),(3,'Limitado entre lotações','Dá acesso a toda a lotação do cadastrante do documento e à lotação (nunca somente à pessoa) para onde for enviado',60),(5,'Limitado entre pessoas','Dá acesso somente ao cadastrante do documento e à lotação (ou apenas pessoa específica) para onde for enviado',100),(6,'Público','Dá acesso a todos, independentemente do órgão',10),(7,'Limitado de pessoa para divisão','Dá acesso somente ao cadastrante do documento e a toda a divisão para onde for enviado',30);
+INSERT INTO `ex_nivel_acesso` VALUES (1,'Limitado ao órgão','Dá acesso a todos do órgão ao qual o documento pertence, bem como a toda a lotação de qualquer órgão para onde for enviado',20),
+(2,'Limitado de divisão para pessoa','Dá acesso a toda a divisão onde o documento foi criado e também a qualquer lotação (ou apenas pessoa específica) para onde for enviado',40),
+(3,'Limitado entre lotações','Dá acesso a toda a lotação do cadastrante do documento e à lotação (nunca somente à pessoa) para onde for enviado',60),
+(5,'Limitado entre pessoas','Dá acesso somente ao cadastrante do documento e à lotação (ou apenas pessoa específica) para onde for enviado',100),
+(6,'Público','Dá acesso a todos, independentemente do órgão',10),
+(7,'Limitado de pessoa para divisão','Dá acesso somente ao cadastrante do documento e a toda a divisão para onde for enviado',30);
 /*!40000 ALTER TABLE `ex_nivel_acesso` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -868,7 +941,11 @@ CREATE TABLE `ex_papel` (
 
 LOCK TABLES `ex_papel` WRITE;
 /*!40000 ALTER TABLE `ex_papel` DISABLE KEYS */;
-INSERT INTO `ex_papel` VALUES (1,'Gestor'),(2,'Interessado'),(5,'Liquidante'),(6,'Autorizador'),(7,'Revisor');
+INSERT INTO `ex_papel` VALUES (1,'Gestor'),
+(2,'Interessado'),
+(5,'Liquidante'),
+(6,'Autorizador'),
+(7,'Revisor');
 /*!40000 ALTER TABLE `ex_papel` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -925,7 +1002,13 @@ CREATE TABLE `ex_situacao_configuracao` (
 
 LOCK TABLES `ex_situacao_configuracao` WRITE;
 /*!40000 ALTER TABLE `ex_situacao_configuracao` DISABLE KEYS */;
-INSERT INTO `ex_situacao_configuracao` VALUES (1,'Pode'),(2,'Não Pode'),(3,'Obrigatório'),(4,'Opcional'),(5,'Default'),(6,'Não default'),(7,'Proibido');
+INSERT INTO `ex_situacao_configuracao` VALUES (1,'Pode'),
+(2,'Não Pode'),
+(3,'Obrigatório'),
+(4,'Opcional'),
+(5,'Default'),
+(6,'Não default'),
+(7,'Proibido');
 /*!40000 ALTER TABLE `ex_situacao_configuracao` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -963,7 +1046,86 @@ CREATE TABLE `ex_temporalidade` (
 
 LOCK TABLES `ex_temporalidade` WRITE;
 /*!40000 ALTER TABLE `ex_temporalidade` DISABLE KEYS */;
-INSERT INTO `ex_temporalidade` VALUES (81,'1 ano',1,1,81,NULL,NULL,NULL,NULL,1),(82,'1 ano após a atualização',1,1,82,NULL,NULL,NULL,NULL,1),(83,'10 anos',10,1,83,NULL,NULL,NULL,NULL,1),(84,'15 anos',15,1,84,NULL,NULL,NULL,NULL,1),(85,'2 anos',2,1,85,NULL,NULL,NULL,NULL,1),(86,'2 anos após a devolução do documento / processo',2,1,86,NULL,NULL,NULL,NULL,1),(87,'2 anos após o encerramento',2,1,87,NULL,NULL,NULL,NULL,1),(88,'2 anos após o encerramento com devolução',2,1,88,NULL,NULL,NULL,NULL,1),(89,'20 anos',20,1,89,NULL,NULL,NULL,NULL,1),(90,'3 anos',3,1,90,NULL,NULL,NULL,NULL,1),(92,'3 anos após o encerramento',3,1,92,NULL,NULL,NULL,NULL,1),(93,'30 dias',30,3,93,NULL,NULL,NULL,NULL,1),(94,'35 anos',35,1,94,NULL,NULL,NULL,NULL,1),(95,'4 anos',4,1,95,NULL,NULL,NULL,NULL,1),(96,'5 anos',5,1,96,NULL,NULL,NULL,NULL,1),(97,'5 anos após o encerramento',5,1,97,NULL,NULL,NULL,NULL,1),(98,'50 anos',50,1,98,NULL,NULL,NULL,NULL,1),(99,'51 anos',51,1,99,NULL,NULL,NULL,NULL,1),(100,'6 anos',6,1,100,NULL,NULL,NULL,NULL,1),(101,'7 anos',7,1,101,NULL,NULL,NULL,NULL,1),(102,'71 anos',71,1,102,NULL,NULL,NULL,NULL,1),(103,'90 dias',90,3,103,NULL,NULL,NULL,NULL,1),(104,'95 anos',95,1,104,NULL,NULL,NULL,NULL,1),(105,'Até a alienação',NULL,NULL,105,NULL,NULL,NULL,NULL,1),(106,'Até a aposentadoria ou o desligamento',NULL,NULL,106,NULL,NULL,NULL,NULL,1),(107,'Até a atualização',NULL,NULL,107,NULL,NULL,NULL,NULL,1),(108,'Até a conclusão da apuração',NULL,NULL,108,NULL,NULL,NULL,NULL,1),(109,'Até a devolução',NULL,NULL,109,NULL,NULL,NULL,NULL,1),(110,'Até a inclusão',NULL,NULL,110,NULL,NULL,NULL,NULL,1),(111,'Até a informatização ou alienação',NULL,NULL,111,NULL,NULL,NULL,NULL,1),(112,'Até a prestação de contas',NULL,NULL,112,NULL,NULL,NULL,NULL,1),(113,'Até a quitação da dívida',NULL,NULL,113,NULL,NULL,NULL,NULL,1),(114,'Até a restauração da obra',NULL,NULL,114,NULL,NULL,NULL,NULL,1),(115,'Até alienação do bem',NULL,NULL,115,NULL,NULL,NULL,NULL,1),(116,'Até o emplacamento',NULL,NULL,116,NULL,NULL,NULL,NULL,1),(117,'Até o encerramento',NULL,NULL,117,NULL,NULL,NULL,NULL,1),(118,'Até o pagamento',NULL,NULL,118,NULL,NULL,NULL,NULL,1),(119,'Até o trânsito em julgado',NULL,NULL,119,NULL,NULL,NULL,NULL,1),(120,'Até vigência',NULL,NULL,120,NULL,NULL,NULL,NULL,1),(121,'Até vigência + 6 anos',6,1,121,NULL,NULL,NULL,NULL,1),(122,'Duração obra',NULL,NULL,122,NULL,NULL,NULL,NULL,1),(123,'Durante vigência',NULL,NULL,123,NULL,NULL,NULL,NULL,1),(124,'Enquanto permanece a ocupação',NULL,NULL,124,NULL,NULL,NULL,NULL,1),(125,'Enquanto vigora',NULL,NULL,125,NULL,NULL,NULL,NULL,1),(126,'Guarda Permanente',NULL,NULL,126,NULL,NULL,NULL,NULL,1),(127,'Indeterminado',NULL,NULL,127,NULL,NULL,NULL,NULL,1),(128,'Julg. TCU',NULL,NULL,128,NULL,NULL,NULL,NULL,1),(129,'No momento do recolhimento',NULL,NULL,129,NULL,NULL,NULL,NULL,1),(130,'Para utilização',NULL,NULL,130,NULL,NULL,NULL,NULL,1),(131,'Prazo da pasta',NULL,NULL,131,NULL,NULL,NULL,NULL,1),(132,'Prazo do assent.',NULL,NULL,132,NULL,NULL,NULL,NULL,1),(133,'Prazo do dossiê',NULL,NULL,133,NULL,NULL,NULL,NULL,1),(134,'Prazo do precatório',NULL,NULL,134,NULL,NULL,NULL,NULL,1),(135,'Prazo do processo',NULL,NULL,135,NULL,NULL,NULL,NULL,1),(136,'Prazo do prontuário',NULL,NULL,136,NULL,NULL,NULL,NULL,1),(137,'Transitado em julgado',NULL,NULL,137,NULL,NULL,NULL,NULL,1),(138,'Validade Concurso',NULL,NULL,138,NULL,NULL,NULL,NULL,1),(139,'Validade contrato',NULL,NULL,139,NULL,NULL,NULL,NULL,1),(140,'Validade credenciamento',NULL,NULL,140,NULL,NULL,NULL,NULL,1),(141,'Validade Projeto',NULL,NULL,141,NULL,NULL,NULL,NULL,1),(142,'Vigência',NULL,NULL,142,NULL,NULL,NULL,NULL,1),(143,'Vigência cadastro',NULL,NULL,143,NULL,NULL,NULL,NULL,1),(144,'Vigência da pensão',NULL,NULL,144,NULL,NULL,NULL,NULL,1),(161,'Até a devolução do bem',NULL,NULL,161,NULL,NULL,NULL,NULL,1),(162,'Até a posse',NULL,NULL,162,NULL,NULL,NULL,NULL,1),(163,'Até a próxima atualização',NULL,NULL,163,NULL,NULL,NULL,NULL,1),(164,'Até a publicação ',NULL,NULL,164,NULL,NULL,NULL,NULL,1),(165,'Até o desfazimento do bem',NULL,NULL,165,NULL,NULL,NULL,NULL,1),(166,'Até o encerramento do processo de execução penal',NULL,NULL,166,NULL,NULL,NULL,NULL,1),(167,'Até o vitaliciamento',NULL,NULL,167,NULL,NULL,NULL,NULL,1),(168,'Até revogação',NULL,NULL,168,NULL,NULL,NULL,NULL,1),(169,'Até vigência do contrato ou Julg. TCU',NULL,NULL,169,NULL,NULL,NULL,NULL,1),(170,'Eliminação no momento do recebimento',NULL,NULL,170,NULL,NULL,NULL,NULL,1),(171,'Enquanto durar a ocupação',NULL,NULL,171,NULL,NULL,NULL,NULL,1),(172,'Enquanto durar a pesquisa',NULL,NULL,172,NULL,NULL,NULL,NULL,1),(173,'Enquanto o bem estiver alienado',NULL,NULL,173,NULL,NULL,NULL,NULL,1),(174,'Enquanto vigente',NULL,NULL,174,NULL,NULL,NULL,NULL,1),(175,'Imediatamente após a produção',NULL,NULL,175,NULL,NULL,NULL,NULL,1),(176,'Prazo da licença',NULL,NULL,176,NULL,NULL,NULL,NULL,1),(177,'Validade do concurso',NULL,NULL,177,NULL,NULL,NULL,NULL,1);
+INSERT INTO `ex_temporalidade` VALUES (81,'1 ano',1,1,81,NULL,NULL,NULL,NULL,1),
+(82,'1 ano após a atualização',1,1,82,NULL,NULL,NULL,NULL,1),
+(83,'10 anos',10,1,83,NULL,NULL,NULL,NULL,1),
+(84,'15 anos',15,1,84,NULL,NULL,NULL,NULL,1),
+(85,'2 anos',2,1,85,NULL,NULL,NULL,NULL,1),
+(86,'2 anos após a devolução do documento / processo',2,1,86,NULL,NULL,NULL,NULL,1),
+(87,'2 anos após o encerramento',2,1,87,NULL,NULL,NULL,NULL,1),
+(88,'2 anos após o encerramento com devolução',2,1,88,NULL,NULL,NULL,NULL,1),
+(89,'20 anos',20,1,89,NULL,NULL,NULL,NULL,1),
+(90,'3 anos',3,1,90,NULL,NULL,NULL,NULL,1),
+(92,'3 anos após o encerramento',3,1,92,NULL,NULL,NULL,NULL,1),
+(93,'30 dias',30,3,93,NULL,NULL,NULL,NULL,1),
+(94,'35 anos',35,1,94,NULL,NULL,NULL,NULL,1),
+(95,'4 anos',4,1,95,NULL,NULL,NULL,NULL,1),
+(96,'5 anos',5,1,96,NULL,NULL,NULL,NULL,1),
+(97,'5 anos após o encerramento',5,1,97,NULL,NULL,NULL,NULL,1),
+(98,'50 anos',50,1,98,NULL,NULL,NULL,NULL,1),
+(99,'51 anos',51,1,99,NULL,NULL,NULL,NULL,1),
+(100,'6 anos',6,1,100,NULL,NULL,NULL,NULL,1),
+(101,'7 anos',7,1,101,NULL,NULL,NULL,NULL,1),
+(102,'71 anos',71,1,102,NULL,NULL,NULL,NULL,1),
+(103,'90 dias',90,3,103,NULL,NULL,NULL,NULL,1),
+(104,'95 anos',95,1,104,NULL,NULL,NULL,NULL,1),
+(105,'Até a alienação',NULL,NULL,105,NULL,NULL,NULL,NULL,1),
+(106,'Até a aposentadoria ou o desligamento',NULL,NULL,106,NULL,NULL,NULL,NULL,1),
+(107,'Até a atualização',NULL,NULL,107,NULL,NULL,NULL,NULL,1),
+(108,'Até a conclusão da apuração',NULL,NULL,108,NULL,NULL,NULL,NULL,1),
+(109,'Até a devolução',NULL,NULL,109,NULL,NULL,NULL,NULL,1),
+(110,'Até a inclusão',NULL,NULL,110,NULL,NULL,NULL,NULL,1),
+(111,'Até a informatização ou alienação',NULL,NULL,111,NULL,NULL,NULL,NULL,1),
+(112,'Até a prestação de contas',NULL,NULL,112,NULL,NULL,NULL,NULL,1),
+(113,'Até a quitação da dívida',NULL,NULL,113,NULL,NULL,NULL,NULL,1),
+(114,'Até a restauração da obra',NULL,NULL,114,NULL,NULL,NULL,NULL,1),
+(115,'Até alienação do bem',NULL,NULL,115,NULL,NULL,NULL,NULL,1),
+(116,'Até o emplacamento',NULL,NULL,116,NULL,NULL,NULL,NULL,1),
+(117,'Até o encerramento',NULL,NULL,117,NULL,NULL,NULL,NULL,1),
+(118,'Até o pagamento',NULL,NULL,118,NULL,NULL,NULL,NULL,1),
+(119,'Até o trânsito em julgado',NULL,NULL,119,NULL,NULL,NULL,NULL,1),
+(120,'Até vigência',NULL,NULL,120,NULL,NULL,NULL,NULL,1),
+(121,'Até vigência + 6 anos',6,1,121,NULL,NULL,NULL,NULL,1),
+(122,'Duração obra',NULL,NULL,122,NULL,NULL,NULL,NULL,1),
+(123,'Durante vigência',NULL,NULL,123,NULL,NULL,NULL,NULL,1),
+(124,'Enquanto permanece a ocupação',NULL,NULL,124,NULL,NULL,NULL,NULL,1),
+(125,'Enquanto vigora',NULL,NULL,125,NULL,NULL,NULL,NULL,1),
+(126,'Guarda Permanente',NULL,NULL,126,NULL,NULL,NULL,NULL,1),
+(127,'Indeterminado',NULL,NULL,127,NULL,NULL,NULL,NULL,1),
+(128,'Julg. TCU',NULL,NULL,128,NULL,NULL,NULL,NULL,1),
+(129,'No momento do recolhimento',NULL,NULL,129,NULL,NULL,NULL,NULL,1),
+(130,'Para utilização',NULL,NULL,130,NULL,NULL,NULL,NULL,1),
+(131,'Prazo da pasta',NULL,NULL,131,NULL,NULL,NULL,NULL,1),
+(132,'Prazo do assent.',NULL,NULL,132,NULL,NULL,NULL,NULL,1),
+(133,'Prazo do dossiê',NULL,NULL,133,NULL,NULL,NULL,NULL,1),
+(134,'Prazo do precatório',NULL,NULL,134,NULL,NULL,NULL,NULL,1),
+(135,'Prazo do processo',NULL,NULL,135,NULL,NULL,NULL,NULL,1),
+(136,'Prazo do prontuário',NULL,NULL,136,NULL,NULL,NULL,NULL,1),
+(137,'Transitado em julgado',NULL,NULL,137,NULL,NULL,NULL,NULL,1),
+(138,'Validade Concurso',NULL,NULL,138,NULL,NULL,NULL,NULL,1),
+(139,'Validade contrato',NULL,NULL,139,NULL,NULL,NULL,NULL,1),
+(140,'Validade credenciamento',NULL,NULL,140,NULL,NULL,NULL,NULL,1),
+(141,'Validade Projeto',NULL,NULL,141,NULL,NULL,NULL,NULL,1),
+(142,'Vigência',NULL,NULL,142,NULL,NULL,NULL,NULL,1),
+(143,'Vigência cadastro',NULL,NULL,143,NULL,NULL,NULL,NULL,1),
+(144,'Vigência da pensão',NULL,NULL,144,NULL,NULL,NULL,NULL,1),
+(161,'Até a devolução do bem',NULL,NULL,161,NULL,NULL,NULL,NULL,1),
+(162,'Até a posse',NULL,NULL,162,NULL,NULL,NULL,NULL,1),
+(163,'Até a próxima atualização',NULL,NULL,163,NULL,NULL,NULL,NULL,1),
+(164,'Até a publicação ',NULL,NULL,164,NULL,NULL,NULL,NULL,1),
+(165,'Até o desfazimento do bem',NULL,NULL,165,NULL,NULL,NULL,NULL,1),
+(166,'Até o encerramento do processo de execução penal',NULL,NULL,166,NULL,NULL,NULL,NULL,1),
+(167,'Até o vitaliciamento',NULL,NULL,167,NULL,NULL,NULL,NULL,1),
+(168,'Até revogação',NULL,NULL,168,NULL,NULL,NULL,NULL,1),
+(169,'Até vigência do contrato ou Julg. TCU',NULL,NULL,169,NULL,NULL,NULL,NULL,1),
+(170,'Eliminação no momento do recebimento',NULL,NULL,170,NULL,NULL,NULL,NULL,1),
+(171,'Enquanto durar a ocupação',NULL,NULL,171,NULL,NULL,NULL,NULL,1),
+(172,'Enquanto durar a pesquisa',NULL,NULL,172,NULL,NULL,NULL,NULL,1),
+(173,'Enquanto o bem estiver alienado',NULL,NULL,173,NULL,NULL,NULL,NULL,1),
+(174,'Enquanto vigente',NULL,NULL,174,NULL,NULL,NULL,NULL,1),
+(175,'Imediatamente após a produção',NULL,NULL,175,NULL,NULL,NULL,NULL,1),
+(176,'Prazo da licença',NULL,NULL,176,NULL,NULL,NULL,NULL,1),
+(177,'Validade do concurso',NULL,NULL,177,NULL,NULL,NULL,NULL,1);
 /*!40000 ALTER TABLE `ex_temporalidade` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -988,7 +1150,23 @@ CREATE TABLE `ex_tipo_despacho` (
 
 LOCK TABLES `ex_tipo_despacho` WRITE;
 /*!40000 ALTER TABLE `ex_tipo_despacho` DISABLE KEYS */;
-INSERT INTO `ex_tipo_despacho` VALUES (1,'De acordo.','S'),(2,'Para ciência.','S'),(3,'Para as providências cabíveis','S'),(4,'Intime-se.','S'),(5,'Autorizo.','S'),(6,'Para atendimento.','S'),(7,'Para verificar a possibilidade de atendimento.','S'),(8,'Oficie-se.','S'),(9,'Expeça-se ofício-circular.','S'),(10,'Expeça-se memorando.','S'),(11,'Expeça-se memorando-circular.','S'),(12,'Arquive-se.','S'),(13,'Junte-se ao dossiê.','S'),(14,'Junte-se ao processo.','S'),(15,'Ciente. Arquive-se.','S'),(16,'Para atendimento e encaminhamento direto','S'),(17,'A pedido','S');
+INSERT INTO `ex_tipo_despacho` VALUES (1,'De acordo.','S'),
+(2,'Para ciência.','S'),
+(3,'Para as providências cabíveis','S'),
+(4,'Intime-se.','S'),
+(5,'Autorizo.','S'),
+(6,'Para atendimento.','S'),
+(7,'Para verificar a possibilidade de atendimento.','S'),
+(8,'Oficie-se.','S'),
+(9,'Expeça-se ofício-circular.','S'),
+(10,'Expeça-se memorando.','S'),
+(11,'Expeça-se memorando-circular.','S'),
+(12,'Arquive-se.','S'),
+(13,'Junte-se ao dossiê.','S'),
+(14,'Junte-se ao processo.','S'),
+(15,'Ciente. Arquive-se.','S'),
+(16,'Para atendimento e encaminhamento direto','S'),
+(17,'A pedido','S');
 /*!40000 ALTER TABLE `ex_tipo_despacho` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1013,7 +1191,50 @@ CREATE TABLE `ex_tipo_destinacao` (
 
 LOCK TABLES `ex_tipo_destinacao` WRITE;
 /*!40000 ALTER TABLE `ex_tipo_destinacao` DISABLE KEYS */;
-INSERT INTO `ex_tipo_destinacao` VALUES (1,'Eliminação',NULL),(2,'Guarda Permanente',NULL),(21,'5 anos',NULL),(22,'Agência',NULL),(23,'Arquivo',NULL),(24,'Arquivo Intermediário',NULL),(26,'Arquivo Permanente',NULL),(27,'Assentamento Funcional',NULL),(28,'Banco',NULL),(29,'Biblioteca',NULL),(30,'Candidato',NULL),(31,'Clínica',NULL),(32,'Correios',NULL),(33,'Devolvida',NULL),(34,'Doador',NULL),(35,'Dossiê',NULL),(36,'Dossiê do curso',NULL),(37,'Dossiê do Evento',NULL),(38,'Empresa',NULL),(39,'Estagiário',NULL),(40,'Executor',NULL),(41,'Imprensa',NULL),(42,'Interessado',NULL),(43,'Julg. TCU',NULL),(44,'Magistrado',NULL),(45,'Participante',NULL),(46,'Participante / Instrutor',NULL),(47,'Pasta do Evento',NULL),(48,'Pasta do projeto',NULL),(49,'Precatório',NULL),(50,'Processo',NULL),(51,'Processo de origem',NULL),(52,'Prontuário Médico',NULL),(53,'Receita Federal',NULL),(54,'Remetido',NULL),(55,'Servidor',NULL),(57,'Setor',NULL),(58,'Setor Competente',NULL),(59,'Setores ',NULL),(60,'Setores / Interessados',NULL),(61,'TCU',NULL),(62,'Unidade Geradora',NULL),(81,'Magistrado / Servidor',NULL),(82,'Processo Judicial',NULL);
+INSERT INTO `ex_tipo_destinacao` VALUES (1,'Eliminação',NULL),
+(2,'Guarda Permanente',NULL),
+(21,'5 anos',NULL),
+(22,'Agência',NULL),
+(23,'Arquivo',NULL),
+(24,'Arquivo Intermediário',NULL),
+(26,'Arquivo Permanente',NULL),
+(27,'Assentamento Funcional',NULL),
+(28,'Banco',NULL),
+(29,'Biblioteca',NULL),
+(30,'Candidato',NULL),
+(31,'Clínica',NULL),
+(32,'Correios',NULL),
+(33,'Devolvida',NULL),
+(34,'Doador',NULL),
+(35,'Dossiê',NULL),
+(36,'Dossiê do curso',NULL),
+(37,'Dossiê do Evento',NULL),
+(38,'Empresa',NULL),
+(39,'Estagiário',NULL),
+(40,'Executor',NULL),
+(41,'Imprensa',NULL),
+(42,'Interessado',NULL),
+(43,'Julg. TCU',NULL),
+(44,'Magistrado',NULL),
+(45,'Participante',NULL),
+(46,'Participante / Instrutor',NULL),
+(47,'Pasta do Evento',NULL),
+(48,'Pasta do projeto',NULL),
+(49,'Precatório',NULL),
+(50,'Processo',NULL),
+(51,'Processo de origem',NULL),
+(52,'Prontuário Médico',NULL),
+(53,'Receita Federal',NULL),
+(54,'Remetido',NULL),
+(55,'Servidor',NULL),
+(57,'Setor',NULL),
+(58,'Setor Competente',NULL),
+(59,'Setores ',NULL),
+(60,'Setores / Interessados',NULL),
+(61,'TCU',NULL),
+(62,'Unidade Geradora',NULL),
+(81,'Magistrado / Servidor',NULL),
+(82,'Processo Judicial',NULL);
 /*!40000 ALTER TABLE `ex_tipo_destinacao` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1037,7 +1258,11 @@ CREATE TABLE `ex_tipo_documento` (
 
 LOCK TABLES `ex_tipo_documento` WRITE;
 /*!40000 ALTER TABLE `ex_tipo_documento` DISABLE KEYS */;
-INSERT INTO `ex_tipo_documento` VALUES (1,'Interno Produzido'),(2,'Interno Folha de Rosto'),(3,'Externo Folha de Rosto'),(4,'Externo Capturado'),(5,'Interno Capturado');
+INSERT INTO `ex_tipo_documento` VALUES (1,'Interno Produzido'),
+(2,'Interno Folha de Rosto'),
+(3,'Externo Folha de Rosto'),
+(4,'Externo Capturado'),
+(5,'Interno Capturado');
 /*!40000 ALTER TABLE `ex_tipo_documento` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1062,7 +1287,8 @@ CREATE TABLE `ex_tipo_forma_documento` (
 
 LOCK TABLES `ex_tipo_forma_documento` WRITE;
 /*!40000 ALTER TABLE `ex_tipo_forma_documento` DISABLE KEYS */;
-INSERT INTO `ex_tipo_forma_documento` VALUES (1,'Expediente',0),(2,'Processo Administrativo',1);
+INSERT INTO `ex_tipo_forma_documento` VALUES (1,'Expediente',0),
+(2,'Processo Administrativo',1);
 /*!40000 ALTER TABLE `ex_tipo_forma_documento` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1086,7 +1312,10 @@ CREATE TABLE `ex_tipo_mobil` (
 
 LOCK TABLES `ex_tipo_mobil` WRITE;
 /*!40000 ALTER TABLE `ex_tipo_mobil` DISABLE KEYS */;
-INSERT INTO `ex_tipo_mobil` VALUES (1,'Geral'),(2,'Via'),(3,'Cópia'),(4,'Volume');
+INSERT INTO `ex_tipo_mobil` VALUES (1,'Geral'),
+(2,'Via'),
+(3,'Cópia'),
+(4,'Volume');
 /*!40000 ALTER TABLE `ex_tipo_mobil` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1110,7 +1339,71 @@ CREATE TABLE `ex_tipo_movimentacao` (
 
 LOCK TABLES `ex_tipo_movimentacao` WRITE;
 /*!40000 ALTER TABLE `ex_tipo_movimentacao` DISABLE KEYS */;
-INSERT INTO `ex_tipo_movimentacao` VALUES (1,'Criação'),(2,'Anexação'),(3,'Transferência'),(4,'Recebimento'),(5,'Despacho'),(6,'Despacho com Transferência'),(7,'Despacho Interno'),(8,'Despacho Interno com Transferência'),(9,'Arquivamento Corrente'),(10,'Eliminação'),(11,'Assinatura'),(12,'Juntada'),(13,'Desentranhamento'),(14,'Cancelamento de Movimentação'),(15,'Extravio'),(16,'Vinculação'),(17,'Transferência Externa'),(18,'Despacho com Transferência Externa'),(19,'Recolhimento ao Arq. Permanente'),(20,'Arquivamento Intermediário'),(21,'Desarquivamento'),(22,'Assinatura de Movimentação'),(23,'Recebimento Transitório'),(24,'Inclusão de Cossignatário'),(25,'Registro de Assinatura'),(26,'Registro de Assinatura de Movimentação'),(27,'Atualização'),(28,'Anotação'),(29,'Redefinição de Sigilo'),(30,'Registro de Acesso Alheio'),(31,'Juntada a Documento Externo'),(32,'Agendamento de Publicação no DJE'),(33,'Remessa para Publicação'),(34,'Confirmação de Remessa Manual'),(35,'Disponibilização'),(36,'Solicitação de Publicação no Boletim'),(37,'Publicação do Boletim'),(38,'Pedido de Publicação no DJE'),(39,'Revolvimento Unidirecional'),(40,'Notificação de Publicação no Boletim'),(41,'Apensação'),(42,'Desapensação'),(43,'Encerramento de Volume'),(44,'Definição de Perfil'),(45,'Autenticação de Documento'),(46,'Sobrestar'),(47,'Desobrestar'),(48,'Tornar sem Efeito'),(49,'Indicação para Guarda Permanente'),(50,'Reversão de Ind. para Guarda Permanente'),(51,'Reclassificação'),(52,'Avaliação'),(53,'Avaliação com Reclassificação'),(54,'Inclusão em Edital de Eliminação'),(55,'Retirada de Edital de Eliminação'),(56,'Desarquivamento Intermediário'),(57,'Pendência de Anexação'),(58,'Assinatura com senha'),(59,'Assinatura de movimentação com senha'),(60,'Autenticação de Documento com senha'),(61,'Controle de Coloboração'),(62,'Marcação'),(63,'Inclusão de Cópia'),(64,'Anexação de Arquivo Auxiliar'),(67,'Autuar');
+INSERT INTO `ex_tipo_movimentacao` VALUES (1,'Criação'),
+(2,'Anexação'),
+(3,'Transferência'),
+(4,'Recebimento'),
+(5,'Despacho'),
+(6,'Despacho com Transferência'),
+(7,'Despacho Interno'),
+(8,'Despacho Interno com Transferência'),
+(9,'Arquivamento Corrente'),
+(10,'Eliminação'),
+(11,'Assinatura'),
+(12,'Juntada'),
+(13,'Desentranhamento'),
+(14,'Cancelamento de Movimentação'),
+(15,'Extravio'),
+(16,'Vinculação'),
+(17,'Transferência Externa'),
+(18,'Despacho com Transferência Externa'),
+(19,'Recolhimento ao Arq. Permanente'),
+(20,'Arquivamento Intermediário'),
+(21,'Desarquivamento'),
+(22,'Assinatura de Movimentação'),
+(23,'Recebimento Transitório'),
+(24,'Inclusão de Cossignatário'),
+(25,'Registro de Assinatura'),
+(26,'Registro de Assinatura de Movimentação'),
+(27,'Atualização'),
+(28,'Anotação'),
+(29,'Redefinição de Sigilo'),
+(30,'Registro de Acesso Alheio'),
+(31,'Juntada a Documento Externo'),
+(32,'Agendamento de Publicação no DJE'),
+(33,'Remessa para Publicação'),
+(34,'Confirmação de Remessa Manual'),
+(35,'Disponibilização'),
+(36,'Solicitação de Publicação no Boletim'),
+(37,'Publicação do Boletim'),
+(38,'Pedido de Publicação no DJE'),
+(39,'Revolvimento Unidirecional'),
+(40,'Notificação de Publicação no Boletim'),
+(41,'Apensação'),
+(42,'Desapensação'),
+(43,'Encerramento de Volume'),
+(44,'Definição de Perfil'),
+(45,'Autenticação de Documento'),
+(46,'Sobrestar'),
+(47,'Desobrestar'),
+(48,'Tornar sem Efeito'),
+(49,'Indicação para Guarda Permanente'),
+(50,'Reversão de Ind. para Guarda Permanente'),
+(51,'Reclassificação'),
+(52,'Avaliação'),
+(53,'Avaliação com Reclassificação'),
+(54,'Inclusão em Edital de Eliminação'),
+(55,'Retirada de Edital de Eliminação'),
+(56,'Desarquivamento Intermediário'),
+(57,'Pendência de Anexação'),
+(58,'Assinatura com senha'),
+(59,'Assinatura de movimentação com senha'),
+(60,'Autenticação de Documento com senha'),
+(61,'Controle de Coloboração'),
+(62,'Marcação'),
+(63,'Inclusão de Cópia'),
+(64,'Anexação de Arquivo Auxiliar'),
+(67,'Autuar');
 /*!40000 ALTER TABLE `ex_tipo_movimentacao` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1135,7 +1428,34 @@ CREATE TABLE `ex_tp_doc_publicacao` (
 
 LOCK TABLES `ex_tp_doc_publicacao` WRITE;
 /*!40000 ALTER TABLE `ex_tp_doc_publicacao` DISABLE KEYS */;
-INSERT INTO `ex_tp_doc_publicacao` VALUES (1,'Ato Ordinatório','J'),(2,'Decisão','J'),(3,'Despacho','J'),(4,'Sentença','J'),(5,'Edital (Teor Judicial)','J'),(6,'Informação de Secretaria',NULL),(7,'Ordem de Serviço',NULL),(8,'Portaria',NULL),(9,'Acórdão','J'),(18,'Outros','A'),(25,'Aviso','A'),(26,'Aviso de Aditamento','A'),(40,'Aviso de Licitação','A'),(73,'Errata',NULL),(83,'Extrato de convênio','A'),(85,'Extratos de Contratos','A'),(86,'Extrato de dispensa de licitação','A'),(90,'Extrato de inexigibilidade de licitação','A'),(104,'Extrato de Registro de Preços','A'),(106,'Extrato de Rescisão','A'),(107,'Extrato de rescisão contratual','A'),(108,'Extrato de termo aditivo','A'),(147,'Aviso de Pregão','A'),(158,'Ato da Presidência',NULL),(159,'Edital da Presidência',NULL),(160,'Portaria da Presidência',NULL),(161,'Ordem de Serviço da presidência',NULL),(162,'Resolução da Presidência',NULL);
+INSERT INTO `ex_tp_doc_publicacao` VALUES (1,'Ato Ordinatório','J'),
+(2,'Decisão','J'),
+(3,'Despacho','J'),
+(4,'Sentença','J'),
+(5,'Edital (Teor Judicial)','J'),
+(6,'Informação de Secretaria',NULL),
+(7,'Ordem de Serviço',NULL),
+(8,'Portaria',NULL),
+(9,'Acórdão','J'),
+(18,'Outros','A'),
+(25,'Aviso','A'),
+(26,'Aviso de Aditamento','A'),
+(40,'Aviso de Licitação','A'),
+(73,'Errata',NULL),
+(83,'Extrato de convênio','A'),
+(85,'Extratos de Contratos','A'),
+(86,'Extrato de dispensa de licitação','A'),
+(90,'Extrato de inexigibilidade de licitação','A'),
+(104,'Extrato de Registro de Preços','A'),
+(106,'Extrato de Rescisão','A'),
+(107,'Extrato de rescisão contratual','A'),
+(108,'Extrato de termo aditivo','A'),
+(147,'Aviso de Pregão','A'),
+(158,'Ato da Presidência',NULL),
+(159,'Edital da Presidência',NULL),
+(160,'Portaria da Presidência',NULL),
+(161,'Ordem de Serviço da presidência',NULL),
+(162,'Resolução da Presidência',NULL);
 /*!40000 ALTER TABLE `ex_tp_doc_publicacao` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1162,7 +1482,23 @@ CREATE TABLE `ex_tp_forma_doc` (
 
 LOCK TABLES `ex_tp_forma_doc` WRITE;
 /*!40000 ALTER TABLE `ex_tp_forma_doc` DISABLE KEYS */;
-INSERT INTO `ex_tp_forma_doc` VALUES (1,1),(2,1),(3,1),(4,1),(5,3),(8,1),(9,1),(12,1),(13,1),(14,1),(54,1),(55,1),(56,1),(57,1),(97,1),(98,1),(99,4);
+INSERT INTO `ex_tp_forma_doc` VALUES (1,1),
+(2,1),
+(3,1),
+(4,1),
+(5,3),
+(8,1),
+(9,1),
+(12,1),
+(13,1),
+(14,1),
+(54,1),
+(55,1),
+(56,1),
+(57,1),
+(97,1),
+(98,1),
+(99,4);
 /*!40000 ALTER TABLE `ex_tp_forma_doc` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1188,7 +1524,20 @@ CREATE TABLE `ex_tp_mov_estado` (
 
 LOCK TABLES `ex_tp_mov_estado` WRITE;
 /*!40000 ALTER TABLE `ex_tp_mov_estado` DISABLE KEYS */;
-INSERT INTO `ex_tp_mov_estado` VALUES (1,1),(3,3),(4,2),(5,2),(6,3),(7,2),(8,3),(9,6),(10,8),(12,9),(13,2),(15,4),(17,11),(18,11);
+INSERT INTO `ex_tp_mov_estado` VALUES (1,1),
+(3,3),
+(4,2),
+(5,2),
+(6,3),
+(7,2),
+(8,3),
+(9,6),
+(10,8),
+(12,9),
+(13,2),
+(15,4),
+(17,11),
+(18,11);
 /*!40000 ALTER TABLE `ex_tp_mov_estado` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1238,7 +1587,11 @@ CREATE TABLE `ex_via` (
 
 LOCK TABLES `ex_via` WRITE;
 /*!40000 ALTER TABLE `ex_via` DISABLE KEYS */;
-INSERT INTO `ex_via` VALUES (1,4,58,'1',85,NULL,'-',1,1,'2019-03-13 00:00:00',NULL,NULL,NULL,1),(2,7,58,'1',85,NULL,'-',1,2,'2009-03-13 00:00:00',NULL,NULL,NULL,1),(3,8,58,'1',85,NULL,'-',1,3,'2009-03-13 00:00:00',NULL,NULL,NULL,1),(4,11,58,'1',85,NULL,'-',1,4,'2009-03-13 00:00:00',NULL,NULL,NULL,1),(5,12,58,'1',85,NULL,'-',1,5,'2009-03-13 00:00:00',NULL,NULL,NULL,1);
+INSERT INTO `ex_via` VALUES (1,4,58,'1',85,NULL,'-',1,1,'2019-03-13 00:00:00',NULL,NULL,NULL,1),
+(2,7,58,'1',85,NULL,'-',1,2,'2009-03-13 00:00:00',NULL,NULL,NULL,1),
+(3,8,58,'1',85,NULL,'-',1,3,'2009-03-13 00:00:00',NULL,NULL,NULL,1),
+(4,11,58,'1',85,NULL,'-',1,4,'2009-03-13 00:00:00',NULL,NULL,NULL,1),
+(5,12,58,'1',85,NULL,'-',1,5,'2009-03-13 00:00:00',NULL,NULL,NULL,1);
 /*!40000 ALTER TABLE `ex_via` ENABLE KEYS */;
 UNLOCK TABLES;
 
