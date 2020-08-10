@@ -1059,6 +1059,16 @@ public class FuncoesEL {
 						mob);
 	}
 
+	public static Boolean deveAutenticarComSenha(
+			DpPessoa titular, DpLotacao lotaTitular, ExMobil mob)
+			throws Exception {
+		return Ex
+				.getInstance()
+				.getComp()
+				.deveAutenticarComSenha(titular, lotaTitular,
+						mob);
+	}
+
 	public static Boolean podeAutenticarDocumento(DpPessoa titular,
 			DpLotacao lotaTitular, ExDocumento doc) throws Exception {
 		return Ex.getInstance().getComp()

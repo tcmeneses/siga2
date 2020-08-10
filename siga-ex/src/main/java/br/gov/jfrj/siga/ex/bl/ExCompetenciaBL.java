@@ -1433,6 +1433,28 @@ public class ExCompetenciaBL extends CpCompetenciaBL {
 				null, exTpMov, null, null, null, lotaTitular, titular, null,null,
 				CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR);
 	}	
+	
+	public boolean deveAutenticarComSenha(final DpPessoa titular,
+			final DpLotacao lotaTitular, final ExMobil mob) throws Exception {
+		
+		if(mob == null)
+			return false;
+
+		ExTipoMovimentacao exTpMov = ExDao.getInstance().consultar(ExTipoMovimentacao.TIPO_MOVIMENTACAO_CONFERENCIA_COPIA_COM_SENHA,
+				ExTipoMovimentacao.class, false);
+
+		CpSituacaoConfiguracao situacao = getConf().situacaoPorConfiguracao(null, null, null, null, mob.getExDocumento().getExFormaDocumento(), mob.getExDocumento().getExModelo(), null,
+				null, exTpMov, null, null, null, lotaTitular, titular, null,null,
+				CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR);
+		
+		if (situacao != null
+				&& (situacao.getIdSitConfiguracao() == CpSituacaoConfiguracao.SITUACAO_DEFAULT ||
+						situacao.getIdSitConfiguracao() == CpSituacaoConfiguracao.SITUACAO_OBRIGATORIO))
+			return true;
+
+		return false; 
+
+	}	
 	public boolean podeSerSubscritor(final ExDocumento doc) {
 		
 		if(doc.isExterno() || doc.isExternoCapturado())
