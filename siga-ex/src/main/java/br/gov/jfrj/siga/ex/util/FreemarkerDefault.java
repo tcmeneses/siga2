@@ -1,8 +1,6 @@
 package br.gov.jfrj.siga.ex.util;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -13,21 +11,32 @@ import br.gov.jfrj.siga.ex.bl.Ex;
 public class FreemarkerDefault {
 	public static String getDefaultTemplate() {
 		try {
-			String pathname = Ex
-					.getInstance()
-					.getProp()
-					.obterPropriedade("siga.ex.debug.default.template.pathname");
+			String pathname = Ex.getInstance().getProp().obterPropriedade("siga.ex.debug.default.template.pathname");
 			if (pathname != null)
-				return new String(Files.readAllBytes(Paths.get(pathname)),
-						"UTF-8");
+				return new String(Files.readAllBytes(Paths.get(pathname)), "UTF-8");
 		} catch (Exception e1) {
 		}
 
 		String template;
 		try (InputStream stream = FreemarkerDefault.class.getClassLoader()
-				.getResourceAsStream(
-						"br/gov/jfrj/siga/ex/util/" + "default.ftl")) {
+				.getResourceAsStream("br/gov/jfrj/siga/ex/util/" + "default.ftl")) {
 			template = IOUtils.toString(stream, "UTF-8");
+
+			String pathBrasao = Ex.getInstance().getProp().obterPropriedade("siga.ex.default.template.brasao") + "";
+			if (pathBrasao != null)
+				template = template.replaceAll("\\[#assign _pathBrasao = \"([^\"]+)\" /\\]",
+						"[#assign _pathBrasao = \"" + pathBrasao + "\" /]");
+
+			String tituloGeral = Ex.getInstance().getProp().obterPropriedade("siga.ex.default.template.titulo");
+			if (tituloGeral != null)
+				template = template.replaceAll("\\[#assign _tituloGeral = \"[^\"]+\" /\\]",
+						"[#assign _tituloGeral = \"" + tituloGeral + "\" /]");
+
+			String subtituloGeral = Ex.getInstance().getProp().obterPropriedade("siga.ex.default.template.subtitulo");
+			if (subtituloGeral != null)
+				template = template.replaceAll("\\[#assign _subtituloGeral = \"[^\"]+\" /\\]",
+						"[#assign _subtituloGeral = \"" + subtituloGeral + "\" /]");
+
 			return template;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
