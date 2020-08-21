@@ -46,8 +46,6 @@ import br.gov.jfrj.siga.model.Objeto;
 public abstract class AbstractCpOrgaoUsuario extends Objeto implements
 		Serializable {
 
-	private static final long serialVersionUID = -4788748819884158050L;
-
 	@Column(name = "CGC_ORGAO_USU")
 	private Integer cgcOrgaoUsu;
 
