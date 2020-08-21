@@ -2894,28 +2894,26 @@ public class ExMovimentacaoController extends ExController {
 
 	@Get("/app/expediente/mov/assinar_lote")
 	public void assina_lote() throws Exception {
-		final List<ExDocumento> itensComoSubscritor = dao()
-				.listarDocPendenteAssinatura(getTitular(), false);
+		final List<ExDocumento> itensComoSubscritor = dao().listarDocPendenteAssinatura(getTitular(), false);
+
 		final List<ExDocumento> itensFinalizados = new ArrayList<ExDocumento>();
-
 		for (final ExDocumento doc : itensComoSubscritor) {
-
-			if (doc.isFinalizado())
+			// Documento deve estar finalizado e, se for interno capturado, deve estar
+			// autenticado.
+			if (doc.isFinalizado() && (!doc.isInternoCapturado() || !doc.getAutenticacoesComTokenOuSenha().isEmpty())) {
 				itensFinalizados.add(doc);
+			}
 		}
-		final List<ExDocumento> documentosQuePodemSerAssinadosComSenha = new ArrayList<ExDocumento>();
 
+		final List<ExDocumento> documentosQuePodemSerAssinadosComSenha = new ArrayList<ExDocumento>();
 		for (final ExDocumento exDocumento : itensFinalizados) {
-			if (Ex.getInstance()
-					.getComp()
-					.podeAssinarComSenha(getTitular(), getLotaTitular(),
-							exDocumento.getMobilGeral())) {
+			if (Ex.getInstance().getComp().podeAssinarComSenha(getTitular(), getLotaTitular(),
+					exDocumento.getMobilGeral())) {
 				documentosQuePodemSerAssinadosComSenha.add(exDocumento);
 			}
 		}
 
-		result.include("documentosQuePodemSerAssinadosComSenha",
-				documentosQuePodemSerAssinadosComSenha);
+		result.include("documentosQuePodemSerAssinadosComSenha", documentosQuePodemSerAssinadosComSenha);
 		result.include("itensSolicitados", itensFinalizados);
 		result.include("request", getRequest());
 	}
