@@ -249,29 +249,30 @@ public class ExMovimentacaoVO extends ExVO {
 					&& idTpMov != TIPO_MOVIMENTACAO_CONFERENCIA_COPIA_DOCUMENTO
 					&& idTpMov != TIPO_MOVIMENTACAO_AGENDAMENTO_DE_PUBLICACAO && idTpMov != TIPO_MOVIMENTACAO_ANEXACAO
 					&& idTpMov != TIPO_MOVIMENTACAO_ANEXACAO_DE_ARQUIVO_AUXILIAR) {
-				if (!mov.isCancelada() && !mov.mob().doc().isSemEfeito())
-
-					if ((idTpMov == ExTipoMovimentacao.TIPO_MOVIMENTACAO_DESPACHO
-							|| idTpMov == ExTipoMovimentacao.TIPO_MOVIMENTACAO_DESPACHO_INTERNO
-							|| idTpMov == ExTipoMovimentacao.TIPO_MOVIMENTACAO_DESPACHO_INTERNO_TRANSFERENCIA
-							|| idTpMov == ExTipoMovimentacao.TIPO_MOVIMENTACAO_DESPACHO_TRANSFERENCIA
-							|| idTpMov == ExTipoMovimentacao.TIPO_MOVIMENTACAO_DESPACHO_TRANSFERENCIA_EXTERNA
-							|| idTpMov == ExTipoMovimentacao.TIPO_MOVIMENTACAO_CIENCIA)
+				if (!mov.isCancelada() && !mov.mob().doc().isSemEfeito()) {
+					boolean isDespacho = (idTpMov == ExTipoMovimentacao.TIPO_MOVIMENTACAO_DESPACHO)
+							|| (idTpMov == ExTipoMovimentacao.TIPO_MOVIMENTACAO_DESPACHO_INTERNO)
+							|| (idTpMov == ExTipoMovimentacao.TIPO_MOVIMENTACAO_DESPACHO_INTERNO_TRANSFERENCIA)
+							|| (idTpMov == ExTipoMovimentacao.TIPO_MOVIMENTACAO_DESPACHO_TRANSFERENCIA)
+							|| (idTpMov == ExTipoMovimentacao.TIPO_MOVIMENTACAO_DESPACHO_TRANSFERENCIA_EXTERNA);
+					if ((isDespacho || (idTpMov == ExTipoMovimentacao.TIPO_MOVIMENTACAO_CIENCIA)
+							|| (idTpMov == ExTipoMovimentacao.TIPO_MOVIMENTACAO_ENCERRAMENTO_DE_VOLUME))
 							&& mov.isAssinada()) {
 
 						addAcao("printer", "Ver", "/app/arquivo", "exibir",
 								Ex.getInstance().getComp().podeVisualizarImpressao(titular, lotaTitular, mov.mob()),
 								null, "&popup=true&arquivo=" + mov.getReferenciaPDF(), null, null, null);
 
-						if (idTpMov != ExTipoMovimentacao.TIPO_MOVIMENTACAO_CIENCIA)
+						if (isDespacho)
 							addAcao("script_key", "Autenticar", "/app/expediente/mov", "autenticar_mov",
-									Ex.getInstance().getComp().podeAutenticarMovimentacao(titular, lotaTitular, mov), null,
-									"&popup=true&autenticando=true", null, null, null);
+									Ex.getInstance().getComp().podeAutenticarMovimentacao(titular, lotaTitular, mov),
+									null, "&popup=true&autenticando=true", null, null, null);
 
 					} else if (!(mov.isAssinada() && mov.mob().isEmTransito())) {
 						addAcao(null, "Ver/Assinar", "/app/expediente/mov", "exibir", true, null, "&popup=true", null,
 								null, null);
 					}
+				}
 			}
 
 			if (mov.getExMovimentacaoReferenciadoraSet() != null) {
