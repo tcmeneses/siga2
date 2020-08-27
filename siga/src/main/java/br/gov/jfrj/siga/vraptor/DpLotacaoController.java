@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -25,8 +26,8 @@ import br.com.caelum.vraptor.observer.download.InputStreamDownload;
 import br.com.caelum.vraptor.observer.upload.UploadedFile;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
-import br.gov.jfrj.siga.base.SigaModal;
 import br.gov.jfrj.siga.base.Prop;
+import br.gov.jfrj.siga.base.SigaModal;
 import br.gov.jfrj.siga.base.Texto;
 import br.gov.jfrj.siga.cp.bl.Cp;
 import br.gov.jfrj.siga.cp.bl.CpBL;
@@ -279,6 +280,7 @@ public class DpLotacaoController extends SigaSelecionavelControllerSupport<DpLot
 		}
 		if (id != null) {
 			DpLotacao lotacao = dao().consultar(id, DpLotacao.class, false);
+			
 			result.include("nmLotacao",lotacao.getDescricao());
 			result.include("siglaLotacao", lotacao.getSiglaLotacao());
 			result.include("idOrgaoUsu", lotacao.getOrgaoUsuario().getId());
@@ -293,15 +295,25 @@ public class DpLotacaoController extends SigaSelecionavelControllerSupport<DpLot
 			if(list.size() == 0) {
 				result.include("podeAlterarOrgao", Boolean.TRUE);
 			}
+
 		}		
 		
 		if("ZZ".equals(getTitular().getOrgaoUsuario().getSigla())) {
 			result.include("orgaosUsu", dao().listarOrgaosUsuarios());
+			result.include("podeAlterarUnidadePai", true);
+			result.include("podeAlterarUnidadeComAcessoExterno", true);
 		} else {
 			CpOrgaoUsuario ou = CpDao.getInstance().consultarPorSigla(getTitular().getOrgaoUsuario());
-			List<CpOrgaoUsuario> list = new ArrayList<CpOrgaoUsuario>();
-			list.add(ou);
-			result.include("orgaosUsu", list);
+			result.include("orgaosUsu", Collections.singletonList(ou));
+
+			// Unidade Pai
+			result.include("podeAlterarUnidadePai",
+					Boolean.valueOf(Cp.getInstance().getConf().podeUtilizarServicoPorConfiguracao(getTitular(),
+							getTitular().getLotacao(), "SIGA;GI;CAD_UNIDADE")));
+			// Unidade com acesso externo
+			result.include("podeAlterarUnidadeComAcessoExterno",
+					Boolean.valueOf(Cp.getInstance().getConf().podeUtilizarServicoPorConfiguracao(getTitular(),
+							getTitular().getLotacao(), "SIGA;GI;TIPO_UNIDADE")));
 		}		
 		
 		if(Prop.isGovSP()) {
