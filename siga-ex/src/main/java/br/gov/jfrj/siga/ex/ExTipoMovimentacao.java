@@ -22,6 +22,7 @@
 package br.gov.jfrj.siga.ex;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Entity;
@@ -212,6 +213,10 @@ public class ExTipoMovimentacao extends AbstractExTipoMovimentacao implements Se
 
 	final static public long TIPO_MOVIMENTACAO_PUBLICACAO_PORTAL_TRANSPARENCIA = 77;
 	
+	final static public long TIPO_MOVIMENTACAO_RECEBER_TRAMITACAO = 78;
+
+	final static public long TIPO_MOVIMENTACAO_INCLUIR_COSSIGNATARIO = 79;
+
 	public static boolean hasDespacho(long id) {
 		return id == ExTipoMovimentacao.TIPO_MOVIMENTACAO_DESPACHO
 				|| id == ExTipoMovimentacao.TIPO_MOVIMENTACAO_DESPACHO_INTERNO
@@ -219,6 +224,13 @@ public class ExTipoMovimentacao extends AbstractExTipoMovimentacao implements Se
 				|| id == ExTipoMovimentacao.TIPO_MOVIMENTACAO_DESPACHO_TRANSFERENCIA
 				|| id == ExTipoMovimentacao.TIPO_MOVIMENTACAO_DESPACHO_TRANSFERENCIA_EXTERNA;
 	}
+
+	/**
+	 * Compara de acordo com a {@link #getDescrTipoMovimentacao() Descrição do tipo
+	 * de movimentação}.
+	 */
+	public static final Comparator<ExTipoMovimentacao> DESCRICAO_COMPARATOR = Comparator
+			.comparing(ExTipoMovimentacao::getDescrTipoMovimentacao);
 
 	public static boolean hasDocumento(long id) {
 		return id == ExTipoMovimentacao.TIPO_MOVIMENTACAO_ANEXACAO || hasDespacho(id);

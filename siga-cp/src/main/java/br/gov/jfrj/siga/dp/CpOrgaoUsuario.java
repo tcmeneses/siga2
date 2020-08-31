@@ -184,9 +184,13 @@ public class CpOrgaoUsuario extends AbstractCpOrgaoUsuario implements
 		return getSigla();
 	}
 
+	/**
+	 * Marca a {@link #getHisAtivo() flag de ativo} como 1 antes da inserção na base
+	 * de dados caso ainda esteja <code>null</code>.
+	 */
 	@PrePersist
 	private void inserirComoAtivo() {
-		if(Objects.isNull(hisAtivo)) {
+		if (Objects.isNull(hisAtivo)) {
 			hisAtivo = 1;
 		}
 	}

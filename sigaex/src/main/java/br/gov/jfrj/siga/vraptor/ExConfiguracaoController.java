@@ -561,14 +561,7 @@ public class ExConfiguracaoController extends ExController {
 
 	@SuppressWarnings("all")
 	private Set<ExTipoMovimentacao> getListaTiposMovimentacao() throws Exception {
-		TreeSet<ExTipoMovimentacao> s = new TreeSet<ExTipoMovimentacao>(new Comparator() {
-
-			public int compare(Object o1, Object o2) {
-				return ((ExTipoMovimentacao) o1).getDescrTipoMovimentacao()
-						.compareTo(((ExTipoMovimentacao) o2).getDescrTipoMovimentacao());
-			}
-
-		});
+		TreeSet<ExTipoMovimentacao> s = new TreeSet<>(ExTipoMovimentacao.DESCRICAO_COMPARATOR);
 
 		s.addAll(dao().listarExTiposMovimentacao());
 
