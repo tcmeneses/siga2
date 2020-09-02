@@ -11,10 +11,26 @@
 <link rel="stylesheet" href="/siga/javascript/select2/select2-bootstrap.css" type="text/css" media="screen, projection" />
 		
 	<script type="text/javascript" language="Javascript1.1">	
-		$(document).ready(function() {					
-			alteraTipoDaForma();			
-			setTimeout("alteraForma()", 5000);												
-		});			
+		const valoresExibicaoPermissoes = {
+			tipoConfiguracao: '1', // Movimentação
+			situacao: '1', // Pode
+			tiposMovimentacao: [
+				'78', // Receber Tramitação
+				'24' // Inclusão de Cossignatário
+			],
+			valoresValidos: function(tipoConfiguracaoSelecionado, situacaoSelecionada, movimentacaoSelecionada) {
+				return (tipoConfiguracaoSelecionado === this.tipoConfiguracao) && 
+					(situacaoSelecionada === this.situacao) &&
+					this.tiposMovimentacao.includes(movimentacaoSelecionada);
+			}
+		};
+
+	
+		$(document).ready(function() {
+			alteraTipoDaForma();
+			setTimeout("alteraForma()", 5000);
+			verificarPermissoes();
+		});
 
 		function alteraTipoDaForma() {
 			ReplaceInnerHTMLFromAjaxResponse(
@@ -43,10 +59,74 @@
 							.getElementById('comboModeloDiv'), function() {transformarEmSelect2(null, '#idMod', '#idModGroup')});						
 		}							
 
-		function sbmt() {
-			editar_gravar = '${pageContext.request.contextPath}/app/expediente/configuracao/editar';
-			editar_gravar.submit();
-		}							
+		function sbmt(propriedade) {
+			if (!propriedade) {
+				editar_gravar = '${pageContext.request.contextPath}/app/expediente/configuracao/editar';
+				editar_gravar.submit();
+			} else if (propriedade === 'pessoaAutorizada') {
+				if (!!document.getElementsByName("pessoaAutorizada_pessoaSel.id")[0].value
+						&& !!document.getElementsByName("pessoaAutorizada_pessoaSel.descricao")[0].value) {
+					let btnAdicionar = document.getElementById("btnAddPessoaAutorizada");
+					btnAdicionar.disabled = false;
+					btnAdicionar.focus();
+				}
+			}
+		}
+
+		function verificarPermissoes() {
+			console.log("verificarPermissoes", 
+					document.getElementById("idTpConfiguracao").value, 
+					document.getElementById("idSituacao").value, 
+					document.getElementById("idTpMov").value);
+				if(valoresExibicaoPermissoes.valoresValidos(
+						document.getElementById("idTpConfiguracao").value, 
+						document.getElementById("idSituacao").value, 
+						document.getElementById("idTpMov").value)) {
+					document.getElementById("permissoes").style.display = '';
+				} else {
+					document.getElementById("permissoes").style.display = 'none';
+					document.getElementById("pessoasAutorizadas").options.length = 0;
+				}
+		}
+
+		function addPermissao() {
+			let pessoaAutorizadaId = document.getElementsByName("pessoaAutorizada_pessoaSel.id")[0];
+			let pessoaAutorizadaNome = document.getElementsByName("pessoaAutorizada_pessoaSel.descricao")[0];
+
+			if (!pessoaAutorizadaId.value || !pessoaAutorizadaNome.value) {
+				console.log("Pessoas não selecionada");
+				return;
+			}
+
+			let selPessoasAutorizadas = document.getElementById("pessoasAutorizadas");
+			let pessoasAutorizadas = Array.from(selPessoasAutorizadas.options);
+			if(pessoasAutorizadas.map(opt => opt.value).find(id => id === pessoaAutorizadaId.value)) {
+				console.warn("Pessoa de ID " + pessoaAutorizadaId.value + " (" 
+						+ pessoaAutorizadaNome.value + ") já foi adicionada anteriormente.");
+			} else {
+				pessoasAutorizadas.push(new Option(pessoaAutorizadaNome.value, pessoaAutorizadaId.value));
+				pessoasAutorizadas.sort((opt1, opt2) => opt1.text.localeCompare(opt2.text));
+				pessoasAutorizadas.forEach((opt, index) => selPessoasAutorizadas.options[index] = opt);
+			}
+
+			document.getElementById("pessoaAutorizada_pessoaSelSpan").innerHTML = null;
+			document.getElementById("formulario_pessoaAutorizada_pessoaSel_sigla").value = null;
+			pessoaAutorizadaId.value = null;
+			pessoaAutorizadaNome.value = null;
+			document.getElementById("btnAddPessoaAutorizada").disabled = true;
+		}
+
+		function removePermissao() {
+			let selPessoasAutorizadas = document.getElementById("pessoasAutorizadas");
+			selPessoasAutorizadas.options[selPessoasAutorizadas.options.selectedIndex] = null;
+			document.getElementById("btnRemovePessoaAutorizada").disabled = true;
+		}
+
+		function pessoaSelecionada() {
+			let selPessoasAutorizadas = document.getElementById("pessoasAutorizadas");
+			document.getElementById("btnRemovePessoaAutorizada").disabled = (selPessoasAutorizadas.options.selectedIndex < 0);
+		}
+
 	</script>
 
 	<body onload="aviso()">
@@ -79,7 +159,7 @@
 													list="listaTiposConfiguracao" listKey="idTpConfiguracao"
 													id="idTpConfiguracao" headerValue="[Indefinido]"
 													headerKey="0" listValue="dscTpConfiguracao" theme="simple"
-													value="${idTpConfiguracao}" />
+													value="${idTpConfiguracao}" onchange="verificarPermissoes()" />
 											</c:otherwise>
 										</c:choose>
 									</div>
@@ -87,10 +167,11 @@
 								<div class="col-sm-4">
 									<div class="form-group">
 										<label>Situação</label>
-										<siga:select name="idSituacao"
+										<siga:select name="idSituacao" id="idSituacao"
 											list="listaSituacao" listKey="idSitConfiguracao"
 											listValue="dscSitConfiguracao" theme="simple"
-											headerValue="[Indefinido]" headerKey="0" value="${idSituacao}" />
+											headerValue="[Indefinido]" headerKey="0" value="${idSituacao}" 
+											onchange="verificarPermissoes()"/>
 									</div>
 								</div>
 								<div class="col-sm-4">
@@ -162,10 +243,10 @@
 												${config.exTipoMovimentacao.descrTipoMovimentacao}
 											</c:when>
 											<c:otherwise>
-												<siga:select name="idTpMov" list="listaTiposMovimentacao"
+												<siga:select name="idTpMov" list="listaTiposMovimentacao" id="idTpMov"
 													listKey="idTpMov" listValue="descrTipoMovimentacao"
 													theme="simple" headerValue="[Indefinido]" headerKey="0"
-													value="${idTpMov}" />
+													value="${idTpMov}" onchange="verificarPermissoes()" />
 											</c:otherwise>
 										</c:choose>
 									</div>
@@ -180,7 +261,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="row">
+						<div class="row">
 								<div class="col-sm-6">
 									<div class="form-group">
 										<label>Espécie</label>
@@ -240,6 +321,42 @@
 									</div>
 								</div>
 							</div>														
+							<div class="row" id="permissoes">
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label>Pessoa Movimentação</label>
+										<siga:selecao tipo="pessoa" propriedade="pessoaAutorizada" tema="simple"
+											modulo="siga" reler="ajax" />
+									</div>
+								</div>
+								<div class="col-sm-2">
+									<div class="form-group">
+										<label>&nbsp;&nbsp;&nbsp;</label>
+										<div class="d-flex flex-column align-items-center">
+											<button id="btnAddPessoaAutorizada"
+												title="Adiciona pessoa autorizada" type="button"
+												class="btn btn-secondary btn-block w-25"
+												disabled="disabled"
+												onclick="addPermissao()">+</button>
+											<button id="btnRemovePessoaAutorizada"
+												title="Remove pessoa Autorizada" type="button"
+												class="btn btn-secondary btn-block w-25"
+												disabled="disabled"
+												onclick="removePermissao()">-</button>
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-4">
+									<div class="form-group">
+										<label>Pessoas permitidas</label>
+										<div>
+											<select id="pessoasAutorizadas" size="4"
+												class="custom-select" onchange="pessoaSelecionada()">
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
 							<div class="row">
 								<div class="col-sm-6">
 									<div class="form-group">
