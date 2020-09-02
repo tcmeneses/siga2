@@ -782,7 +782,7 @@ public class AppController extends GcController {
 		for (GcMovimentacao m : informacao.getMovs())
 			;
 		
-		String conteudo = bl.marcarLinkNoConteudo(informacao, informacao.arq
+		String conteudo = bl.marcarLinkNoConteudo(informacao, informacao.getArq()
 				.getConteudoTXT());
 		em().detach(informacao);
 		// if (conteudo != null)
@@ -1280,8 +1280,8 @@ public class AppController extends GcController {
 		if (infoMae == null || !(infoMae.acessoExternoPublicoPermitido()))
 			throw new Exception("Arquivo não pode ser acessado sem autenticação.");
 		
-		return new ByteArrayDownload(arq.conteudo, arq.mimeType,
-					arq.titulo, false);
+		return new ByteArrayDownload(arq.getConteudo(), arq.getMimeType(),
+					arq.getTitulo(), false);
 		
 	}
 

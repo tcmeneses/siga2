@@ -197,7 +197,7 @@ public class GcMovimentacao extends Objeto implements
 		// BJN workaround pro erro na hora de usar a constante dentro do HQL direto
 		query.setParameter("idTipoMovAnexarArquivo", GcTipoMovimentacao.TIPO_MOVIMENTACAO_ANEXAR_ARQUIVO);
 		
-		query.setParameter("idArqMov", anexo.id);
+		query.setParameter("idArqMov", anexo.getId());
 		GcInformacao retorno = null;
 		try {
 			retorno = (GcInformacao) query.getSingleResult();

@@ -652,7 +652,7 @@ public class GcInformacao extends Objeto {
 	}
 	
 	public boolean acessoExternoPublicoPermitido() {
-		if(this.visualizacao.id == (int) GcAcesso.ACESSO_EXTERNO_PUBLICO)
+		if(this.visualizacao.getId() == (int) GcAcesso.ACESSO_EXTERNO_PUBLICO)
 			return true;
 		return false;
 	}

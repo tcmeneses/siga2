@@ -9,11 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.directwebremoting.guice.RequestScoped;
 
 import br.com.caelum.vraptor.AroundCall;
-import br.com.caelum.vraptor.InterceptionException;
 import br.com.caelum.vraptor.Intercepts;
 import br.com.caelum.vraptor.controller.ControllerMethod;
 import br.com.caelum.vraptor.interceptor.SimpleInterceptorStack;
-import br.com.caelum.vraptor.jpa.SigaTransacionalnterceptor;
 import br.com.caelum.vraptor.jpa.JPATransactionInterceptor;
 import br.com.caelum.vraptor.validator.Validator;
 import br.gov.jfrj.siga.ex.bl.CurrentRequest;
@@ -24,7 +22,7 @@ import br.gov.jfrj.siga.model.ContextoPersistencia;
 import br.gov.jfrj.siga.model.dao.ModeloDao;
 
 @RequestScoped
-@Intercepts(before = SigaTransacionalnterceptor.class)
+@Intercepts(before = JPATransactionInterceptor.class)
 public class ExInterceptor {
 
 	private final EntityManager manager;

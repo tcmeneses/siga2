@@ -19,18 +19,18 @@
 		<module>siga-vraptor-module</module>
 		<module>siga-dump</module>
 		<module>siga</module>
-	<!--  	<module>sigawf</module>
-		<module>siga-wf</module> -->
+		<module>sigawf</module>
+		<module>siga-wf</module>
 		<module>sigaex</module>
 		<module>siga-ext</module>
 		<module>siga-ex</module>
-		<module>sigatp</module>
-	<!--  	<module>siga-ex-gsa</module>
+		<module>siga-ex-gsa</module>
 		<module>siga-ex-sinc</module>
-		<module>siga-gc-gsa</module> 
-		<module>sigasr</module> -->
- 		<module>sigagc</module>
- 	<!--  <module>sigapp</module> -->
+		<module>siga-gc-gsa</module>
+		<module>sigagc</module>
+		<module>sigasr</module>
+ 		<module>sigapp</module>
+ 		<module>sigatp</module>
 		<!--<module>sigari</module>
  		<module>siga-cp-sinc</module> 
  		<module>siga-dump</module>
@@ -47,9 +47,9 @@
 	<properties>
  		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> 
  		<siga.version>${project.version}</siga.version>
-		<hibernate.version>5.3.10.Final</hibernate.version>
-		<version.jboss.bom.eap>7.2.3.GA</version.jboss.bom.eap>
-		<spring.version>4.3.19.RELEASE</spring.version>
+		<hibernate.version>5.3.7.Final</hibernate.version>
+		<version.jboss.bom.eap>6.2.0-redhat-1</version.jboss.bom.eap>
+		<spring.version>4.0.6.RELEASE</spring.version>
 		<siga.versao>develop</siga.versao>
 	</properties>
 
@@ -93,42 +93,10 @@
                 <groupId>org.wildfly.plugins</groupId>
                 <artifactId>wildfly-maven-plugin</artifactId>
                 <version>2.0.2.Final</version>
-				<executions>
-					<execution>
-						<id>enforce-property</id>
-						<goals>
-							<goal>enforce</goal>
-						</goals>
-						<configuration>
-							<rules>
-								<requireProperty>
-									<property>siga.versao</property>
-									<message>
-										${line.separator}
-										${line.separator}
-	DEFINA A PROPRIEDADE siga.versao !
-	${line.separator}
-	-Dsiga.versao=a.b.c.d
-										${line.separator}
-										${line.separator}
-									</message>
-									<regex>(develop|(release-|hotfix-)?\d{1,}\.\d{1,}\.\d{1,}(\.\d{1,})?)(-alfa|-beta|-teste)?(-\d.*)?</regex>
-									<regexMessage>
-										${line.separator}
-										${line.separator}
-	FORMATO INVALIDO DO PARAMETRO siga.versao.
-										${line.separator}
-	Exemplos: 3.10.0, 3.11.1.5, release-1.0.0, hotfix-1.2.3.4, develop, 4.5.0-beta										
-										${line.separator}
-										${line.separator}
-									</regexMessage>
-								</requireProperty>
-							</rules>
-							<fail>true</fail>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 
@@ -156,11 +124,6 @@
 			<id>swetake</id>
 			<url>http://itrc.jju.edu.cn/nexus-2.0.6/content/repositories/thirdparty/</url>
 		</repository>
-		
-		<repository>
-			<id>sonatype</id>
-			<url>https://oss.sonatype.org/content/repositories/releases/</url>
-		</repository>
 
 		<!-- repositorio adicionado para a simplecaptcha -->
 		<!-- Edson: removendo pois está quebrado -->
@@ -169,18 +132,18 @@
 			<url>http://maven.nfms4redd.org/</url>
 		</repository>-->
 		<!-- repositorio adicionado para o dynamic jasper
-	<!-- 	<repository>
+		<repository>
 	    	<id>fdvsolution.public</id>
 	    	<url>http://nexus.fdvs.com.ar/content/groups/public/</url>
-	    </repository>   -->
+	    </repository>
 	     -->
 	</repositories>
 
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>org.jboss.bom</groupId>
-				<artifactId>jboss-eap-javaee8-with-tools</artifactId>
+				<groupId>org.jboss.bom.eap</groupId>
+				<artifactId>jboss-javaee-6.0-with-hibernate</artifactId>
 				<version>${version.jboss.bom.eap}</version>
 				<type>pom</type>
 				<scope>import</scope>
@@ -329,6 +292,11 @@
 			<dependency>
 				<groupId>siga</groupId>
 				<artifactId>sigawf</artifactId>
+				<version>${siga.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>siga</groupId>
+				<artifactId>siga-oidc</artifactId>
 				<version>${siga.version}</version>
 			</dependency>
 			<dependency>
@@ -660,14 +628,13 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-<!--  		<version>${hibernate.version}</version> -->	
+			<version>${hibernate.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator</artifactId>	
-		    <version>6.1.0.Final</version>			
+			<artifactId>hibernate-validator</artifactId>			
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>

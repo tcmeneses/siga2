@@ -24,7 +24,7 @@ import br.gov.jfrj.siga.model.ContextoPersistencia;
 
 import com.auth0.jwt.JWTVerifyException;
 
-public class AuthJwtFormFilter implements Filter {
+public class AuthJwtFormFilterOld implements Filter {
 
 	public static final String SIGA_JWT_AUTH_COOKIE_NAME = "siga-jwt-auth";
 	private static final int TIME_TO_EXPIRE_IN_S = 60 * 60 * 8; // 8h é o tempo

@@ -29,12 +29,12 @@
 	</welcome-file-list>
 
 	<filter>
-		<filter-name>AuthJwtFormFilter</filter-name>
-		<filter-class>br.gov.jfrj.siga.idp.jwt.AuthJwtFormFilter
+		<filter-name>AuthJwtFormFilterOld</filter-name>
+		<filter-class>br.gov.jfrj.siga.idp.jwt.AuthJwtFormFilterOld
 		</filter-class>
 	</filter>
 	<filter-mapping>
-		<filter-name>AuthJwtFormFilter</filter-name>
+		<filter-name>AuthJwtFormFilterOld</filter-name>
 		<url-pattern>/app/*</url-pattern>
 		<dispatcher>FORWARD</dispatcher>
 		<dispatcher>REQUEST</dispatcher>

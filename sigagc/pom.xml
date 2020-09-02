@@ -78,10 +78,6 @@
 			<groupId>siga</groupId>
 			<artifactId>siga-vraptor-module-old</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>siga</groupId>
-			<artifactId>siga-rel</artifactId>
-		</dependency>
 
 
 		<!-- CDI -->
