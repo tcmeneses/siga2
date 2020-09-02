@@ -85,14 +85,13 @@ import br.gov.jfrj.itextpdf.ConversorHtml;
 import br.gov.jfrj.itextpdf.Documento;
 import br.gov.jfrj.siga.Service;
 import br.gov.jfrj.siga.base.AplicacaoException;
-import br.gov.jfrj.siga.base.Contexto;
 import br.gov.jfrj.siga.base.Correio;
 import br.gov.jfrj.siga.base.Data;
 import br.gov.jfrj.siga.base.GeraMessageDigest;
 import br.gov.jfrj.siga.base.HttpRequestUtils;
 import br.gov.jfrj.siga.base.Par;
-import br.gov.jfrj.siga.base.RegraNegocioException;
 import br.gov.jfrj.siga.base.Prop;
+import br.gov.jfrj.siga.base.RegraNegocioException;
 import br.gov.jfrj.siga.base.SigaMessages;
 import br.gov.jfrj.siga.base.Texto;
 import br.gov.jfrj.siga.base.util.SetUtils;
@@ -101,7 +100,6 @@ import br.gov.jfrj.siga.bluc.service.EnvelopeRequest;
 import br.gov.jfrj.siga.bluc.service.EnvelopeResponse;
 import br.gov.jfrj.siga.bluc.service.ValidateRequest;
 import br.gov.jfrj.siga.bluc.service.ValidateResponse;
-import br.gov.jfrj.siga.cp.CpArquivo;
 import br.gov.jfrj.siga.cp.CpArquivoTipoArmazenamentoEnum;
 import br.gov.jfrj.siga.cp.CpConfiguracao;
 import br.gov.jfrj.siga.cp.CpIdentidade;
@@ -4899,7 +4897,7 @@ public class ExBL extends CpBL {
 	public void vincularMarcador(final DpPessoa cadastrante, final DpLotacao lotaCadastrante, final ExMobil mob,
 			final Date dtMov, DpLotacao lotaResponsavel, final DpPessoa responsavel, final DpPessoa subscritor,
 			final DpPessoa titular, final String descrMov, String nmFuncaoSubscritor, CpMarcador marcador,
-			boolean ativo) throws Exception {
+			boolean ativo, Date dtFimMov) throws Exception {
 
 		if (marcador == null)
 			throw new AplicacaoException("não foi informado o marcador");
@@ -4916,6 +4914,7 @@ public class ExBL extends CpBL {
 				mov.setNmFuncaoSubscritor(nmFuncaoSubscritor);
 				mov.setDescrMov(descrMov);
 				mov.setMarcador(marcador);
+				mov.setDtFimMov(dtFimMov);
 
 				gravarMovimentacao(mov);
 				concluirAlteracao(mov.getExMobil());
@@ -5446,6 +5445,15 @@ public class ExBL extends CpBL {
 	public void registrarCiencia(final DpPessoa cadastrante, final DpLotacao lotaCadastrante, final ExMobil mob,
 			final Date dtMov, DpLotacao lotaResponsavel, final DpPessoa responsavel, final DpPessoa subscritor,
 			final String descrMov) throws AplicacaoException {
+		
+		if(!SigaMessages.isSigaSP()) {
+			throw new RegraNegocioException("Não é possível fazer ciência do documento neste ambiente.");
+		}
+
+		if (!Ex.getInstance().getComp().podeFazerCiencia(responsavel, lotaResponsavel, mob)) {
+			throw new RegraNegocioException("Não é possível fazer ciência do documento."			
+					+ " Isso pode ocorrer se o documento não estiver apto a receber ciência ou devido a alguma regra para não permitir esta operação");
+		}
 
 		try {
 			iniciarAlteracao();
@@ -6255,26 +6263,38 @@ public class ExBL extends CpBL {
 	}
 
 	public void gravarForma(ExFormaDocumento forma) throws AplicacaoException {
-		if (forma.getDescrFormaDoc() == null || forma.getDescrFormaDoc().isEmpty())
-			throw new AplicacaoException("não é possível salvar um tipo sem informar a descrição.");
-		if (forma.getExTipoFormaDoc() == null)
-			throw new AplicacaoException("não é possível salvar um tipo sem informar se é processo ou expediente.");
-		if (!forma.isSiglaValida())
-			throw new AplicacaoException("Sigla inválida. A sigla deve ser formada por 3 letras.");
-
-		if (Prop.isGovSP()
-				&& forma.getExTipoDocumentoSet().isEmpty())
-			throw new AplicacaoException("Selecione uma origem.");
-
-		ExFormaDocumento formaConsulta = dao().consultarPorSigla(forma);
-		if ((forma.getIdFormaDoc() == null && formaConsulta != null) || (forma.getIdFormaDoc() != null
-				&& formaConsulta != null && !formaConsulta.getIdFormaDoc().equals(forma.getIdFormaDoc())))
-			throw new AplicacaoException("Esta sigla já está sendo utilizada.");
-
-		try {
+		try {		
+			if (forma.isTipoFormaAlterada()) {
+				boolean isExFormaComDocumentoVinculado = dao().isExFormaComDocumentoVinculado(forma.getId());
+				
+				if (isExFormaComDocumentoVinculado) {
+					throw new RegraNegocioException("Não é possível alterar o Tipo para <b>" + forma.getExTipoFormaDoc().getDescTipoFormaDoc() + "</b>"
+							+ ", existem documentos que dependem desta informação.");
+				}					
+			}
+					
+			if (forma.getDescrFormaDoc() == null || forma.getDescrFormaDoc().isEmpty())
+				throw new RegraNegocioException("Não é possível salvar um tipo sem informar a descrição.");
+			if (forma.getExTipoFormaDoc() == null)
+				throw new RegraNegocioException("Não é possível salvar um tipo sem informar se é processo ou expediente.");
+			if (!forma.isSiglaValida())
+				throw new RegraNegocioException("Sigla inválida. A sigla deve ser formada por 3 letras.");
+	
+			if (Prop.isGovSP()
+					&& forma.getExTipoDocumentoSet().isEmpty())
+				throw new RegraNegocioException("Selecione uma origem.");
+	
+			ExFormaDocumento formaConsulta = dao().consultarPorSigla(forma);
+			if ((forma.getIdFormaDoc() == null && formaConsulta != null) || (forma.getIdFormaDoc() != null
+					&& formaConsulta != null && !formaConsulta.getIdFormaDoc().equals(forma.getIdFormaDoc())))
+				throw new RegraNegocioException("Esta sigla já está sendo utilizada.");
+		
 			ExDao.iniciarTransacao();
 			dao().gravar(forma);
 			ExDao.commitTransacao();
+		} catch (RegraNegocioException e) {
+			dao().em().getTransaction().rollback();
+			throw new RegraNegocioException(e.getMessage());
 		} catch (Exception e) {
 			ExDao.rollbackTransacao();
 			throw new AplicacaoException("Erro ao salvar um tipo.", 0, e);
@@ -7226,7 +7246,7 @@ public class ExBL extends CpBL {
 			for(String marcador: listaMarcadores) {
 			   cpMarcador = dao().consultar(Long.parseLong(marcador), CpMarcador.class, false);
 			   try {
-				vincularMarcador(cadastrante, lotaCadastrante, mob, null, lotaCadastrante, cadastrante, cadastrante, cadastrante, null, null, cpMarcador, true);
+				vincularMarcador(cadastrante, lotaCadastrante, mob, null, lotaCadastrante, cadastrante, cadastrante, cadastrante, null, null, cpMarcador, true, null);
 			   } catch (Exception e) {
 					throw new AplicacaoException("Ocorreu um erro ao gravar marcadores");
 			   }
