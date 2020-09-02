@@ -14,7 +14,6 @@ import java.util.Set;
 
 import javax.persistence.Query;
 
-import net.sf.jasperreports.engine.JRException;
 import ar.com.fdvs.dj.domain.builders.DJBuilderException;
 import br.gov.jfrj.relatorio.dinamico.AbstractRelatorioBaseBuilder;
 import br.gov.jfrj.relatorio.dinamico.RelatorioRapido;
@@ -22,9 +21,10 @@ import br.gov.jfrj.relatorio.dinamico.RelatorioTemplate;
 import br.gov.jfrj.siga.dp.CpMarcador;
 import br.gov.jfrj.siga.dp.DpLotacao;
 import br.gov.jfrj.siga.dp.DpPessoa;
-import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.ex.ExTipoMovimentacao;
+import br.gov.jfrj.siga.model.ContextoPersistencia;
 import br.gov.jfrj.siga.model.dao.HibernateUtil;
+import net.sf.jasperreports.engine.JRException;
 
 public class RelTempoMedioSituacao extends RelatorioTemplate {
 
@@ -108,17 +108,17 @@ public class RelTempoMedioSituacao extends RelatorioTemplate {
 
 		String queryLotacao = "";
 		if (parametros.get("lotacao") != null
-				&& parametros.get("lotacao") != "") {
+				&& !"".equals(parametros.get("lotacao"))) {
 			queryLotacao = " AND DOCA.ID_LOTA_CADASTRANTE IN ( SELECT LOTA.ID_LOTACAO FROM CORPORATIVO.DP_LOTACAO LOTA WHERE LOTA.ID_LOTACAO_INI = :lotacao ) ";
 		}
 
 		String queryUsuario = "";
 		if (parametros.get("usuario") != null
-				&& parametros.get("usuario") != "") {
+				&& !"".equals(parametros.get("usuario"))) {
 			queryUsuario = " AND DOCA.ID_CADASTRANTE IN ( SELECT PES.ID_PESSOA FROM CORPORATIVO.DP_PESSOA PES WHERE PES.ID_PESSOA_INICIAL = :usuario ) ";
 		}
 
-		Query query = CpDao.getInstance().em().createQuery(
+		Query query = ContextoPersistencia.em().createNativeQuery(
 						"SELECT "
 					    + "(LOTA.SIGLA_LOTACAO || ' - ' || LOTA.NOME_LOTACAO) LOTADESCR, "
 					    + "MOD.NM_MOD, "
@@ -236,8 +236,8 @@ public class RelTempoMedioSituacao extends RelatorioTemplate {
 		query.setParameter("idTpMovCancelar", ExTipoMovimentacao.TIPO_MOVIMENTACAO_CANCELAMENTO_DE_MOVIMENTACAO);			
 		
 		if (parametros.get("lotacao") != null
-				&& parametros.get("lotacao") != "") {
-			Query qryLota = CpDao.getInstance().em().createQuery(
+				&& !"".equals(parametros.get("lotacao"))) {
+			Query qryLota = ContextoPersistencia.em().createQuery(
 					"from DpLotacao lot where lot.idLotacao = "
 							+ parametros.get("lotacao"));
 
@@ -249,8 +249,8 @@ public class RelTempoMedioSituacao extends RelatorioTemplate {
 		}
 
 		if (parametros.get("usuario") != null
-				&& parametros.get("usuario") != "") {
-			Query qryPes = CpDao.getInstance().em().createQuery(
+				&& !"".equals(parametros.get("usuario"))) {
+			Query qryPes = ContextoPersistencia.em().createQuery(
 					"from DpPessoa pes where pes.idPessoa = "
 							+ parametros.get("usuario"));
 

@@ -16,11 +16,6 @@ public class SigaMessages {
 	public static String getMessage(String key) {
 		try {
 	    	if (bundle == null) {
-		    	if (SigaBaseProperties.getString("siga.local") == null) {
-		    		bundle = ResourceBundle.getBundle("messages_TRF2");
-		    	} else {
-		    		bundle = ResourceBundle.getBundle("messages_" + SigaBaseProperties.getString("siga.local"));
-		    	}
 	    	}
 		    String message = bundle.getString(key);
 			return message;
@@ -30,26 +25,26 @@ public class SigaMessages {
 	}
 
 	public static boolean isSigaSP() {
-    	if (SigaBaseProperties.getString("siga.local") != null && "GOVSP".equals(SigaBaseProperties.getString("siga.local"))) {
+    	if ("GOVSP".equals(Prop.get("/siga.local"))) {
     		return true;
     	}
     	return false;
     }
 	
 	public static String getLocalizationContext() {
-		String messages = System.getProperty("siga.messages");
+		String messages = Prop.get("/siga.mensagens");
 		if (messages == null) {
 			messages = "messages";
-			if (SigaBaseProperties.getString("siga.local") != null) {
-	    		messages += "_" + SigaBaseProperties.getString("siga.local");
+			if (Prop.get("/siga.local") != null) {
+	    		messages += "_" + Prop.get("/siga.local");
 	    	} else {
-	    		messages = "messages_TRF2";
+	    		messages += "_SIGA";
 	    	}
 		}
 		return messages;
 	}
 	
-	public static ResourceBundle getBundle() {
+	private static ResourceBundle getBundle() {
 		return ResourceBundle.getBundle(getLocalizationContext());
     }
 

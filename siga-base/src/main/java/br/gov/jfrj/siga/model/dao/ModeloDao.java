@@ -104,8 +104,7 @@ public abstract class ModeloDao {
 	}
 
 	public void descarregar() {
-		if (em() != null)
-			em().flush();
+		ContextoPersistencia.flushTransaction();
 	}
 
 	public <T> T gravar(final T entidade) {

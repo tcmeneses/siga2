@@ -19,6 +19,8 @@
 package br.gov.jfrj.siga.ex.vo;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -87,6 +89,7 @@ public class ExDocumentoVO extends ExVO {
 	ExGraphColaboracao dotColaboracao;
 	private List<Object> listaDeAcessos;
 	boolean podeAnexarArquivoAuxiliar;
+	private String dtLimiteDemandaJudicial;
 
 	public ExDocumentoVO(ExDocumento doc, ExMobil mob, DpPessoa cadastrante, DpPessoa titular,
 			DpLotacao lotaTitular, boolean completo, boolean exibirAntigo) {
@@ -240,6 +243,15 @@ public class ExDocumentoVO extends ExVO {
 		this.originalOrgao = doc.getOrgaoExterno() != null ? doc.getOrgaoExterno().getDescricao() : null;
 		
 		this.podeAnexarArquivoAuxiliar = Ex.getInstance().getComp().podeAnexarArquivoAuxiliar(titular, lotaTitular, mob);
+
+		this.dtLimiteDemandaJudicial = doc.getMobilGeral().getExMovimentacaoSet().stream() //
+				.filter(mov -> mov.getExTipoMovimentacao().getId()
+						.equals(ExTipoMovimentacao.TIPO_MOVIMENTACAO_MARCACAO))
+				.filter(mov -> !mov.isCancelada()) //
+				.filter(mov -> mov.getMarcador().isDemandaJudicial()) //
+				.map(ExMovimentacao::getDtFimMovDDMMYY) //
+				.findFirst().orElse(null);
+
 	}
 	
 	/*
@@ -336,6 +348,7 @@ public class ExDocumentoVO extends ExVO {
 		marcasGeralPermitidas
 				.add(CpMarcador.MARCADOR_TRANSFERIR_PARA_ARQUIVO_INTERMEDIARIO);
 		marcasGeralPermitidas.add(CpMarcador.MARCADOR_PENDENTE_DE_ANEXACAO);
+		marcasGeralPermitidas.add(CpMarcador.MARCADOR_PORTAL_TRANSPARENCIA);
 
 		for (ExMobilVO mobVO : mobs) {
 
@@ -478,13 +491,24 @@ public class ExDocumentoVO extends ExVO {
 		for(ExMobil mob:mobs)
 			movs.addAll(dao().consultarMovimentoPorMobil(mob));
 		
-		for(ExMovimentacao mov:movs)
+		Collections.sort(movs, new Comparator<ExMovimentacao>() {
+			public int compare(ExMovimentacao m1, ExMovimentacao m2) {
+				return m2.getData().compareTo(m1.getData());
+			}
+		});
+		
+		for(ExMovimentacao mov:movs) {
+			if(mov.getDescrTipoMovimentacao().equalsIgnoreCase("Desarquivamento")||
+					mov.getDescrTipoMovimentacao().equalsIgnoreCase("Desentranhamento"))
+				return true;
+			
+			
 			if(mov.getDescrTipoMovimentacao().equalsIgnoreCase("Juntada")||
 					mov.getDescrTipoMovimentacao().equalsIgnoreCase("Cancelamento")||
 					mov.getDescrTipoMovimentacao().equalsIgnoreCase("Arquivamento Intermediário")||
 					mov.getDescrTipoMovimentacao().equalsIgnoreCase("Arquivamento Corrente"))
 				return false;
-
+		}
 		return true;
 	}
 	
@@ -669,6 +693,24 @@ public class ExDocumentoVO extends ExVO {
 						.podeRedefinirNivelAcesso(titular, lotaTitular, mob));
 
 		vo.addAcao(
+				"group_link",
+				"Restrição de Acesso",
+				"/app/expediente/mov",
+				"restringir_acesso",
+				Ex.getInstance().getComp().podeRestrigirAcesso(titular, lotaTitular, mob));
+		
+		vo.addAcao(
+				"arrow_undo",
+				"Redefinir Acesso Padrão",
+				"/app/expediente/mov",
+				"desfazer_restricao_acesso",
+				Ex.getInstance()
+						.getComp()
+						.podeDesfazerRestricaoAcesso(titular, lotaTitular, mob),
+				"Esta operação anulará as Restrições de Acesso. Prosseguir?",
+				null, null, null, "once");
+		
+		vo.addAcao(
 				"book_add",
 				"Solicitar Publicação no Boletim",
 				"/app/expediente/mov",
@@ -772,7 +814,7 @@ public class ExDocumentoVO extends ExVO {
 						.getComp()
 						.podeTornarDocumentoSemEfeito(titular, lotaTitular, mob),
 				"Esta operação tornará esse documento sem efeito. Prosseguir?",
-				null, null, null, "once");
+				null, null, null, "once  siga-btn-tornar-documento-sem-efeito");
 		
 		vo.addAcao(
 				"cancel",
@@ -784,6 +826,15 @@ public class ExDocumentoVO extends ExVO {
 						.podeCancelarDocumento(titular, lotaTitular, mob),
 				"Esta operação cancelará o documento pendente de assinatura. Prosseguir?",
 				null, null, null, "once");
+		
+		vo.addAcao(
+				"report_link",
+				SigaMessages.getMessage("documento.publicar.portaltransparencia"),
+				"/app/expediente/mov",
+				"publicacao_transparencia",
+				Ex.getInstance().getComp()
+						.podePublicarPortalTransparencia(titular, lotaTitular, mob));
+
 		
 		if(mostrarGerarProtocolo(doc)) {
 			vo.addAcao(
@@ -1015,4 +1066,9 @@ public class ExDocumentoVO extends ExVO {
 	public void setPodeAnexarArquivoAuxiliar(boolean podeAnexar) {
 		this.podeAnexarArquivoAuxiliar = podeAnexar;
 	}
+	
+	public String getDtLimiteDemandaJudicial() {
+		return dtLimiteDemandaJudicial;
+	}
+
 }

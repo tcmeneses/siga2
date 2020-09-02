@@ -16,9 +16,10 @@
 				<div class="card bg-light mb-3" >
 					<div class="card-header">
 						<h5>
-							Acompanhamento e Autenticação de Protocolo
+							Acompanhamento e Autenticação de Protocolo - Documento <b>${sigla}</b> 
 						</h5>
 					</div>
+					<!--
 					<div class="card-body">
 						<div>
 							<c:url var='pdfAssinado'
@@ -28,8 +29,10 @@
 							<iframe src="${pdfAssinado}" width="100%" height="600" align="center" style="margin-top: 10px;"> </iframe>
 						</div>
 					</div>
+					-->
 				</div>
 			</div>
+			<!--
 			<div class="col">
 				<div class="row">
 					<div class="col">
@@ -46,6 +49,7 @@
 					</div>
 				</div>				
 			</div>
+			-->
 		</div>
 		<div class="row">
 			<div class="col-12">
@@ -59,7 +63,7 @@
 						<div class="card-body">
 						
 						<c:forEach var="m" items="${docVO.mobs}" varStatus="loop">
-							<c:if test="${f:resource('isWorkflowEnabled')}">
+							<c:if test="${f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA:Sistema Integrado de Gestão Administrativa;WF:Módulo de Workflow')}">
 								<script type="text/javascript">
 									var url = "/sigawf/app/doc?sigla=${m.sigla}&ts=1${currentTimeMillis}";
 							        $.ajax({
@@ -92,7 +96,7 @@
 								<table class="table table-striped">
 									<thead class="bg-dark text-white">
 										<tr>
-											<th align="center" rowspan="2">Data</th>
+											<th align="left" rowspan="2">Data</th>
 											<th rowspan="2">Evento</th>
 											<th colspan="2" align="left">Cadastrante</th>
 											<c:if test="${ (exibirCompleto == 'true')}">
@@ -114,7 +118,7 @@
 									<c:set var="evenorodd" value="odd" />
 									<c:forEach var="mov" items="${movs}">
 										<tr>
-											<c:set var="dt" value="${mov.dtRegMovDDMMYY}" />
+											<c:set var="dt" value="${mov.dtRegMovDDMMYYYYHHMMSS}" />
 											<c:choose>
 												<c:when test="${dt == dtUlt}">
 													<c:set var="dt" value="" />
@@ -123,28 +127,16 @@
 													<c:set var="dtUlt" value="${dt}" />
 												</c:otherwise>
 											</c:choose>
-											<td align="center">${dt}</td>
-											<td>${mov.descrTipoMovimentacao}</td>
-											<td align="left"><siga:selecionado isVraptor="true"
-													sigla="${mov.lotaCadastrante.sigla}"
-													descricao="${mov.lotaCadastrante.descricaoAmpliada}"
-													lotacaoParam="${mov.lotaCadastrante.siglaLotacao}${mov.lotaCadastrante.sigla}" />
+											<td align="left">${dt}</td>
+											<td align="left">${mov.descrTipoMovimentacao} 
+												<c:if test="${mov.idTpMov == 12}">
+													<span style="font-size: .8rem;color: #9e9e9e;">| documento juntado ${mov.exMobil}</span>
+												</c:if>
 											</td>
-											<td align="left"><siga:selecionado isVraptor="true"
-													sigla="${mov.cadastrante.nomeAbreviado}"
-													descricao="${mov.cadastrante.descricao} - ${mov.cadastrante.sigla}"
-													pessoaParam="${mov.cadastrante.sigla}" />
-											</td>
-											<td align="left"><siga:selecionado isVraptor="true"
-													sigla="${mov.lotaResp.sigla}"
-													descricao="${mov.lotaResp.descricaoAmpliada}"
-													lotacaoParam="${mov.lotaResp.siglaLotacao}${mov.lotaResp.sigla}" />
-											</td>
-											<td align="left"><siga:selecionado isVraptor="true"
-													sigla="${mov.resp.nomeAbreviado}"
-													descricao="${mov.resp.descricao} - ${mov.resp.sigla}"
-													pessoaParam="${mov.resp.sigla}" />
-											</td>
+											<td align="left">${mov.lotaCadastrante.sigla} </td>
+											<td align="left">${mov.cadastrante.nomeAbreviado}</td>
+											<td align="left">${mov.lotaResp.sigla}</td>
+											<td align="left">${mov.resp.nomeAbreviado}</td>
 										</tr>
 										<c:choose>
 											<c:when test='${evenorodd == "even"}'>

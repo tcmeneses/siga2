@@ -43,10 +43,12 @@ import java.util.regex.Pattern;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.BatchSize;
 import org.jboss.logging.Logger;
 
+import br.gov.jfrj.siga.base.Prop;
 import br.gov.jfrj.siga.base.SigaMessages;
 import br.gov.jfrj.siga.dp.CpMarca;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
@@ -69,6 +71,9 @@ public class ExMobil extends AbstractExMobil implements Serializable, Selecionav
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger log = Logger.getLogger(ExMobil.class);
+	
+	@Transient
+	private static boolean isMovimentacaoComOrigemPeloBotaoDeRestricaoDeAcesso = false;
 
 	/**
 	 * Retorna A penúltima movimentação não cancelada de um Mobil.
@@ -1430,13 +1435,7 @@ public class ExMobil extends AbstractExMobil implements Serializable, Selecionav
 
 		List<ExMovimentacao> naoAssinados = new ArrayList<ExMovimentacao>();
 		Date dataDeInicioDeObrigacaoDeAssinatura = null;
-
-		try {
-
-			dataDeInicioDeObrigacaoDeAssinatura = SigaExProperties.getDataInicioObrigacaoDeAssinarAnexoEDespacho();
-		} catch (Exception e) {
-
-		}
+		dataDeInicioDeObrigacaoDeAssinatura = Prop.getData("data.obrigacao.assinar.anexo.despacho");
 
 		for (ExMovimentacao mov : this.getExMovimentacaoSet()) {
 			if (!mov.isCancelada()) {
@@ -1567,11 +1566,7 @@ public class ExMobil extends AbstractExMobil implements Serializable, Selecionav
 		List<ExMovimentacao> naoAssinados = new ArrayList<ExMovimentacao>();
 		Date dataDeInicioDeObrigacaoDeAssinatura = null;
 
-		try {
-			dataDeInicioDeObrigacaoDeAssinatura = SigaExProperties.getDataInicioObrigacaoDeAssinarAnexoEDespacho();
-		} catch (Exception e) {
-
-		}
+		dataDeInicioDeObrigacaoDeAssinatura = Prop.getData("data.obrigacao.assinar.anexo.despacho");
 		for (ExMovimentacao mov : this.getExMovimentacaoSet()) {
 			if (!mov.isCancelada()) {
 				if (mov.getExTipoMovimentacao().getIdTpMov() == ExTipoMovimentacao.TIPO_MOVIMENTACAO_DESPACHO
@@ -1754,7 +1749,12 @@ public class ExMobil extends AbstractExMobil implements Serializable, Selecionav
 
 		List<ExArquivoNumerado> arquivosNumerados = null;
 
-		arquivosNumerados = mobPrincipal.getExDocumento().getArquivosNumerados(mobPrincipal);
+		arquivosNumerados = mobPrincipal.getExDocumento().getArquivosNumerados(mobPrincipal);		
+		
+		boolean teveReordenacao = (mobPrincipal.getDoc() != null && 
+				mobPrincipal.getDoc().podeReordenar() &&
+				mobPrincipal.getDoc().podeExibirReordenacao() &&
+				mobPrincipal.getDoc().temOrdenacao());
 
 		List<ExArquivoNumerado> ans = new ArrayList<ExArquivoNumerado>();
 		int i = 0;
@@ -1784,9 +1784,24 @@ public class ExMobil extends AbstractExMobil implements Serializable, Selecionav
 				}
 			}
 		} else {
-			ans.add(arquivosNumerados.get(0));
+			if (mobPrincipal == this && teveReordenacao) {
+				for (ExArquivoNumerado arquivo : arquivosNumerados) {
+					if (mobPrincipal.getDoc().getIdDoc().equals(arquivo.getArquivo().getIdDoc())) {						
+						ans.add(arquivo);
+						break;
+					}
+				}
+			} else {
+				ans.add(arquivosNumerados.get(0));
+			}			
 		}
-		if (bCompleto && i != -1) {
+		
+		if (bCompleto && teveReordenacao) {
+			ans.clear();
+			for (ExArquivoNumerado arquivo : arquivosNumerados) {				
+				ans.add(arquivo);
+			}
+		} else if (bCompleto && i != -1) {
 			for (int j = i + 1; j < arquivosNumerados.size(); j++) {
 				ExArquivoNumerado anSub = arquivosNumerados.get(j);
 				if (anSub.getNivel() <= arquivosNumerados.get(i).getNivel())
@@ -2189,5 +2204,41 @@ public class ExMobil extends AbstractExMobil implements Serializable, Selecionav
 			set.add(m);
 		}
 		return set;
+	}
+	
+	public Set<ExMovimentacao> getMovsNaoCanceladas(long[] idTpMovs) {
+		Set<ExMovimentacao> set = new TreeSet<ExMovimentacao>();
+
+		if (getExMovimentacaoSet() == null)
+			return set;
+				
+		for (ExMovimentacao m : getExMovimentacaoSet()) {
+			for (long idTpMov : idTpMovs) {
+				if (m.getExMovimentacaoCanceladora() != null)
+					continue;
+				if (m.getExTipoMovimentacao().getIdTpMov() != idTpMov)
+					continue;
+			
+				set.add(m);
+			}
+		}			
+		
+		return set;
+	}
+	
+	public static void adicionarIndicativoDeMovimentacaoComOrigemPeloBotaoDeRestricaoDeAcesso() {
+		isMovimentacaoComOrigemPeloBotaoDeRestricaoDeAcesso = true;
+	}
+	
+	public static void removerIndicativoDeMovimentacaoComOrigemPeloBotaoDeRestricaoDeAcesso() {
+		isMovimentacaoComOrigemPeloBotaoDeRestricaoDeAcesso = false;
+	}
+	
+	public static boolean isMovimentacaoComOrigemPeloBotaoDeRestricaoDeAcesso() {
+		return isMovimentacaoComOrigemPeloBotaoDeRestricaoDeAcesso;
+	}
+	
+	public void indicarSeDeveExibirDocumentoCompletoReordenado(boolean exibirReordenacao) {
+		this.getDoc().setPodeExibirReordenacao(exibirReordenacao);
 	}
 }

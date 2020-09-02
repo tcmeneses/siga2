@@ -2,7 +2,6 @@ package br.gov.jfrj.siga.ex.relatorio.dinamico.relatorios;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,20 +14,16 @@ import java.util.Set;
 
 import javax.persistence.Query;
 
-import net.sf.jasperreports.engine.JRException;
-
-
 import ar.com.fdvs.dj.domain.builders.DJBuilderException;
 import br.gov.jfrj.relatorio.dinamico.AbstractRelatorioBaseBuilder;
 import br.gov.jfrj.relatorio.dinamico.RelatorioRapido;
 import br.gov.jfrj.relatorio.dinamico.RelatorioTemplate;
-import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
 import br.gov.jfrj.siga.dp.DpLotacao;
-import br.gov.jfrj.siga.dp.DpPessoa;
 import br.gov.jfrj.siga.ex.ExMobil;
-import br.gov.jfrj.siga.ex.ExTipoMovimentacao;
 import br.gov.jfrj.siga.hibernate.ExDao;
+import br.gov.jfrj.siga.model.ContextoPersistencia;
 import br.gov.jfrj.siga.model.dao.HibernateUtil;
+import net.sf.jasperreports.engine.JRException;
 
 	public class RelCobranca extends RelatorioTemplate {
  
@@ -94,9 +89,7 @@ import br.gov.jfrj.siga.model.dao.HibernateUtil;
 				queryLotacao = " and doc.lotaCadastrante.idLotacao in (select l.idLotacao from DpLotacao as l where l.idLotacaoIni = :idLotacao) ";
 			}
 			
-	
-			Query query = ExDao.getInstance().em()
-					.createQuery(
+			Query query = ContextoPersistencia.em().createQuery(
 							"select "
 							+ "doc.lotaCadastrante.siglaLotacao, "
 							+ "doc.exModelo.nmMod, "
@@ -117,17 +110,14 @@ import br.gov.jfrj.siga.model.dao.HibernateUtil;
 							+ "order by doc.lotaCadastrante.siglaLotacao, "
 							+ "doc.exModelo.nmMod, "
 							+ "mob.idMobil "
-							); 
-			
-		
+							);
 			
 			if (parametros.get("orgao") != null && parametros.get("orgao") != "") {
 				query.setParameter("orgao", Long.valueOf((String) parametros.get("orgao")));
 			}
 			
 			if (parametros.get("lotacao") != null && parametros.get("lotacao") != "") {
-				Query qryLota = ExDao.getInstance().em()
-						.createQuery(
+				Query qryLota = ContextoPersistencia.em().createQuery(
 						"from DpLotacao lot where lot.idLotacao = " + parametros.get("lotacao"));
 							
 				Set<DpLotacao> lotacaoSet = new HashSet<DpLotacao>();
@@ -136,14 +126,14 @@ import br.gov.jfrj.siga.model.dao.HibernateUtil;
 				
 				query.setParameter("idLotacao",
 						lotacao.getIdInicial());
-			}  
+			}
 
 			Date dtini = formatter.parse((String) parametros.get("dataInicial"));
 			query.setParameter("dtini", dtini);
 			Date dtfim = formatter.parse((String) parametros.get("dataFinal"));
 			query.setParameter("dtfim", dtfim);
 
-			Iterator it = query.getResultList().iterator(); 
+			Iterator it = query.getResultList().iterator();
 
 			totalDocumentos = 0L;
 			totalPaginas = 0L;
@@ -201,7 +191,6 @@ import br.gov.jfrj.siga.model.dao.HibernateUtil;
 			}
 			
 			return d;
-
 		}
 
 	}

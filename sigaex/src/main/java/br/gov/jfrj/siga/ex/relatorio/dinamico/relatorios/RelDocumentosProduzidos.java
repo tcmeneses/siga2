@@ -27,6 +27,7 @@ import br.gov.jfrj.siga.dp.DpPessoa;
 import br.gov.jfrj.siga.ex.ExMobil;
 import br.gov.jfrj.siga.ex.ExTipoMovimentacao;
 import br.gov.jfrj.siga.hibernate.ExDao;
+import br.gov.jfrj.siga.model.ContextoPersistencia;
 import br.gov.jfrj.siga.model.dao.HibernateUtil;
 
 public class RelDocumentosProduzidos extends RelatorioTemplate {
@@ -227,39 +228,37 @@ public class RelDocumentosProduzidos extends RelatorioTemplate {
 		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
 		String queryOrgao = "";
-		if (parametros.get("orgao") != null && parametros.get("orgao") != "") {
+		if (parametros.get("orgao") != null && !"".equals(parametros.get("orgao"))) {
 			queryOrgao = "and doc.orgaoUsuario.idOrgaoUsu = :orgao ";
 		}
 
 		String queryLotacao = "";
 		if (parametros.get("lotacao") != null
-				&& parametros.get("lotacao") != "") {
+				&& !"".equals(parametros.get("lotacao"))) {
 			queryLotacao = "and doc.lotaCadastrante.idLotacao in (select l.idLotacao from DpLotacao as l where l.idLotacaoIni = :lotacao) ";
 		}
 
 		String queryUsuario = "";
 		if (parametros.get("usuario") != null
-				&& parametros.get("usuario") != "") {
+				&& !"".equals(parametros.get("usuario"))) {
 			queryUsuario = "and doc.cadastrante.idPessoa in (select p.idPessoa from DpPessoa as p where p.idPessoaIni = :usuario) ";
 		}
 
-		 Query query = ExDao.getInstance().em()
-				.createQuery(
+		Query query = ContextoPersistencia.em().createQuery(
 				"select " + addSelect
 						+ "from ExMovimentacao mov inner join mov.exMobil mob "
 						+ "inner join mob.exDocumento doc "
 						+ "where doc.dtRegDoc >= :dtini and doc.dtRegDoc < :dtfim "
 						+ queryOrgao + queryLotacao + queryUsuario + addWhere);
 
-		if (parametros.get("orgao") != null && parametros.get("orgao") != "") {
+		if (parametros.get("orgao") != null && !"".equals(parametros.get("orgao"))) {
 			query.setParameter("orgao",
 					Long.valueOf((String) parametros.get("orgao")));
 		}
 
 		if (parametros.get("lotacao") != null
-				&& parametros.get("lotacao") != "") {
-			Query qryLota =  ExDao.getInstance().em()
-					.createQuery(
+				&& !"".equals(parametros.get("lotacao"))) {
+			Query qryLota = ContextoPersistencia.em().createQuery(
 					"from DpLotacao lot where lot.idLotacao = "
 							+ parametros.get("lotacao"));
 
@@ -271,9 +270,8 @@ public class RelDocumentosProduzidos extends RelatorioTemplate {
 		}
 
 		if (parametros.get("usuario") != null
-				&& parametros.get("usuario") != "") {
-			Query qryPes =  ExDao.getInstance().em()
-					.createQuery(
+				&& !"".equals(parametros.get("usuario"))) {
+			Query qryPes = ContextoPersistencia.em().createQuery(
 					"from DpPessoa pes where pes.idPessoa = "
 							+ parametros.get("usuario"));
 
@@ -289,9 +287,9 @@ public class RelDocumentosProduzidos extends RelatorioTemplate {
 		Date dtfim = formatter.parse((String) parametros.get("dataFinal"));
 		Date dtfimMaisUm = new Date( dtfim.getTime() + 86400000L );
 		query.setParameter("dtfim", dtfimMaisUm);
-
+		
 		Iterator it = query.getResultList().iterator();
-		return it; 
+		return it;
 	}
 
 }

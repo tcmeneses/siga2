@@ -35,13 +35,23 @@
 			}
 			function corrige() {
 				if (tamanho2() < 0) {
-					alert('Descrição com mais de 255 caracteres');
+					sigaModal.alerta('Descrição com mais de 255 caracteres');					
 					nota = new String();
 					nota = document.getElementById("descrMov").value;
 					document.getElementById("descrMov").value = nota.substring(
 							0, 255);
 				}
-			}
+			}	
+			function sbmt() {
+				sigaSpinner.mostrar();
+		        document.getElementById('btnSubmit').disabled = true;
+	            if ($('#descrMov').val() == null || $('#descrMov').val() == '') {
+	            	frm.action = 'ciencia_gravar?sigla=${sigla}&postback=1';
+	            } else {
+	                frm.action = 'ciencia_gravar?sigla=${sigla}&postback=1&descrMov=' + $('#descrMov').val();
+	            }
+	            frm.submit();
+	        }
 		</script>
 
 	<!-- main content bootstrap -->
@@ -59,22 +69,29 @@
 					<div class="row">
 						<div class="col-sm">
 							<div class="form-group">
-								<textarea class="form-control" name="descrMov" value="${descrMov}" cols="60"
+								<textarea id="descrMov" class="form-control" name="descrMov" cols="60"
 									rows="5" onkeydown="corrige();tamanho();" maxlength="255"
-									onblur="tamanho();" onclick="tamanho();"></textarea>
+									onblur="tamanho();" onclick="tamanho();">${descrMov}</textarea>
 								<small class="form-text text-muted" id="Qtd">Restam&nbsp;255&nbsp;Caracteres</small>
 							</div>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col-sm">
-							<input type="submit" value="Ok" class="btn btn-primary" />
-							<input type="button" value="Cancela" onclick="javascript:history.back();" class="btn btn-cancel ml-2" />
-
+							<input id="btnSubmit" type="button" value="Ok" class="btn btn-primary" onclick="sbmt();" />							
+							<a href="${linkTo[ExDocumentoController].exibe()}?sigla=${sigla}" class="btn btn-cancel ml-2">Cancela</a>														 												
 						</div>
 					</div>
 				</form>
 			</div>
 		</div>
 	</div>
+<script>
+	$(function(){
+		if ('${descrMov}'.length > 0) {
+			corrige();
+			tamanho();		
+		}
+	});
+</script>	
 </siga:pagina>

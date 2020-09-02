@@ -442,7 +442,7 @@ public class GcInformacao extends Objeto {
 		// return !isCancelado();
 		return true;
 	}
-
+	
 	public SortedSet<GcAcaoVO> acoes(CpIdentidade idc, DpPessoa titular,
 			DpLotacao lotaTitular) throws Exception {
 		SortedSet<GcAcaoVO> acoes = new TreeSet<GcAcaoVO>();
@@ -450,6 +450,14 @@ public class GcInformacao extends Objeto {
 		StringBuilder sb = new StringBuilder();
 		SigaLogicResult router = ContextInterceptor.result().use(
 				SigaLogicResult.class);
+
+		boolean podeExibirLinkSemAutenticacao = 
+				this.isFinalizado() && this.acessoExternoPublicoPermitido();
+		
+		router.getRedirectURL(sb, AppController.class).exibirPublicoExterno(
+				this.getSiglaCompacta());
+		addAcao(acoes, "eye", "Link externo", null, sb.toString(),
+				podeExibirLinkSemAutenticacao);
 
 		router.getRedirectURL(sb, AppController.class).editar(
 				this.getSiglaCompacta(), null, null, null, null, null);
@@ -642,10 +650,17 @@ public class GcInformacao extends Objeto {
 				"\"/>");
 		return fragment;
 	}
+	
+	public boolean acessoExternoPublicoPermitido() {
+		if(this.visualizacao.id == (int) GcAcesso.ACESSO_EXTERNO_PUBLICO)
+			return true;
+		return false;
+	}
 
 	public boolean acessoPermitido(DpPessoa titular, DpLotacao lotaTitular,
 			long id) {
 		switch ((int) id) {
+		case (int) GcAcesso.ACESSO_EXTERNO_PUBLICO:
 		case (int) GcAcesso.ACESSO_PUBLICO:
 			return true;
 		case (int) GcAcesso.ACESSO_ORGAO_USU:

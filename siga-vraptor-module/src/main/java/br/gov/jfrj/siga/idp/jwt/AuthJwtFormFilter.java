@@ -6,7 +6,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.Filter;
@@ -20,24 +19,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import br.gov.jfrj.siga.base.HttpRequestUtils;
-import br.gov.jfrj.siga.base.SigaBaseProperties;
-import br.gov.jfrj.siga.base.SigaMessages;
-import br.gov.jfrj.siga.cp.AbstractCpAcesso;
-import br.gov.jfrj.siga.cp.bl.Cp;
-import br.gov.jfrj.siga.model.ContextoPersistencia;
-
-import com.auth0.jwt.JWTAudienceException;
 import com.auth0.jwt.JWTExpiredException;
 import com.auth0.jwt.JWTVerifyException;
+
+import br.gov.jfrj.siga.base.Prop;
+import br.gov.jfrj.siga.base.SigaMessages;
+import br.gov.jfrj.siga.model.ContextoPersistencia;
 
 public class AuthJwtFormFilter implements Filter {
 
 	public static final String SIGA_JWT_AUTH_COOKIE_NAME = "siga-jwt-auth";
-	public static final String SIGA_JWT_AUTH_COOKIE_DOMAIN = SigaBaseProperties.getString("idp.jwt.modulo.cookie.domain");
+
 	private static final int TIME_TO_EXPIRE_IN_S = 60 * 60 * 8; // 8h é o tempo
 																// de duração
-	private static final int TIME_TO_RENEW_IN_S = 60 * 60 * 7; // renova
+	public static final int TIME_TO_RENEW_IN_S = 60 * 60 * 7; // renova
 																// automaticamente
 																// 7h antes de
 																// expirar
@@ -47,7 +42,7 @@ public class AuthJwtFormFilter implements Filter {
 
 	private FilterConfig filterConfig;
 
-	private Map<String, Object> validarToken(String token)
+	public static Map<String, Object> validarToken(String token)
 			throws IllegalArgumentException, SigaJwtInvalidException, SigaJwtProviderException, InvalidKeyException,
 			NoSuchAlgorithmException, IllegalStateException, SignatureException, IOException, JWTVerifyException {
 		if (token == null) {
@@ -57,7 +52,7 @@ public class AuthJwtFormFilter implements Filter {
 		return provider.validarToken(token);
 	}
 
-	private String renovarToken(String token)
+	public static String renovarToken(String token)
 			throws IllegalArgumentException, SigaJwtProviderException, InvalidKeyException, NoSuchAlgorithmException,
 			IllegalStateException, SignatureException, IOException, JWTVerifyException {
 		if (token == null) {
@@ -67,15 +62,15 @@ public class AuthJwtFormFilter implements Filter {
 		return provider.renovarToken(token, TIME_TO_EXPIRE_IN_S);
 	}
 
-	public SigaJwtProvider getProvider() throws SigaJwtProviderException {
-		String password = System.getProperty("idp.jwt.modulo.pwd.sigaidp");
+	public static SigaJwtProvider getProvider() throws SigaJwtProviderException {
+		String password = Prop.get("/siga.jwt.secret");
 		SigaJwtOptions options = new SigaJwtOptionsBuilder().setPassword(password).setModulo(null)
 				.setTTL(TIME_TO_EXPIRE_IN_S).build();
 		SigaJwtProvider provider = SigaJwtProvider.getInstance(options);
 		return provider;
 	}
 
-	private String extrairAuthorization(HttpServletRequest request) {
+	public static String extrairAuthorization(HttpServletRequest request) {
 		String auth = request.getHeader("Authorization");
 		if (auth != null) {
 			return request.getHeader("Authorization").replaceAll(".* ", "").trim();
@@ -83,35 +78,34 @@ public class AuthJwtFormFilter implements Filter {
 		Cookie[] cookies = request.getCookies();
 		String token = null;
 		ArrayList<String> tokens = new ArrayList<String>();
-		
-		//Estrutura Otimizada para Verificação de JWT prevendo múltiplos subdomínios
+
 		if (cookies != null) {
-			//Percorre lista cookie e extrai tokens
+			// Percorre lista cookie e extrai tokens
 			for (Cookie c : cookies) {
-				if (SIGA_JWT_AUTH_COOKIE_NAME.equals(c.getName())) {
+				if (getNameCookie().equals(c.getName())) {
 					tokens.add(c.getValue());
 				}
 			}
 			if (!tokens.isEmpty()) {
-				//Se houver apenas 1, retorna para rotina principal validar
+				// Se houver apenas 1, retorna para rotina principal validar
 				if (tokens.size() == 1) {
 					return tokens.get(0);
 				} else {
-					//Se houver mais de 1, tenta localizar algum token válido
+					// Se houver mais de 1, tenta localizar algum token válido
 					for (String t : tokens) {
 						token = t;
 						try {
 							validarToken(token);
-							return token; //Se houver algum Token Válido Retorna para Rotina Principal
+							return token; // Se houver algum Token Válido Retorna para Rotina Principal
 						} catch (Exception e) {
-							//Passa para Próximo Token. 
-						}		
+							// Passa para Próximo Token.
+						}
 					}
-					return token; //Se não há nenhum token válido na lista, retorna para rotina explorar o erro	
+					return token; // Se não há nenhum token válido na lista, retorna para rotina explorar o erro
 				}
-			}		
+			}
 		}
-		return null; //Se não há Tokens
+		return null; // Se não há Tokens
 	}
 
 	public void destroy() {
@@ -122,7 +116,7 @@ public class AuthJwtFormFilter implements Filter {
 			throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse resp = (HttpServletResponse) response;
-		
+
 		try {
 			if (!req.getRequestURI().equals("/sigaex/autenticar.action")) {
 				String token = extrairAuthorization(req);
@@ -141,7 +135,9 @@ public class AuthJwtFormFilter implements Filter {
 				ContextoPersistencia.setUserPrincipal((String) decodedToken.get("sub"));
 			}
 			chain.doFilter(request, response);
-		/* Exceções de Sessão o erro não é exposto ao usuário e redireciona para Login */	
+			/*
+			 * Exceções de Sessão o erro não é exposto ao usuário e redireciona para Login
+			 */
 		} catch (AuthJwtException e) {
 			redirecionarParaFormDeLogin(req, resp, e);
 			return;
@@ -171,23 +167,24 @@ public class AuthJwtFormFilter implements Filter {
 			ContextoPersistencia.removeUserPrincipal();
 		}
 	}
-	
+
 	public static Cookie buildCookie(String tokenNew) {
-		Cookie cookie = new Cookie(SIGA_JWT_AUTH_COOKIE_NAME, tokenNew);
+
+		Cookie cookie = new Cookie(getNameCookie(), tokenNew);
 		cookie.setPath("/");
-		if ("GOVSP".equals(SigaBaseProperties.getString("siga.local")) && SIGA_JWT_AUTH_COOKIE_DOMAIN != null){
-			cookie.setDomain(SIGA_JWT_AUTH_COOKIE_DOMAIN);
+
+		if (SigaMessages.isSigaSP() && getCookieDomain() != null) {
+			cookie.setDomain(getCookieDomain());
 		}
-		
-		// cookie.setSecure(true);
+
 		return cookie;
 	}
 
 	public static Cookie buildEraseCookie() {
-		Cookie cookie = new Cookie(SIGA_JWT_AUTH_COOKIE_NAME, "");
+		Cookie cookie = new Cookie(getNameCookie(), "");
 		cookie.setPath("/");
-		if ("GOVSP".equals(SigaBaseProperties.getString("siga.local")) && SIGA_JWT_AUTH_COOKIE_DOMAIN != null){
-			cookie.setDomain(SIGA_JWT_AUTH_COOKIE_DOMAIN);
+		if (SigaMessages.isSigaSP() && getCookieDomain() != null) {
+			cookie.setDomain(getCookieDomain());
 		}
 		cookie.setMaxAge(0);
 		return cookie;
@@ -203,24 +200,22 @@ public class AuthJwtFormFilter implements Filter {
 			informarAutenticacaoInvalida(resp, e);
 			return;
 		}
-		
-		//Envia Mensagem para Tela de Login
-		HttpSession session = req.getSession(false);	
+
+		// Envia Mensagem para Tela de Login
+		HttpSession session = req.getSession(false);
 		if (session != null) {
-			session.setAttribute("loginMensagem", (e.getClass() != SigaJwtInvalidException.class && e.getClass() != JWTExpiredException.class)?SigaMessages.getMessage("login.erro.jwt"):"");
+			session.setAttribute("loginMensagem",
+					(e.getClass() != SigaJwtInvalidException.class && e.getClass() != JWTExpiredException.class)
+							? SigaMessages.getMessage("login.erro.jwt")
+							: "");
 		}
-		
+
 		String cont = req.getRequestURL() + (req.getQueryString() != null ? "?" + req.getQueryString() : "");
-		String base = System.getProperty("siga.base.url");
+		String base = Prop.get("/siga.base.url");
 		if (base != null && base.startsWith("https:") && cont.startsWith("http:"))
 			cont = "https" + cont.substring(4);
-		
-		if (SigaMessages.isSigaSP() && "true".equals(SigaBaseProperties.getString("siga.integracao.com.login.SSO"))) {
-			resp.sendRedirect(SigaBaseProperties.getString("siga.url.sempapel"));
-		} else {
-			resp.sendRedirect("/siga/public/app/login?cont=" + URLEncoder.encode(cont, "UTF-8"));
-		}
-		
+
+		resp.sendRedirect("/siga/public/app/login?cont=" + URLEncoder.encode(cont, "UTF-8"));
 	}
 
 	private void informarAutenticacaoInvalida(HttpServletResponse resp, Exception e) throws IOException {
@@ -246,6 +241,30 @@ public class AuthJwtFormFilter implements Filter {
 
 	public void init(FilterConfig fConfig) throws ServletException {
 		this.filterConfig = fConfig;
+	}
+
+	/**
+	 * Este cookie é utilizado na sessão do usuário. Gera o nome do cookie de acordo
+	 * com o valor da variavel de name=ambiente que se encontra no standalone.xml do
+	 * server. Este metodo é importante para resolver o problema de compatibilidade
+	 * de sessao quando se tem mais de uma aplicação aberta no mesmo navegador.
+	 * 
+	 * @return String
+	 */
+	private static String getNameCookie() {
+		final String NAME_ENVIRONMENT_PRODUCTION = "PROD";
+		final String NAME_ENVIRONMENT = Prop.get("/siga.ambiente");
+		String nameCookie = SIGA_JWT_AUTH_COOKIE_NAME;
+
+		if (SigaMessages.isSigaSP()) {
+			if (!NAME_ENVIRONMENT_PRODUCTION.equals(NAME_ENVIRONMENT.toUpperCase().trim()))
+				nameCookie += "-" + NAME_ENVIRONMENT;
+		}
+		return nameCookie;
+	}
+	
+	private static String getCookieDomain() {
+		return Prop.get("/siga.jwt.cookie.domain");
 	}
 
 }

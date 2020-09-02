@@ -40,12 +40,12 @@ import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
+import br.gov.jfrj.siga.base.Prop;
 import br.gov.jfrj.siga.base.Texto;
 import br.gov.jfrj.siga.ex.ExClassificacao;
 import br.gov.jfrj.siga.ex.ExTemporalidade;
 import br.gov.jfrj.siga.ex.ExTipoDestinacao;
 import br.gov.jfrj.siga.ex.ExVia;
-import br.gov.jfrj.siga.ex.SigaExProperties;
 import br.gov.jfrj.siga.ex.bl.Ex;
 import br.gov.jfrj.siga.ex.util.MascaraUtil;
 import br.gov.jfrj.siga.hibernate.ExDao;
@@ -122,8 +122,7 @@ public class ExClassificacaoController
 		aBuscar(sigla, postback);
 		final String[] listaNiveis = new String[getTotalDeNiveis()];
 		final String[] nomeNivel = new String[getTotalDeNiveis()];
-		final List<String> listaNomes = SigaExProperties
-				.getExClassificacaoNomesNiveis();
+		final List<String> listaNomes = Prop.getList("classificacao.mascara.nome.nivel");
 		final List<ExClassificacao>[] classificacoesDoNivel = new List[getTotalDeNiveis()];
 		for (int i = 0; i < listaNiveis.length; i++) {
 			listaNiveis[i] = String.valueOf(i);
@@ -158,7 +157,12 @@ public class ExClassificacaoController
 			String codificacao, String acao) throws Exception {
 		assertAcesso(ACESSO_SIGA_DOC_FE_PC);
 		ExClassificacao exClass = null;
-		if (codificacao != null && exClassificacao == null) {
+		
+		if (exClassificacao == null) {
+			exClassificacao = new ExClassificacao();
+		}		
+		
+		if (codificacao != null && exClassificacao.getId() == null) {
 			exClass = buscarExClassificacao(codificacao);
 		} else {
 			exClass = exClassificacao;
@@ -182,8 +186,7 @@ public class ExClassificacaoController
 				.getMascaraEntrada());
 		result.include("mascaraSaida", MascaraUtil.getInstance()
 				.getMascaraSaida());
-		result.include("mascaraJavascript",
-				SigaExProperties.getExClassificacaoMascaraJavascript());
+		result.include("mascaraJavascript", Prop.get("classificacao.mascara.javascript"));
 		return exClass;
 	}
 
@@ -466,8 +469,7 @@ public class ExClassificacaoController
 	}
 
 	private boolean exibirAdicaoDeVia(String codificacao) {
-		Integer i = SigaExProperties
-				.getExClassificacaoNivelMinimoDeEnquadramento();
+		Integer i = Prop.getInt("classificacao.nivel.minimo.de.enquadramento");
 		if (codificacao != null) {
 			if (i != null)
 				return MascaraUtil.getInstance().calcularNivel(codificacao) >= i;

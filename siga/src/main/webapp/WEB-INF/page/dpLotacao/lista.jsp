@@ -58,10 +58,12 @@ function sbmt(offset) {
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-md-4">
+					<div class="col-sm-12">
 						<div class="form-group">
 							<input value="Pesquisar" class="btn btn-primary" onclick="javascript: sbmt(0);"/>
-							<button type="button" class="btn btn-outline-success" id="exportarCsv" title="Exportar para CSV"	onclick="javascript:csv('listar', '/siga/app/lotacao/exportarCsv');"><i class="fa fa-file-csv"></i> Exportar</button>
+							<c:if test="${temPermissaoParaExportarDados}">
+								<button type="button" class="btn btn-outline-success" id="exportarCsv" title="Exportar para CSV" onclick="javascript:csv('listar', '/siga/app/lotacao/exportarCsv');"><i class="fa fa-file-csv"></i> Exportar</button>
+							</c:if>							
 						</div>
 					</div>
 				</div>			
@@ -74,6 +76,7 @@ function sbmt(offset) {
 				<tr>
 					<th align="left">Nome</th>
 					<th align="left">Sigla</th>
+					<th align="left">Externa</th>
 					<th colspan="2" align="center">Op&ccedil;&otilde;es</th>					
 				</tr>
 			</thead>
@@ -84,6 +87,7 @@ function sbmt(offset) {
 					<tr>
 						<td align="left">${lotacao.descricao}</td>
 						<td align="left">${lotacao.sigla}</td>
+						<td align="left">${lotacao.isExternaLotacao == 1 ? 'SIM' : 'NÃO'}</td>
 						<td align="left">
 							<c:url var="url" value="/app/lotacao/editar">
 								<c:param name="id" value="${lotacao.id}"></c:param>
@@ -117,9 +121,6 @@ function sbmt(offset) {
 <script type="text/javascript" src="/siga/javascript/select2/i18n/pt-BR.js"></script>
 <script type="text/javascript" src="/siga/javascript/siga.select2.js"></script>
 <script type="text/javascript">
-temPermissaoParaExportarDados = '${temPermissaoParaExportarDados}' == 'true';		
-	if (!temPermissaoParaExportarDados) $('#exportarCsv').attr('disabled', 'disabled').attr('title', 'Exportar para CSV - usuário sem permissão');
-	
 	$(document).ready(function() {	
 		if ('${mensagemPesquisa}'.length > 0) $('.mensagem-pesquisa').css({'display':'block'});
 	});

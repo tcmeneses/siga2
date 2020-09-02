@@ -1,6 +1,7 @@
 package br.gov.jfrj.siga.ex.bl;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -8,9 +9,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import com.crivano.swaggerservlet.ISwaggerModel;
+
 import br.gov.jfrj.siga.base.Data;
-import br.gov.jfrj.siga.base.SigaBaseProperties;
+import br.gov.jfrj.siga.base.Prop;
 import br.gov.jfrj.siga.base.SigaMessages;
 import br.gov.jfrj.siga.dp.CpMarcador;
 import br.gov.jfrj.siga.dp.DpLotacao;
@@ -18,6 +21,7 @@ import br.gov.jfrj.siga.dp.DpPessoa;
 import br.gov.jfrj.siga.ex.ExMarca;
 import br.gov.jfrj.siga.ex.ExMobil;
 import br.gov.jfrj.siga.ex.ExMovimentacao;
+import br.gov.jfrj.siga.ex.ExTipoMovimentacao;
 import br.gov.jfrj.siga.hibernate.ExDao;
 
 public class Mesa2 {
@@ -28,6 +32,7 @@ public class Mesa2 {
 		public Long grupoQtd;
 		public Long grupoQtdPag;
 		public boolean grupoCollapsed;
+		public boolean grupoHide;
 	}
 	
 	public static class GrupoItem implements ISwaggerModel {
@@ -41,6 +46,7 @@ public class Mesa2 {
 		public Long grupoQtdPag;
 		public String grupoOrdem;
 		public boolean grupoCollapsed;
+		public boolean grupoHide;
 		public List<MesaItem> grupoDocs;
 		public List<Integer> grupoMarcadores;
 	}
@@ -49,6 +55,7 @@ public class Mesa2 {
 		public String grupoOrdem;
 		public String tipo;
 		public Date datahora;
+		public String datahoraDDMMYYYHHMM;
 		public String tempoRelativo;
 		public String codigo;
 		public String sigla;
@@ -78,47 +85,55 @@ public class Mesa2 {
 	}
 
 	public enum GrupoDeMarcadorEnum {
-		PRONTO_PARA_ASSINAR(1, "Pronto para Assinar", "fas fa-inbox", true, true),
+		PRONTO_PARA_ASSINAR(1, "Pronto para Assinar", "fas fa-inbox", true, true, false),
 		//
-		ALERTA(2, "Alertas", "fas fa-hourglass-end", true, false),
+		ALERTA(2, "Alertas", "fas fa-hourglass-end", true, false, false),
 		//
-		A_REVISAR(3, "Pendente de Revisão", "fas fa-glasses", true, true),
+		A_REVISAR(3, "Pendente de Revisão", "fas fa-glasses", true, true, false),
 		//
-		A_ASSINAR(4, "Pendente de Assinatura", "fas fa-key", true, false),
+		A_ASSINAR(4, "Pendente de Assinatura", "fas fa-key", true, false, false),
 		//
-		CAIXA_DE_ENTRADA(5, "Caixa de Entrada", "fas fa-inbox", true, false),
+		CAIXA_DE_ENTRADA(5, "Caixa de Entrada", "fas fa-inbox", true, false, false),
 		//
-		EM_ELABORACAO(6, "Em Elaboração", "fas fa-lightbulb", true, false),
+		EM_ELABORACAO(6, "Em Elaboração", "fas fa-lightbulb", true, false, false),
 		//
-		AGUARDANDO_ANDAMENTO(7, "Aguardando Andamento", "fas fa-clock", true, true),
+		AGUARDANDO_ANDAMENTO(7, "Aguardando Andamento", "fas fa-clock", true, true, false),
 		//
-		CAIXA_DE_SAIDA(8, "Caixa de Saída", "fas fa-inbox", false, true),
+		CAIXA_DE_SAIDA(8, "Caixa de Saída", "fas fa-inbox", false, true, true),
 		//
-		ACOMPANHANDO(9, "Acompanhando", "fas fa-tags", true, true),
+		ACOMPANHANDO(9, "Acompanhando", "fas fa-tags", true, true, false),
 		//
-		MONITORANDO(10, "Monitorando", "fas fa-hourglass-half", true, true),
+		MONITORANDO(10, "Monitorando", "fas fa-hourglass-half", true, true, false),
 		//
 		AGUARDANDO_ACAO_DE_TEMPORALIDADE(11, "Aguardando Ação de Temporalidade",
-				"fas fa-hourglass-half", true, true),
+				"fas fa-hourglass-half", true, true, true),
 		//
-		OUTROS(12, "Outros", "fas fa-inbox", true, true),
+		OUTROS(12, "Outros", "fas fa-inbox", true, true, false),
 		//
-		QUALQUER(13, "Qualquer", "fas fa-inbox", false, true),
+		QUALQUER(13, "Qualquer", "fas fa-inbox", false, true, true),
 		//
-		NENHUM(14, "Nenhum", "fas fa-inbox", false, true);
+		NENHUM(14, "Nenhum", "fas fa-inbox", false, true, true);
 
 		private final Integer id;
 		private final String nome;
 		private final String icone;
 		private final boolean visible;
 		private final boolean collapsed;
+		private final boolean hide;
 
-		private GrupoDeMarcadorEnum(Integer id, String nome, String icone, boolean visible, boolean collapsed) {
+		private GrupoDeMarcadorEnum(Integer id, String nome, String icone, boolean visible, boolean collapsed, boolean hide) {
 			this.id = id;
 			this.nome = nome;
 			this.icone = icone;
 			this.visible = visible;
 			this.collapsed = collapsed;
+			this.hide = hide;
+		}
+		public String getNome() {
+			return this.nome;
+		}
+		public Integer getId() {
+			return this.id;
 		}
 		public static GrupoDeMarcadorEnum getByNome(String nome) {
 			for (GrupoDeMarcadorEnum i : GrupoDeMarcadorEnum.values()) {
@@ -359,6 +374,9 @@ public class Mesa2 {
 		MARCADOR_COMO_REVISOR(72, "Como Revisor", "fas fa-glasses", "",
 				GrupoDeMarcadorEnum.A_REVISAR),
 		//
+		MARCADOR_PORTAL_TRANSPARENCIA(73, "Portal da Transparência", "fas fa-globe", "",
+				GrupoDeMarcadorEnum.NENHUM),
+		//
 		URGENTE(1000, "Urgente", "fas fa-bomb", "", GrupoDeMarcadorEnum.ALERTA),
 
 		//
@@ -370,8 +388,25 @@ public class Mesa2 {
 		//
 		PRIORITARIO(1003, "Prioritário", "fas fa-star", "", GrupoDeMarcadorEnum.ALERTA),
 		//		
-		RESTRICAO_ACESSO(1004, "Restrição de Acesso", "fas fa-user-secret", "", GrupoDeMarcadorEnum.ALERTA);
-		//		
+		RESTRICAO_ACESSO(1004, "Restrição de Acesso", "fas fa-user-secret", "", GrupoDeMarcadorEnum.ALERTA),
+		//
+		DOCUMENTO_ANALISADO(1005, "Documento Analisado", "fas fa-book-reader", "",
+				GrupoDeMarcadorEnum.AGUARDANDO_ANDAMENTO),
+		//
+		COVID_19(1006, "COVID-19", "fas fa-tag", "",
+				GrupoDeMarcadorEnum.NENHUM),
+		//
+		NOTA_EMPENHO(1007, "Nota de Empenho", "fas fa-tag", "",
+				GrupoDeMarcadorEnum.NENHUM),
+		//
+		DEMANDA_JUDICIAL_BAIXA(1008, "Demanda Judicial Prioridade Baixa", "fas fa-tag", "",
+                GrupoDeMarcadorEnum.ALERTA),
+		//
+		DEMANDA_JUDICIAL_MEDIA(1009, "Demanda Judicial Prioridade Média", "fas fa-tag", "",
+                GrupoDeMarcadorEnum.ALERTA),
+		//
+		DEMANDA_JUDICIAL_ALTA(1010, "Demanda Judicial Prioridade Alta", "fas fa-tag", "",
+                GrupoDeMarcadorEnum.ALERTA);
 
 		private MarcadorEnum(int id, String nome, String icone,
 				String descricao, GrupoDeMarcadorEnum grupo) {
@@ -393,7 +428,7 @@ public class Mesa2 {
 			List<Integer> listMar = new ArrayList<Integer>();
 			for(MarcadorEnum mar : MarcadorEnum.values()) {
 				if (mar.grupo.nome.equals(nomegrupo)) {
-					listMar.add(mar.id);
+						listMar.add(mar.id);
 				}
 			}
 			return listMar;
@@ -403,6 +438,10 @@ public class Mesa2 {
 			return icone;
 		}
 
+		public int getId() {
+			return id;
+		}
+		
 		public String getNome() {
 			if (SigaMessages.isSigaSP() && nome.equals("Como Subscritor")) {
 				return "Responsável pela Assinatura";
@@ -423,12 +462,9 @@ public class Mesa2 {
 		List<MeM> listMeM;
 		Date movUltimaDtIniMov;
 		Date movUltimaDtFimMov;
-		String movUltimaSiglaOrgao;
-		String movUltimaSiglaLotacao;
 		String movTramiteSiglaOrgao;
 		String movTramiteSiglaLotacao;
 		String movAnotacaoDescrMov;
-		String movAnotacaoIdMov;
 		boolean isComposto;
 	}
 
@@ -439,8 +475,10 @@ public class Mesa2 {
 
 	private static List<MesaItem> listarReferencias(TipoDePainelEnum tipo,
 			Map<ExMobil, DocDados> references, DpPessoa pessoa,
-			DpLotacao unidade, Date currentDate, String grupoOrdem) {
+			DpLotacao unidade, Date currentDate, String grupoOrdem, boolean trazerAnotacoes,
+			List<Integer> marcasAIgnorar) {
 		List<MesaItem> l = new ArrayList<>();
+		final SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
 		for (ExMobil mobil : references.keySet()) {
 			MesaItem r = new MesaItem();
@@ -452,11 +490,12 @@ public class Mesa2 {
 			else
 				datahora = mobil.getDoc().getDtAltDoc();
 			r.datahora = datahora;
+			r.datahoraDDMMYYYHHMM = df.format(datahora);
 			r.tempoRelativo = Data.calcularTempoRelativo(datahora);
 
 			r.codigo = mobil.getCodigoCompacto();
 			r.sigla = mobil.getSigla();
-			r.descr = mobil.doc().getDescrCurta(80);
+			r.descr = mobil.doc().getDescrCurta(255).replace("\r", " ").replace("\f", " ").replace("\n", " ");
 			if (references.get(mobil).isComposto) {
 				r.tipoDoc = "Composto";
 			} else {
@@ -496,8 +535,7 @@ public class Mesa2 {
 							.parseInt(((dataMovimentacao.getTime() - dataHoje.getTime() - +3600000L) / 86400000L)
 									+ "");
 
-					String qtdDias = SigaBaseProperties
-							.getString("siga.qtdDiasDevolucao");
+					String qtdDias = Prop.get("/siga.devolucao.dias");
 					
 					if(qtdDias == null){
 						qtdDias = "5";
@@ -515,11 +553,8 @@ public class Mesa2 {
 
 			r.grupoOrdem = grupoOrdem;
 			
-			if (references.get(mobil).movAnotacaoDescrMov != null) { 
-				r.anotacao = references.get(mobil).movAnotacaoDescrMov 
-						+ "<br/><a href='/sigaex/app/expediente/mov/excluir?id=" 
-						+ references.get(mobil).movAnotacaoIdMov
-						+ "&redirectURL=../../mesa2?excluiuAnotacao=true'>Excluir Anotação</a>";
+			if (trazerAnotacoes && mobil.getDnmUltimaAnotacao() != null && !mobil.getDnmUltimaAnotacao().replace(" ", "").equals("")) { 
+				r.anotacao = mobil.getDnmUltimaAnotacao().replace("\r\f", "<br/>").replace("\n", "<br/>");
 			}
 
 			r.list = new ArrayList<Marca>();
@@ -553,6 +588,16 @@ public class Mesa2 {
 							.getSigla();
 				t.inicio = tag.marca.getDtIniMarca();
 				t.termino = tag.marca.getDtFimMarca();
+				if(tag.marca.getCpMarcador().isDemandaJudicial()) {
+					t.nome += " até " + tag.marca.getExMobil().getDoc().getMobilGeral()
+							.getExMovimentacaoSet().stream() //
+							.filter(mov -> mov.getExTipoMovimentacao().getId()
+									.equals(ExTipoMovimentacao.TIPO_MOVIMENTACAO_MARCACAO))
+							.filter(mov -> !mov.isCancelada()) //
+							.filter(mov -> tag.marca.getCpMarcador().equals(mov.getMarcador())) //
+							.map(ExMovimentacao::getDtFimMovDDMMYY) //
+							.findFirst().orElse("[indeterminado]");
+				}
 
 				r.list.add(t);
 				if (pessoa != null && tag.marca.getDpPessoaIni() != null) {
@@ -584,12 +629,15 @@ public class Mesa2 {
 	}
 
 	public static List<GrupoItem> getContadores(ExDao dao, DpPessoa titular, DpLotacao lotaTitular, 
-			Map<String, SelGrupo> selGrupos, boolean exibeLotacao, boolean trazerCancelados) throws Exception {
+			Map<String, SelGrupo> selGrupos, boolean exibeLotacao, 
+			List<Integer> marcasAIgnorar) throws Exception {
 		List<GrupoItem> gruposMesa = new ArrayList<GrupoItem>();
-		gruposMesa = montaGruposUsuario(selGrupos, trazerCancelados);
+		gruposMesa = montaGruposUsuario(selGrupos);
 		List<Object[]> l = dao.consultarTotaisPorMarcador(titular, lotaTitular, gruposMesa, 
-				exibeLotacao, trazerCancelados);
-
+				exibeLotacao, marcasAIgnorar);
+		if (l == null)
+			return gruposMesa;
+		
 		for (GrupoItem gItem : gruposMesa) {
 			gItem.grupoCounterUser = 0L;
 			gItem.grupoCounterLota = 0L;
@@ -612,17 +660,19 @@ public class Mesa2 {
 
 	public static List<GrupoItem> getMesa(ExDao dao, DpPessoa titular,
 			DpLotacao lotaTitular, Map<String, SelGrupo> selGrupos, List<Mesa2.GrupoItem> gruposMesa, 
-			boolean exibeLotacao, boolean trazerAnotacoes, boolean trazerCancelados) throws Exception {
+			boolean exibeLotacao, boolean trazerAnotacoes, boolean trazerComposto, 
+			List<Integer> marcasAIgnorar) throws Exception {
+//		long tempoIni = System.nanoTime();
 		Date dtNow = dao.consultarDataEHoraDoServidor();
 
 		List<Object[]> l = dao.listarMobilsPorMarcas(titular,
-				lotaTitular, exibeLotacao, trazerCancelados);
+				lotaTitular, exibeLotacao, marcasAIgnorar);
 
 		Map<ExMobil, DocDados> map = new HashMap<>();
 		List<Long> listIdMobil = new ArrayList<Long>();
 		Long idMob = 0L;
 
-		if (l.size() > 0) {
+		if (l != null && l.size() > 0) {
 			// Para cada grupo da mesa, pesquisa no resultado da query
 			for (GrupoItem gItem : gruposMesa) {
 				Object[] reference = l.get(0);
@@ -633,9 +683,22 @@ public class Mesa2 {
 				
 				for (Integer i = 0; i < l.size(); i++) {
 					reference = l.get(i);
+					// Inclui o mobil no grupo da mesa
 					mobil = (ExMobil) reference[2];
 					idMob = mobil.getIdMobil();
-					if (temMarcador(i, l, idMob, gItem) && !map.containsKey(mobil)) {
+					// Se for TMP e o grupo nao for Em Elaboracao, nao deve mostrar no grupo (só GOVSP).
+					if (SigaMessages.isSigaSP()
+							&& reference[4] == null 
+							&& !gItem.grupoNome.equals(GrupoDeMarcadorEnum.EM_ELABORACAO.getNome())) 
+						continue;
+					// Se for do grupo Aguardando Andamento e tiver marcador da caixa de entrada, nao inclui
+					if (gItem.grupoNome.equals(GrupoDeMarcadorEnum.AGUARDANDO_ANDAMENTO.getNome())
+							&& temMarcador(0, l, idMob, Integer.valueOf(GrupoDeMarcadorEnum.CAIXA_DE_ENTRADA.id))) 
+						continue;
+					
+					if (temMarcador(i, l, idMob, Integer.valueOf(gItem.grupoOrdem)) && !map.containsKey(mobil)) {
+						// Se o mobil possui um marcador do grupo e ele ainda nao foi incluido,
+						// inclui junto com as outras marcas que estao no resultado da query
 						for (Integer i2 = 0; i2 < l.size(); i2++) {  
 							reference = l.get(i2);
 							mobil = (ExMobil) reference[2];
@@ -643,6 +706,7 @@ public class Mesa2 {
 								marca = (ExMarca) reference[0];
 								marcador = (CpMarcador) reference[1];
 								if (!map.containsKey(mobil)) {
+									// Mobil ainda nao foi incluido no grupo, inclui
 									if (listIdMobil.size() < gItem.grupoQtd) {
 										DocDados docDados = new DocDados();
 										MeM mm = new MeM();
@@ -652,8 +716,11 @@ public class Mesa2 {
 										docDados.listMeM.add(mm);
 										map.put(mobil, docDados);
 										listIdMobil.add(mobil.getId());
+									} else {
+										break;
 									} 
 								} else {
+									// Mobil ja foi incluido no grupo, inclui so a marca no mobil
 									MeM mm = new MeM();
 									mm.marca = marca;
 									mm.marcador = marcador;
@@ -670,7 +737,7 @@ public class Mesa2 {
 						if ( iMobs + 1000 < iMobsFim )
 							iMobsFim = iMobs + 1000;
 						List<Object[]> refs = dao.listarMovimentacoesMesa(
-								listIdMobil.subList(iMobs, iMobsFim), trazerAnotacoes);
+								listIdMobil.subList(iMobs, iMobsFim), trazerComposto);
 			
 						for (Object[] ref : refs) {
 							incluiMovimentacoesMesa(map, ref);
@@ -678,12 +745,16 @@ public class Mesa2 {
 						iMobs = iMobsFim;
 					}
 					gItem.grupoDocs = Mesa2.listarReferencias(TipoDePainelEnum.UNIDADE, map, titular,
-							titular.getLotacao(), dtNow, gItem.grupoOrdem);
+							titular.getLotacao(), dtNow, gItem.grupoOrdem, trazerAnotacoes, marcasAIgnorar);
 					map = new HashMap<>();
 					listIdMobil = new ArrayList<Long>();
 				}
 			}
 		}
+//		long tempoTotal = System.nanoTime() - tempoIni;
+//		System.out.println("getMesa: " + tempoTotal
+//		/ 1000000 + " ms ==> ");
+
 		return gruposMesa;
 	}
 
@@ -691,13 +762,10 @@ public class Mesa2 {
 		ExMobil mob = (ExMobil) ref[0];
 		ExMovimentacao movUltima = null;
 		ExMovimentacao movTramite = null;
-		ExMovimentacao movAnotacao = null;
 		if (ref[2] != null)
 			movUltima = (ExMovimentacao) ref[2];
 		if (ref[3] != null)
 			movTramite = (ExMovimentacao) ref[3];
-		if (ref.length > 4 && ref[4] != null && ref[4].getClass().equals(ExMovimentacao.class))
-				movAnotacao = (ExMovimentacao) ref[4];
 		if (map.containsKey(mob)) {
 			DocDados docDados = map.get(mob); 
 			if (ref[1] != null) {
@@ -706,35 +774,25 @@ public class Mesa2 {
 			if (movUltima != null) {
 				docDados.movUltimaDtIniMov = movUltima.getDtIniMov();
 				docDados.movUltimaDtFimMov = movUltima.getDtFimMov();
-				docDados.movUltimaSiglaLotacao = movUltima.getLotacao().getSigla();
-				docDados.movUltimaSiglaOrgao = movUltima.getLotacao().getOrgaoUsuario().getSigla();
 			}
 			if (movTramite != null) {
 				docDados.movTramiteSiglaLotacao = movTramite.getLotacao().getSigla();
 				docDados.movTramiteSiglaOrgao = movTramite.getLotacao().getOrgaoUsuario().getSigla();
 			}
-			if (movAnotacao != null) {
-				docDados.movAnotacaoDescrMov = movAnotacao.getDescrMov();
-				docDados.movAnotacaoIdMov = movAnotacao.getIdMov().toString();
-			}
 		}
 	}
 
-	private static boolean temMarcador(Integer listStart, List<Object[]> l, Long idMobil, GrupoItem gItem) {
+	private static boolean temMarcador(Integer listStart, List<Object[]> l, Long idMobil, Integer grupoId) {
 		// Pesquisa na lista retornada pela query se um determinado mobil (idMobil) tem
-		// algum marcador constante em gItem.grupoMarcadores. Devolve true se existir.
+		// algum marcador do grupoId informado. Devolve true se existir.
 		for (Integer i = listStart; i < l.size(); i++ ) {
 			Object[] ref = l.get(i);
 			ExMobil mobil = (ExMobil) ref[2];
 			if (idMobil == mobil.getIdMobil()) {
 				CpMarcador marcador = (CpMarcador) ref[1];
-				for (Integer grpMarca : gItem.grupoMarcadores) {
-					if (grpMarca.equals(marcador.getIdMarcador().intValue())) {
-						return true;
-					}
+				if (grupoId.equals(marcador.getGrupoMarcador())) {
+					return true;
 				}
-			} else {
-				break;
 			}
 		}
 		return false;
@@ -756,6 +814,7 @@ public class Mesa2 {
 						grpItem.grupoQtd = 15L;
 					}
 					grpItem.grupoQtdPag = 15L;
+					grpItem.grupoHide = gEnum.hide;
 					grpItem.grupoMarcadores = MarcadorEnum.getListIdByGrupo(gEnum.nome);
 					gruposBase.add(grpItem);
 				}
@@ -763,7 +822,7 @@ public class Mesa2 {
 		}
 	}
 	
-	public static List<GrupoItem> montaGruposUsuario(Map<String, SelGrupo> selGrupos, boolean trazerCancelados ) {
+	public static List<GrupoItem> montaGruposUsuario(Map<String, SelGrupo> selGrupos) {
 		carregaGruposBase();
 		List<String> ordemGrupos = new ArrayList<String>(); 
 		List<GrupoItem> lGrupo = new ArrayList<GrupoItem>();
@@ -783,10 +842,12 @@ public class Mesa2 {
 					grpItem.grupoIcone = grp.grupoIcone;
 					if (selGrupos != null && selGrupos.size() > 0) {
 						grpItem.grupoCollapsed = selGrupos.get(grp.grupoNome).grupoCollapsed;
+						grpItem.grupoHide = selGrupos.get(grp.grupoNome).grupoHide;
 						grpItem.grupoQtdPag = selGrupos.get(grp.grupoNome).grupoQtdPag;
 						grpItem.grupoQtd = selGrupos.get(grp.grupoNome).grupoQtd;
 					} else {
 						grpItem.grupoCollapsed = grp.grupoCollapsed;
+						grpItem.grupoHide = grp.grupoHide;
 						grpItem.grupoQtdPag = grp.grupoQtdPag;
 						grpItem.grupoQtd = grp.grupoQtd;
 					}

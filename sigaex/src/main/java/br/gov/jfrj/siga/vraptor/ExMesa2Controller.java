@@ -37,25 +37,26 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Get;
+import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.Data;
+import br.gov.jfrj.siga.base.Prop;
+import br.gov.jfrj.siga.base.SigaMessages;
 import br.gov.jfrj.siga.cp.CpAcesso;
 import br.gov.jfrj.siga.cp.CpTipoConfiguracao;
 import br.gov.jfrj.siga.cp.bl.Cp;
 import br.gov.jfrj.siga.dp.DpLotacao;
 import br.gov.jfrj.siga.dp.DpVisualizacao;
+import br.gov.jfrj.siga.ex.bl.AcessoConsulta;
+import br.gov.jfrj.siga.ex.bl.Ex;
 import br.gov.jfrj.siga.ex.bl.Mesa2;
+import br.gov.jfrj.siga.ex.bl.Mesa2.MarcadorEnum;
 import br.gov.jfrj.siga.hibernate.ExDao;
-import br.gov.jfrj.siga.vraptor.ExController;
 
 @Controller
 public class ExMesa2Controller extends ExController {
 
-	private Result result;
-	private SigaObjects so;
-	
-	
 	/**
 	 * @deprecated CDI eyes only
 	 */
@@ -67,12 +68,17 @@ public class ExMesa2Controller extends ExController {
 	public ExMesa2Controller(HttpServletRequest request, HttpServletResponse response, ServletContext context,
 			Result result, SigaObjects so, EntityManager em) {
 		super(request, response, context, result, ExDao.getInstance(), so, em);
-		this.so = so;
-		this.result = result;
 	}
 
 	@Get("app/mesa2")
-	public void lista(Boolean exibirAcessoAnterior, Long idVisualizacao, String msg) {
+	public void lista(Boolean exibirAcessoAnterior, Long idVisualizacao, String msg) throws Exception {
+		result.include("ehPublicoExterno", AcessoConsulta.ehPublicoExterno(getTitular()));
+		try {
+			result.include("podeNovoDocumento", Cp.getInstance().getConf().podePorConfiguracao(getTitular(), getTitular().getLotacao(),
+					CpTipoConfiguracao.TIPO_CONFIG_CRIAR_NOVO_EXTERNO));
+		} catch (Exception e) {
+			throw e;
+		} 
 		if (exibirAcessoAnterior != null && exibirAcessoAnterior) {
 			CpAcesso a = dao.consultarAcessoAnterior(so.getCadastrante());
 			if (a == null)
@@ -99,19 +105,40 @@ public class ExMesa2Controller extends ExController {
 		}
 	}
 
-	@Get("app/mesa2.json")
-	public void json(Long idVisualizacao, boolean exibeLotacao, boolean trazerAnotacoes, boolean trazerCancelados, 
-			String parms) throws Exception {
+	@Post("app/mesa2.json")
+	public void json(Long idVisualizacao, boolean exibeLotacao, boolean trazerAnotacoes, boolean trazerArquivados, 
+			boolean trazerComposto, boolean trazerCancelados, String parms) throws Exception {
+		
 		List<br.gov.jfrj.siga.ex.bl.Mesa2.GrupoItem> g = new ArrayList<br.gov.jfrj.siga.ex.bl.Mesa2.GrupoItem>();
 		Map<String, Mesa2.SelGrupo> selGrupos = null;
 		List<Mesa2.GrupoItem> gruposMesa = new ArrayList<Mesa2.GrupoItem>();
+		result.include("ehPublicoExterno", AcessoConsulta.ehPublicoExterno(getTitular()));
+		List<Integer> marcasAIgnorar = new ArrayList<Integer>();
 
+		if (SigaMessages.isSigaSP()) { 
+			if (!trazerArquivados) {
+				marcasAIgnorar.add(MarcadorEnum.ARQUIVADO_CORRENTE.getId()); 
+				marcasAIgnorar.add(MarcadorEnum.ARQUIVADO_INTERMEDIARIO.getId()); 
+				marcasAIgnorar.add(MarcadorEnum.ARQUIVADO_PERMANENTE.getId()); 
+			}
+			if (!trazerCancelados) 
+				marcasAIgnorar.add(MarcadorEnum.CANCELADO.getId());
+		}
 		try {
 			if (parms != null) {
 				ObjectMapper mapper = new ObjectMapper();
 				selGrupos = mapper.readValue(parms, new TypeReference<Map<String, Mesa2.SelGrupo>>() {});
 			}
-	
+			if (exibeLotacao 
+					&& (Ex.getInstance().getComp().ehPublicoExterno(
+							getTitular()) 
+					|| !Prop.getBool("/siga.mesa.carrega.lotacao"))) {
+				result.use(Results.http()).addHeader("Content-Type", "text/plain")
+					.body("Não é permitido exibir dados da sua " 
+							+ SigaMessages.getMessage("usuario.lotacao"))
+					.setStatusCode(200);				
+				return;
+			}
 			DpLotacao lotaTitular = null;
 			if(idVisualizacao != null && !idVisualizacao.equals(Long.valueOf(0)) 
 					&& Cp.getInstance().getConf().podePorConfiguracao
@@ -121,15 +148,15 @@ public class ExMesa2Controller extends ExController {
 				DpVisualizacao vis = dao().consultar(idVisualizacao, DpVisualizacao.class, false);
 				lotaTitular = vis.getTitular().getLotacao();
 				gruposMesa = Mesa2.getContadores(dao(), vis.getTitular(), lotaTitular, selGrupos, 
-						exibeLotacao, trazerCancelados );
+						exibeLotacao, marcasAIgnorar);
 				g = Mesa2.getMesa(dao(), vis.getTitular(), lotaTitular, selGrupos, 
-						gruposMesa, exibeLotacao, trazerAnotacoes, trazerCancelados);
+						gruposMesa, exibeLotacao, trazerAnotacoes, trazerComposto, marcasAIgnorar);
 			} else {
 				lotaTitular = getTitular().getLotacao();
 				gruposMesa = Mesa2.getContadores(dao(), getTitular(), lotaTitular, selGrupos, 
-						exibeLotacao, trazerCancelados );
+						exibeLotacao, marcasAIgnorar);
 				g = Mesa2.getMesa(dao(), getTitular(), lotaTitular, selGrupos, 
-						gruposMesa, exibeLotacao, trazerAnotacoes, trazerCancelados);
+						gruposMesa, exibeLotacao, trazerAnotacoes, trazerComposto, marcasAIgnorar);
 			}
 	
 			String s = ExAssinadorExternoController.gson.toJson(g);

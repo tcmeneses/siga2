@@ -21,15 +21,16 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 
+import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
-import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.observer.download.Download;
 import br.com.caelum.vraptor.observer.download.InputStreamDownload;
 import br.gov.jfrj.siga.Service;
 import br.gov.jfrj.siga.base.AplicacaoException;
+import br.gov.jfrj.siga.base.Prop;
 import br.gov.jfrj.siga.bluc.service.BlucService;
 import br.gov.jfrj.siga.bluc.service.HashRequest;
 import br.gov.jfrj.siga.bluc.service.HashResponse;
@@ -48,11 +49,10 @@ import br.gov.jfrj.siga.unirest.proxy.GoogleRecaptcha;
 
 @Controller
 public class ExProcessoAutenticacaoController extends ExController {
-
 	private static final String URL_EXIBIR = "/public/app/processoautenticar";
 	private static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
 	private static final String APPLICATION_PDF = "application/pdf";
-
+	
 	/**
 	 * @deprecated CDI eyes only
 	 */
@@ -91,7 +91,7 @@ public class ExProcessoAutenticacaoController extends ExController {
 			return;
 		}
 
-		String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
+		String gRecaptchaResponse = request.getParameter("g-recaptcha-response");		
 		boolean success = false;
 		if (gRecaptchaResponse != null) {
 			JsonNode body = null;
@@ -261,12 +261,9 @@ public class ExProcessoAutenticacaoController extends ExController {
 					mob = doc.getPrimeiraVia();
 				}
 			}
-
-			List<ExMovimentacao> lista = new ArrayList<ExMovimentacao>();
+			
 			List<ExMobil> lstMobil = dao().consultarMobilPorDocumento(doc);
-			for (ExMobil m : lstMobil)
-				lista.addAll(dao().consultarMovimentoPorMobil(m));
-			lista.addAll(doc.getAutenticacoesComSenha());
+			List<ExMovimentacao> lista = dao().consultarMovimentoIncluindoJuntadaPorMobils(lstMobil);								
 			
 			DpPessoa p = new DpPessoa();
 			DpLotacao l = new DpLotacao();
@@ -285,6 +282,7 @@ public class ExProcessoAutenticacaoController extends ExController {
 			final ExDocumentoVO docVO = new ExDocumentoVO(doc, mob, getCadastrante(), p, l, true, true);
 			docVO.exibe();
 			result.include("movs", lista);
+			result.include("sigla",exDocumentoDTO.getDoc().getSigla());
 			result.include("msg", exDocumentoDTO.getMsg());
 			result.include("docVO", docVO);
 			result.include("mob", exDocumentoDTO.getMob());
@@ -293,39 +291,15 @@ public class ExProcessoAutenticacaoController extends ExController {
 	}
 
 	private static String getRecaptchaSiteKey() {
-		String pwd = null;
-		try {
-			pwd = System.getProperty("siga.ex.autenticacao.recaptcha.key");
-			if (pwd == null)
-				throw new AplicacaoException("Erro obtendo propriedade siga.ex.autenticacao.recaptcha.key");
-			return pwd;
-		} catch (Exception e) {
-			throw new AplicacaoException("Erro obtendo propriedade siga.ex.autenticacao.recaptcha.key", 0, e);
-		}
+		return Prop.get("/siga.recaptcha.key");
 	}
 
 	private static String getRecaptchaSitePassword() {
-		String pwd = null;
-		try {
-			pwd = System.getProperty("siga.ex.autenticacao.recaptcha.pwd");
-			if (pwd == null)
-				throw new AplicacaoException("Erro obtendo propriedade siga.ex.autenticacao.recaptcha.pwd");
-			return pwd;
-		} catch (Exception e) {
-			throw new AplicacaoException("Erro obtendo propriedade siga.ex.autenticacao.recaptcha.pwd", 0, e);
-		}
+		return Prop.get("/siga.recaptcha.pwd");
 	}
 
 	private static String getJwtPassword() {
-		String pwd = null;
-		try {
-			pwd = System.getProperty("siga.ex.autenticacao.pwd");
-			if (pwd == null)
-				throw new AplicacaoException("Erro obtendo propriedade siga.ex.autenticacao.pwd");
-			return pwd;
-		} catch (Exception e) {
-			throw new AplicacaoException("Erro obtendo propriedade siga.ex.autenticacao.pwd", 0, e);
-		}
+		return Prop.get("/siga.autenticacao.senha");
 	}
 
 	private static String buildJwtToken(String n) {
