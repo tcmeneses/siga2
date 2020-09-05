@@ -32,12 +32,10 @@ public class Prop {
 	static public IPropertyProvider provider = null;
 
 	public static void setProvider(IPropertyProvider prov) {
-	log.info("propriedade testada: " + prov.toString());
 		provider = prov;
 	}
 
 	public static String get(String nome) {
-		log.info("propriedade testada: " + nome);
 		return provider.getProp(nome);
 	}
 

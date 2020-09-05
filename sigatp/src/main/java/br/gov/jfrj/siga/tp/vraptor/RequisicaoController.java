@@ -39,7 +39,7 @@ import br.gov.jfrj.siga.tp.model.TpDao;
 import br.gov.jfrj.siga.tp.util.SigaTpException;
 import br.gov.jfrj.siga.tp.vraptor.i18n.MessagesBundle;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
-import br.gov.jfrj.siga.vraptor.Transacional;
+import javax.transaction.Transactional;
 
 @Controller
 @Path("/app/requisicao")
@@ -95,7 +95,7 @@ public class RequisicaoController extends TpController {
 
     @RoleAdmin
     @RoleAdminMissao
-    @Transacional
+    @Transactional
     @Path("/salvarNovoComplexo")
     public void salvarNovoComplexo(Long[] req, CpComplexo novoComplexo) {
         if (req == null) {
@@ -173,7 +173,7 @@ public class RequisicaoController extends TpController {
         result.use(Results.page()).of(RequisicaoController.class).listarPAprovar();
     }
 
-    @Transacional
+    @Transactional
     @Path("/salvar")
     public void salvar(RequisicaoTransporte requisicaoTransporte, TipoDePassageiro[] tiposDePassageiros, boolean checkRetorno, boolean checkSemPassageiros) throws Exception {
         validar(requisicaoTransporte, checkSemPassageiros, tiposDePassageiros, checkRetorno);
@@ -327,7 +327,7 @@ public class RequisicaoController extends TpController {
  		result.include("opcoesDeTiposDePassageiro", tipos);
 	}
 
-    @Transacional
+    @Transactional
 	@Path("/salvarAndamentos")
     public void salvarAndamentos(@Valid RequisicaoTransporte requisicaoTransporte, boolean checkRetorno, boolean checkSemPassageiros) throws Exception{
         redirecionarSeErroAoSalvar(requisicaoTransporte, checkRetorno, checkSemPassageiros);
@@ -507,7 +507,7 @@ public class RequisicaoController extends TpController {
         return requisicaoTransporte;
     }
 
-    @Transacional
+    @Transactional
     @Path("/excluir/{id}")
     public void excluir(Long id) throws Exception {
         RequisicaoTransporte requisicaoTransporte = RequisicaoTransporte.AR.findById(id);

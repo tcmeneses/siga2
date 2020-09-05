@@ -29,7 +29,7 @@ import br.gov.jfrj.siga.tp.model.RequisicaoTransporte;
 import br.gov.jfrj.siga.tp.model.TpDao;
 import br.gov.jfrj.siga.tp.vraptor.i18n.MessagesBundle;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
-import br.gov.jfrj.siga.vraptor.Transacional;
+import javax.transaction.Transactional;
 
 @Path("/app/andamento/")
 @Controller
@@ -63,7 +63,7 @@ public class AndamentoController extends TpController {
     @RoleAdminFrota
     @RoleAdminMissao
     @RoleAprovador
-    @Transacional
+    @Transactional
     @Path("salvar")
     public void salvar(Andamento andamento) throws AndamentoControllerException {
         try {

@@ -10,11 +10,11 @@ import br.com.caelum.vraptor.AroundCall;
 import br.com.caelum.vraptor.Intercepts;
 import br.com.caelum.vraptor.controller.ControllerMethod;
 import br.com.caelum.vraptor.interceptor.SimpleInterceptorStack;
-import br.com.caelum.vraptor.jpa.JPATransactionCustomInterceptor;
+import br.com.caelum.vraptor.jpa.JPATransactionInterceptor;
 
 
 @RequestScoped
-@Intercepts(after = JPATransactionCustomInterceptor.class)
+@Intercepts(after = JPATransactionInterceptor.class)
 public class ClearManagerInterceptor  {
 
 	private EntityManager em;

@@ -176,8 +176,7 @@ public class GcBL {
 	public GcInformacao gravar(GcInformacao inf, CpIdentidade idc,
 			DpPessoa titular, DpLotacao lotaTitular) throws Exception {
 		Date dt = dt();
-	//	em().getTransaction().begin();
-	//	try {
+
 			
 		// Atualiza o campo arq, pois este não pode ser nulo
 		if (inf.getMovs() != null) {
@@ -215,10 +214,6 @@ public class GcBL {
 		atualizarTags(inf);
 		inf.save();
 		atualizarMarcas(inf);
-	//	em().getTransaction().commit();
-	//	 } catch (Exception e) {
-	//		 em().getTransaction().rollback();
-	//	 }
 		return inf;
 	}
 
@@ -332,21 +327,21 @@ public class GcBL {
 	public void atualizarMarcas(GcInformacao inf) throws Exception {
 		SortedSet<GcMarca> setA = new TreeSet<GcMarca>();
 		if (inf.getMarcas() != null) {
-			em().getTransaction().begin();
+		//	em().getTransaction().begin();
 			// Excluir marcas duplicadas
-			try {
+		//	try {
 				for (GcMarca m : inf.getMarcas()) {
 					if (setA.contains(m))
 						m.delete();
 					else
 						setA.add(m);
 				}
-				em().getTransaction().commit();
-				
-			} catch (Exception Ex) {
-				em().getTransaction().rollback();
-				throw Ex;
-			}
+		//		em().getTransaction().commit();
+		//		
+		//	} catch (Exception Ex) {
+		//		em().getTransaction().rollback();
+		//		throw Ex;
+		//	}
 
 
 		}
@@ -366,9 +361,9 @@ public class GcBL {
 			i.save();
 			i.getInf().getMarcas().add(i);
 		}
-		em().getTransaction().begin();
-		try {
-			for (GcMarca e : excluir) {
+	//	em().getTransaction().begin();
+	//	try {
+	 		for (GcMarca e : excluir) {
 				if (e.getInf().getMarcas() == null) {
 					// e.inf.marcas = new TreeSet<GcMarca>();
 					e.getInf().setMarcas(new ArrayList<GcMarca>());
@@ -376,12 +371,12 @@ public class GcBL {
 				e.getInf().getMarcas().remove(e);
 				e.delete();
 			}
-			em().getTransaction().commit();
+	//		em().getTransaction().commit();
 			
-		} catch (Exception Ex) {
-			em().getTransaction().rollback();
-			throw Ex;
-		}
+	//	} catch (Exception Ex) {
+	//		em().getTransaction().rollback();
+	//		throw Ex;
+	//	}
 
 
 	}

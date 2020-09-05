@@ -45,9 +45,9 @@ import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
 import br.gov.jfrj.siga.dp.DpLotacao;
 import br.gov.jfrj.siga.dp.DpPessoa;
 import br.gov.jfrj.siga.dp.dao.CpDao;
-import br.gov.jfrj.siga.gc.ContextInterceptor;
 import br.gov.jfrj.siga.gc.util.WikiParser;
 import br.gov.jfrj.siga.gc.vraptor.AppController;
+import br.gov.jfrj.siga.gc.vraptor.GcInterceptor;
 import br.gov.jfrj.siga.gc.vraptor.SigaLogicResult;
 import br.gov.jfrj.siga.model.ActiveRecord;
 import br.gov.jfrj.siga.model.Objeto;
@@ -448,7 +448,7 @@ public class GcInformacao extends Objeto {
 		SortedSet<GcAcaoVO> acoes = new TreeSet<GcAcaoVO>();
 
 		StringBuilder sb = new StringBuilder();
-		SigaLogicResult router = ContextInterceptor.result().use(
+		SigaLogicResult router = GcInterceptor.result().use(
 				SigaLogicResult.class);
 
 		boolean podeExibirLinkSemAutenticacao = 

@@ -46,7 +46,7 @@ import br.com.caelum.vraptor.core.InterceptorStack;
 import br.com.caelum.vraptor.http.Parameter;
 import br.com.caelum.vraptor.http.ParameterNameProvider;
 import br.com.caelum.vraptor.interceptor.Interceptor;
-import br.com.caelum.vraptor.jpa.JPATransactionCustomInterceptor;
+import br.com.caelum.vraptor.jpa.JPATransactionInterceptor;
 import br.com.caelum.vraptor.view.FlashScope;	
 
 /**	
@@ -59,7 +59,7 @@ import br.com.caelum.vraptor.view.FlashScope;
  *
  */
 @RequestScoped
-@Intercepts(before=JPATransactionCustomInterceptor.class)
+@Intercepts(before=JPATransactionInterceptor.class)
 public class ParameterOptionalLoaderInterceptor implements Interceptor {
 
 	private final EntityManager em;

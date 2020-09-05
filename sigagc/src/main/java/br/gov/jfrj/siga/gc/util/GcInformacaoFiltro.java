@@ -11,7 +11,6 @@ import br.gov.jfrj.siga.dp.DpPessoa;
 import br.gov.jfrj.siga.gc.model.GcInformacao;
 import br.gov.jfrj.siga.gc.model.GcTag;
 import br.gov.jfrj.siga.gc.model.GcTipoInformacao;
-import br.gov.jfrj.siga.model.Selecionavel;
 
 public class GcInformacaoFiltro {
 	public GcTipoInformacao tipo;

@@ -19,7 +19,7 @@ import br.gov.jfrj.siga.tp.auth.annotation.RoleAdminMissaoComplexo;
 import br.gov.jfrj.siga.tp.model.FinalidadeRequisicao;
 import br.gov.jfrj.siga.tp.model.TpDao;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
-import br.gov.jfrj.siga.vraptor.Transacional;
+import javax.transaction.Transactional;
 
 @Controller
 @Path("/app/finalidade")
@@ -89,7 +89,7 @@ public class FinalidadeController extends TpController {
 	@RoleAdmin
 	@RoleAdminMissao
 	@RoleAdminMissaoComplexo
-	@Transacional
+	@Transactional
 	@Path("/salvar")
 	public void salvar(FinalidadeRequisicao finalidade) throws Exception {
 		

@@ -12,12 +12,13 @@ import br.com.caelum.vraptor.Intercepts;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.controller.ControllerMethod;
 import br.com.caelum.vraptor.interceptor.SimpleInterceptorStack;
-import br.com.caelum.vraptor.jpa.JPATransactionCustomInterceptor;
+import br.com.caelum.vraptor.jpa.JPATransactionInterceptor;
 import br.com.caelum.vraptor.validator.Validator;
 import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.model.ContextoPersistencia;
+import br.gov.jfrj.siga.model.dao.ModeloDao;
 
-@Intercepts(before = JPATransactionCustomInterceptor.class)
+@Intercepts(before = JPATransactionInterceptor.class)
 public class GcInterceptor  {
 
 	private final EntityManager manager;
@@ -38,15 +39,15 @@ public class GcInterceptor  {
 			HttpServletResponse response,Result result) {
 		this.manager = manager;
 		resultByThread.set(result);
-		if (this.manager != null) { 
-			ContextoPersistencia.setEntityManager(this.manager);
-		}
-		CpDao.freeInstance();
-		CpDao.getInstance();
 	}
 
 	@AroundCall
 	public void intercept(SimpleInterceptorStack stack)  {
+
+		ContextoPersistencia.setEntityManager(this.manager);
+		
+		ModeloDao.freeInstance();
+		CpDao.getInstance();
 
 		stack.next();
 

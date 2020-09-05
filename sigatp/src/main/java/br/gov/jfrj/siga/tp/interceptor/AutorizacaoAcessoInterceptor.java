@@ -8,7 +8,7 @@ import br.com.caelum.vraptor.InterceptionException;
 import br.com.caelum.vraptor.Intercepts;
 import br.com.caelum.vraptor.controller.ControllerMethod;
 import br.com.caelum.vraptor.interceptor.SimpleInterceptorStack;
-import br.com.caelum.vraptor.jpa.JPATransactionCustomInterceptor;
+import br.com.caelum.vraptor.jpa.JPATransactionInterceptor;
 import br.gov.jfrj.siga.tp.auth.AutorizacaoGI;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdmin;
 import br.gov.jfrj.siga.tp.auth.annotation.RoleAdminFrota;
@@ -29,7 +29,7 @@ import br.gov.jfrj.siga.tp.auth.annotation.RoleGabinete;
  *
  */
 @RequestScoped
-@Intercepts(after = { PreencherAutorizacaoGIInterceptor.class }, before = {MotivoLogInterceptor.class, JPATransactionCustomInterceptor.class})
+@Intercepts(after = { PreencherAutorizacaoGIInterceptor.class }, before = {MotivoLogInterceptor.class, JPATransactionInterceptor.class})
 public class AutorizacaoAcessoInterceptor  {
 
 	private AutorizacaoGI autorizacaoGI;

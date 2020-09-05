@@ -41,7 +41,7 @@ import br.gov.jfrj.siga.tp.model.ServicoVeiculo;
 import br.gov.jfrj.siga.tp.model.TpDao;
 import br.gov.jfrj.siga.tp.util.CondutorFiltro;
 import br.gov.jfrj.siga.vraptor.SigaObjects;
-import br.gov.jfrj.siga.vraptor.Transacional;
+import javax.transaction.Transactional;
 
 @Controller
 @Path("/app/application")
@@ -142,7 +142,7 @@ public class ApplicationController extends TpController {
          */
     }
 
-    @Transacional
+    @Transactional
     @Path("/selecionarPessoa")
     public void selecionarPessoa() {
         CondutorFiltro filtro = new CondutorFiltro();
@@ -151,7 +151,7 @@ public class ApplicationController extends TpController {
         result.include("filtro", filtro);
     }
 
-    @Transacional
+    @Transactional
     @Path({ "/selecionarPessoa/{sigla}/{tipo}/{nome}", "/selecionarPessoa" })
     public void selecionarSiga(String sigla, String tipo, String nome) throws ApplicationControllerException {
         try {
@@ -161,7 +161,7 @@ public class ApplicationController extends TpController {
         }
     }
 
-    @Transacional
+    @Transactional
     @Path({ "/buscarSiga/{sigla}/{tipo}/{nome}", "/buscarSiga" })
     public void buscarSiga(String sigla, String tipo, String nome) throws ApplicationControllerException {
         try {
@@ -171,7 +171,7 @@ public class ApplicationController extends TpController {
         }
     }
 
-    @Transacional
+    @Transactional
     @Path("/exibirManualUsuario")
     public void exibirManualUsuario() {
         /**
@@ -186,7 +186,7 @@ public class ApplicationController extends TpController {
          */
     }
 
-    @Transacional
+    @Transactional
     @Path("/gadget")
     public void gadget() {
         try {

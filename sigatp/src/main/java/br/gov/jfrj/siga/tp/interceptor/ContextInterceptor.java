@@ -9,11 +9,10 @@ import br.com.caelum.vraptor.AroundCall;
 import br.com.caelum.vraptor.InterceptionException;
 import br.com.caelum.vraptor.Intercepts;
 import br.com.caelum.vraptor.interceptor.SimpleInterceptorStack;
-import br.com.caelum.vraptor.jpa.JPATransactionCustomInterceptor;
+import br.com.caelum.vraptor.jpa.JPATransactionInterceptor;
 import br.gov.jfrj.siga.model.ActiveRecord;
 import br.gov.jfrj.siga.model.ContextoPersistencia;
 import br.gov.jfrj.siga.tp.model.TpDao;
-import br.gov.jfrj.siga.vraptor.ParameterOptionalLoaderInterceptor;
 
 
 /**
@@ -25,7 +24,7 @@ import br.gov.jfrj.siga.vraptor.ParameterOptionalLoaderInterceptor;
  *
  */
 @RequestScoped
-@Intercepts(before = {ParameterOptionalLoaderInterceptor.class,JPATransactionCustomInterceptor.class })
+@Intercepts(before = {JPATransactionInterceptor.class })
 public class ContextInterceptor   {
 
 
