@@ -32,6 +32,12 @@ parameters:
     name: sigla
     in: path
     description: Sigla do mobil
+    # Padrão baseado em ExMobil.setSigla
+    pattern: ^([A-Za-z]+)?-?([A-Za-z]{3})?-?(?:([0-9]{1,8})|(?:(\d{4}?)\/?)([0-9]{1,8})(\.?[0-9]{1,3})??)(?:((?:-?[a-zA-Z]{1})|(?:-[0-9]{1,2}))|(?:-?V([0-9]{1,2})))?$
+    examples: 
+      - PD-EXP-2020/000123
+      - SAA-MEM-2019/1254-A
+      - GOV-PRC-2018-3548-V01
     type: string
     required: true
   completo:
@@ -82,6 +88,7 @@ parameters:
     description: Informar o tipo de arquivo desejado, pode ser application/pdf ou text/html
     required: false
     type: string
+    enum: [application/pdf, text/html]
   chave:
     name: chave
     in: path
@@ -138,6 +145,10 @@ paths:
               jwt:
                 type: string
                 description: JWT com as informações para download do PDF
+        404:
+          description: Documento Nao encontrado
+          schema:
+            type: string # código do documento não encontrado
         500:
           description: Error ocurred
           schema:
@@ -163,6 +174,10 @@ paths:
             Content-Disposition:
               type: string
               description: attachment
+        404:
+          description: Documento Não encontrado
+          schema:
+            type: string # código do documento não encontrado
         500:
           description: Error ocurred
           schema:

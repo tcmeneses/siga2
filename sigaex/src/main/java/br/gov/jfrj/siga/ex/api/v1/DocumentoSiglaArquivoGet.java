@@ -1,12 +1,14 @@
 package br.gov.jfrj.siga.ex.api.v1;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.crivano.swaggerservlet.PresentableUnloggedException;
 import com.crivano.swaggerservlet.SwaggerAuthorizationException;
+import com.crivano.swaggerservlet.SwaggerException;
 import com.crivano.swaggerservlet.SwaggerServlet;
 
 import br.gov.jfrj.itextpdf.Status;
@@ -33,11 +35,10 @@ public class DocumentoSiglaArquivoGet implements IDocumentoSiglaArquivoGet {
 				throw new SwaggerAuthorizationException("Usuário não está logado");
 
 			final ExMobilDaoFiltro filter = new ExMobilDaoFiltro();
-			filter.setSigla(req.sigla);
+			filter.setSigla(URLDecoder.decode(req.sigla, StandardCharsets.UTF_8.toString()));
 			ExMobil mob = (ExMobil) ExDao.getInstance().consultarPorSigla(filter);
 			if (mob == null)
-				throw new PresentableUnloggedException(
-						"Não foi possível encontrar um documento a partir da sigla fornecida");
+				throw new SwaggerException("Não foi possível encontrar um documento a partir da sigla fornecida", 404, null, req, resp, null);
 
 			HttpServletRequest request = SwaggerServlet.getHttpServletRequest();
 			SigaObjects so = new SigaObjects(request);
