@@ -128,4 +128,16 @@ public interface IExApiV1 {
 		public void run(StatusChaveGetRequest req, StatusChaveGetResponse resp) throws Exception;
 	}
 
+	public class MobilJuntarSiglaPostRequest implements ISwaggerRequest {
+		public String sigla;
+		public String siglaPai;
+	}
+
+	public class MobilJuntarSiglaPostResponse implements ISwaggerResponse {
+		public String siglaPai;
+	}
+
+	public interface IMobilJuntarSiglaPost extends ISwaggerMethod {
+		public void run(MobilJuntarSiglaPostRequest req, MobilJuntarSiglaPostResponse resp) throws Exception;
+	}
 }

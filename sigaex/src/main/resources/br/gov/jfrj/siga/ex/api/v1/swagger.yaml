@@ -203,6 +203,37 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+  /mobil/juntar/{sigla}:
+    post:
+      summary: Junta o mobil de um documento com outro informado em siglaPai
+      tags: [mobil]
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          name: sigla
+          required: true
+          type: string
+          description: Sigla do documento filho
+        - in: query
+          name: siglaPai
+          required: true
+          type: string
+          description: Sigla do documento pai a ser juntado       
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: object
+            properties:
+              siglaPai:
+                type: string
+                description: Sigla do documento pai
+        500:
+          description: Error ocurred
+          schema:
+            $ref: "#/definitions/Error"
+
 
 ################################################################################
 #                                     Definitions                              #
