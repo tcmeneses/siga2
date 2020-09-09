@@ -16,6 +16,7 @@ public class SigaMessages {
 	public static String getMessage(String key) {
 		try {
 	    	if (bundle == null) {
+	    		bundle = getBundle();
 	    	}
 		    String message = bundle.getString(key);
 			return message;
