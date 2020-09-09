@@ -1,16 +1,19 @@
 package br.gov.jfrj.siga.ex.api.v1;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+
 import javax.servlet.http.HttpServletRequest;
 
-import com.crivano.swaggerservlet.PresentableUnloggedException;
 import com.crivano.swaggerservlet.SwaggerAuthorizationException;
+import com.crivano.swaggerservlet.SwaggerException;
 import com.crivano.swaggerservlet.SwaggerServlet;
 
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.ex.ExMobil;
+import br.gov.jfrj.siga.ex.api.v1.IExApiV1.IMobilJuntarSiglaPost;
 import br.gov.jfrj.siga.ex.api.v1.IExApiV1.MobilJuntarSiglaPostRequest;
 import br.gov.jfrj.siga.ex.api.v1.IExApiV1.MobilJuntarSiglaPostResponse;
-import br.gov.jfrj.siga.ex.api.v1.IExApiV1.IMobilJuntarSiglaPost;
 import br.gov.jfrj.siga.ex.bl.Ex;
 import br.gov.jfrj.siga.hibernate.ExDao;
 import br.gov.jfrj.siga.model.ContextoPersistencia;
@@ -25,9 +28,9 @@ public class MobilJuntarSiglaPost implements IMobilJuntarSiglaPost {
 		ApiContext ctx = new ApiContext(true);
 		try {
 			inicializar();
-
-			ExMobil mobFilho = buscarMobil(req.sigla);
-			ExMobil mobPai = buscarMobil(req.siglaPai);
+			
+			ExMobil mobFilho = buscarMobil(URLDecoder.decode(req.sigla, StandardCharsets.UTF_8.toString()), "Secundário", req, resp);
+			ExMobil mobPai = buscarMobil(req.siglaPai, "Principal", req, resp);
 
 			Ex.getInstance()
 					.getBL()
@@ -60,23 +63,26 @@ public class MobilJuntarSiglaPost implements IMobilJuntarSiglaPost {
 		return "Junta vias";
 	}
 
-	private ExMobil buscarMobil (final String sigla) throws Exception {
+	private ExMobil buscarMobil (final String sigla, String tipo, MobilJuntarSiglaPostRequest req, MobilJuntarSiglaPostResponse resp) throws Exception {
 		final ExMobilDaoFiltro filter = new ExMobilDaoFiltro();
 		filter.setSigla(sigla);
 		ExMobil mob = (ExMobil) ExDao.getInstance().consultarPorSigla(filter);
-		if (mob == null)
-			throw new PresentableUnloggedException(
-					"Não foi possível encontrar um documento a partir da sigla fornecida");
+		if (mob == null) {
+			throw new SwaggerException("Número do Documento " + tipo
+					+ " não existe no SPSP", 404, null, req, resp, null);
+		}
 
-		verificarNivelAcesso(mob);
+		verificarNivelAcesso(mob, req, resp);
 		return mob;
 	}
 
-	private void verificarNivelAcesso(ExMobil mob) {
+	private void verificarNivelAcesso(ExMobil mob, MobilJuntarSiglaPostRequest req, MobilJuntarSiglaPostResponse resp)
+			throws SwaggerException {
 		if (!Ex.getInstance().getComp().podeAcessarDocumento(so.getTitular(), so.getLotaTitular(), mob))
-			throw new AplicacaoException(
+			throw new SwaggerException(
 					"Acesso ao documento " + mob.getSigla() + " permitido somente a usuários autorizados. ("
-							+ so.getTitular().getSigla() + "/" + so.getLotaTitular().getSiglaCompleta() + ")");
+							+ so.getTitular().getSigla() + "/" + so.getLotaTitular().getSiglaCompleta() + ")",
+					403, null, req, resp, null);
 	}
 
 	protected void assertAcesso(String pathServico) throws AplicacaoException {
