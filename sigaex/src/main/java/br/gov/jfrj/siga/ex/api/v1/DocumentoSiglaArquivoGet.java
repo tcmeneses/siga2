@@ -37,8 +37,9 @@ public class DocumentoSiglaArquivoGet implements IDocumentoSiglaArquivoGet {
 			final ExMobilDaoFiltro filter = new ExMobilDaoFiltro();
 			filter.setSigla(URLDecoder.decode(req.sigla, StandardCharsets.UTF_8.toString()));
 			ExMobil mob = (ExMobil) ExDao.getInstance().consultarPorSigla(filter);
-			if (mob == null)
-				throw new SwaggerException("Não foi possível encontrar um documento a partir da sigla fornecida", 404, null, req, resp, null);
+			if (mob == null) {
+				throw new SwaggerException("Número dos Documentos não existe no SPSP", 404, null, req, resp, null);
+			}
 
 			HttpServletRequest request = SwaggerServlet.getHttpServletRequest();
 			SigaObjects so = new SigaObjects(request);
