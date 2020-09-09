@@ -50,18 +50,21 @@ parameters:
     in: query
     description: Informar true se deseja receber todos os arquivos juntados e anexos
     required: false
+    default: false
     type: boolean
   estampa:
     name: estampa
     in: query
     description: Informar true se deseja receber o PDF sem estampas
     required: false
+    default: false
     type: boolean
   volumes:
     name: volumes
     in: query
     description: Informar true se deseja receber uma compilação com todos os volumes de um processo
     required: false
+    default: false
     type: boolean
   pdf:
     name: pdf
@@ -100,6 +103,23 @@ parameters:
     description: Chave que referencia um processo assíncrono
     required: true
     type: string
+  siglaPai:
+    name: siglaPai
+    in: query
+    description: >
+      Sigla do documento pai a ser juntado. O formato da sigla é DDD-UUU-AAAA/NNNN, Onde DDD é a a sigla do Tipo de Documento 
+      (tamanho variável), UUU é a sigla da Unidade (tamanho variável), AAAA é o ano (4 dígitos), NNNN é um número 
+      (tamanho variável). 
+      Eventualmente ao número pode se adicionado um indicador da versão ou da via. PD-EXP-2020/000123, 
+      SAA-MEM-2019/1254-A, GOV-PRC-2018-3548-V01
+    # Padrão baseado em ExMobil.setSigla
+    pattern: ^([A-Za-z]+)?-?([A-Za-z]{3})?-?(?:([0-9]{1,8})|(?:(\d{4}?)\/?)([0-9]{1,8})(\.?[0-9]{1,3})??)(?:((?:-?[a-zA-Z]{1})|(?:-[0-9]{1,2}))|(?:-?V([0-9]{1,2})))?$
+    examples: 
+      - PD-EXP-2020/000123
+      - SAA-MEM-2019/1254-A
+      - GOV-PRC-2018-3548-V01
+    type: string
+    required: true
 
 
 ################################################################################
@@ -230,16 +250,8 @@ paths:
       security:
         - Bearer: []
       parameters:
-        - in: path
-          name: sigla
-          required: true
-          type: string
-          description: Sigla do documento filho
-        - in: query
-          name: siglaPai
-          required: true
-          type: string
-          description: Sigla do documento pai a ser juntado       
+        - $ref: "#/parameters/sigla"
+        - $ref: "#/parameters/siglaPai"
       responses:
         200:
           description: Successful response
