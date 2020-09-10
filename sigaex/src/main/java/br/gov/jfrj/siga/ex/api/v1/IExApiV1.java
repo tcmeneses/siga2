@@ -143,4 +143,15 @@ public interface IExApiV1 {
 		public void run(MobilAssinarSiglaPostRequest req, MobilAssinarSiglaPostResponse resp) throws Exception;
 	}
 
+	public class MobilAutenticarSiglaPostRequest implements ISwaggerRequest {
+		public String sigla;
+	}
+
+	public class MobilAutenticarSiglaPostResponse implements ISwaggerResponse {
+	}
+
+	public interface IMobilAutenticarSiglaPost extends ISwaggerMethod {
+		public void run(MobilAutenticarSiglaPostRequest req, MobilAutenticarSiglaPostResponse resp) throws Exception;
+	}
+
 }
