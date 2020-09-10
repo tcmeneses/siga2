@@ -41,7 +41,7 @@ public interface IExApiV1 {
 		public Boolean estampa;
 		public Boolean completo;
 		public Boolean volumes;
-		public Boolean exibirReordenacao;  
+		public Boolean exibirReordenacao;
 	}
 
 	public class DocumentoSiglaArquivoGetResponse implements ISwaggerResponse {
@@ -69,39 +69,30 @@ public interface IExApiV1 {
 		public String getContenttype() {
 			return contenttype;
 		}
-
 		public void setContenttype(String contenttype) {
 			this.contenttype = contenttype;
 		}
-
 		public String getContentdisposition() {
 			return contentdisposition;
 		}
-
 		public void setContentdisposition(String contentdisposition) {
 			this.contentdisposition = contentdisposition;
 		}
-
 		public Long getContentlength() {
 			return contentlength;
 		}
-
 		public void setContentlength(Long contentlength) {
 			this.contentlength = contentlength;
 		}
-
 		public InputStream getInputstream() {
 			return inputstream;
 		}
-
 		public void setInputstream(InputStream inputstream) {
 			this.inputstream = inputstream;
 		}
-
 		public Map<String, List<String>> getHeaderFields() {
 			return headerFields;
 		}
-
 		public void setHeaderFields(Map<String, List<String>> headerFields) {
 			this.headerFields = headerFields;
 		}
@@ -140,4 +131,16 @@ public interface IExApiV1 {
 	public interface IMobilJuntarSiglaPost extends ISwaggerMethod {
 		public void run(MobilJuntarSiglaPostRequest req, MobilJuntarSiglaPostResponse resp) throws Exception;
 	}
+
+	public class MobilAssinarSiglaPostRequest implements ISwaggerRequest {
+		public String sigla;
+	}
+
+	public class MobilAssinarSiglaPostResponse implements ISwaggerResponse {
+	}
+
+	public interface IMobilAssinarSiglaPost extends ISwaggerMethod {
+		public void run(MobilAssinarSiglaPostRequest req, MobilAssinarSiglaPostResponse resp) throws Exception;
+	}
+
 }

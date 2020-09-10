@@ -279,6 +279,36 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
+  /mobil/assinar/{sigla}:
+    post:
+      summary: Assina um documento
+      tags: [mobil]
+      security:
+        - Bearer: []
+      parameters:
+        - $ref: "#/parameters/sigla"
+      responses:
+#Tive que adicionar o 200 porque se tivesse apenas o 201 swaggerservlet soltaria uma exceção
+        200:
+          description: Ok
+        201:
+          description: Assinado
+          schema: 
+            type: object
+            properties:
+              numeroReferencia:
+                type: string
+                description:  Número de Referência
+        400:
+          description: Erro de Validação
+        403: 
+          description: Documento <número do documento> Sem Permissão para Assinar
+        404:
+          description: Número dos Documento não existe no SPSP
+        500:
+          description: Error ocurred
+          schema:
+            $ref: "#/definitions/Error"
 
 ################################################################################
 #                                     Definitions                              #
