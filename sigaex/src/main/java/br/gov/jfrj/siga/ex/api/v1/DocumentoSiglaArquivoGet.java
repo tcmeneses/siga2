@@ -28,6 +28,7 @@ public class DocumentoSiglaArquivoGet implements IDocumentoSiglaArquivoGet {
 
 	@Override
 	public void run(DocumentoSiglaArquivoGetRequest req, DocumentoSiglaArquivoGetResponse resp) throws Exception {
+		req.sigla = URLDecoder.decode(req.sigla, StandardCharsets.UTF_8.toString());
 		try (ApiContext ctx = new ApiContext(false)) {
 			String usuario = ContextoPersistencia.getUserPrincipal();
 
@@ -35,7 +36,7 @@ public class DocumentoSiglaArquivoGet implements IDocumentoSiglaArquivoGet {
 				throw new SwaggerAuthorizationException("Usuário não está logado");
 
 			final ExMobilDaoFiltro filter = new ExMobilDaoFiltro();
-			filter.setSigla(URLDecoder.decode(req.sigla, StandardCharsets.UTF_8.toString()));
+			filter.setSigla(req.sigla);
 			ExMobil mob = (ExMobil) ExDao.getInstance().consultarPorSigla(filter);
 			if (mob == null) {
 				throw new SwaggerException("Número dos Documentos não existe no SPSP", 404, null, req, resp, null);
