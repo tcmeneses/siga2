@@ -39,7 +39,7 @@ public class DocumentoSiglaArquivoGet implements IDocumentoSiglaArquivoGet {
 			filter.setSigla(req.sigla);
 			ExMobil mob = (ExMobil) ExDao.getInstance().consultarPorSigla(filter);
 			if (mob == null) {
-				throw new SwaggerException("Número dos Documentos não existe no SPSP", 404, null, req, resp, null);
+				throw new SwaggerException("Número dos Documento não existe no SPSP", 404, null, req, resp, null);
 			}
 
 			HttpServletRequest request = SwaggerServlet.getHttpServletRequest();
