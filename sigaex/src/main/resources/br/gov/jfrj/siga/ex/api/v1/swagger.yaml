@@ -32,19 +32,44 @@ parameters:
     name: sigla
     in: path
     description: >
-      Sigla do mobil. 
-
-      O formato da sigla é DDD-UUU-AAAA/NNNN, Onde DDD é a a sigla do Tipo de Documento 
-      (tamanho variável), UUU é a sigla da Unidade (tamanho variável), AAAA é o ano (4 dígitos), NNNN é um número 
-      (tamanho variável). 
-      Eventualmente ao número pode se adicionado um indicador da versão ou da via. 
-      PD-EXP-2020/000123, SAA-MEM-2019/1254-A, GOV-PRC-2018-3548-V01
+      Sigla do documento com a via ou volume. 
+      O formato da sigla é DDD-UUU-AAAA/NNNN, onde DDD é o acrônimo do órgão (tamanho variável), 
+      UUU é a espécie do modelo do documento, AAAA é o ano de emissão (4 dígitos), 
+      NNNNN é o número sequencial do documento naquele ano. Os hífens e a barra são opcionais.
+      Eventualmente ao número pode ser adicionado um indicador da via ou volume (mobil). PD-EXP-2020/000123, 
+      SAA-MEM-2019/1254-A, GOV-PRC-2018-3548-V01
     # Padrão baseado em ExMobil.setSigla
     pattern: ^([A-Za-z]+)?-?([A-Za-z]{3})?-?(?:([0-9]{1,8})|(?:(\d{4}?)\/?)([0-9]{1,8})(\.?[0-9]{1,3})??)(?:((?:-?[a-zA-Z]{1})|(?:-[0-9]{1,2}))|(?:-?V([0-9]{1,2})))?$
     examples: 
       - PD-EXP-2020/000123
       - SAA-MEM-2019/1254-A
       - GOV-PRC-2018-3548-V01
+    type: string
+    required: true
+  sigladoc:
+    name: sigladoc
+    in: path
+    description: 
+      Sigla do documento sem via ou volume. 
+      O formato da sigla é DDD-UUU-AAAA/NNNN, onde DDD é o acrônimo do órgão (tamanho variável), 
+      UUU é a espécie do modelo do documento, AAAA é o ano de emissão (4 dígitos), 
+      NNNNN é o número sequencial do documento naquele ano. Os hífens e a barra são opcionais.
+    examples:
+      - PDEXP202012345
+      - SAAMEM201912345
+      - GOVPRC201912345
+    type: string
+    required: true
+  siglamob:
+    name: siglamob
+    in: path
+    description: 
+      Via ou volume do documento (mobil). 
+      Se a espécie for do tipo expediente, deve indicar a via do mesmo, uma letra maiúscula de A a Z exceto as letras V, X, K, Y e W
+      Se a espécie for do tipo processo, deve indicar o volume do mesmo, iniciando com a letra V + um número de dois dígitos  
+    examples: 
+      - A      (Ex. para um documento de sigla PDMEM202012345 - Memorando)
+      - V01    (Ex. para um documento de sigla PDPRC202012345 - Processo)
     type: string
     required: true
   completo:
@@ -67,6 +92,12 @@ parameters:
     description: Informar true se deseja receber uma compilação com todos os volumes de um processo
     required: false
     default: false
+    type: boolean
+  exibirreordenacao:
+    name: exibirReordenacao
+    in: query
+    description: Exibir reordenação
+    required: false
     type: boolean
   pdf:
     name: pdf
@@ -105,23 +136,15 @@ parameters:
     description: Chave que referencia um processo assíncrono
     required: true
     type: string
-  siglaPai:
-    name: siglaPai
-    in: query
-    description: >
-      Sigla do documento pai a ser juntado. 
-      
-      O formato da sigla é DDD-UUU-AAAA/NNNN, Onde DDD é a a sigla do Tipo de Documento 
-      (tamanho variável), UUU é a sigla da Unidade (tamanho variável), AAAA é o ano (4 dígitos), NNNN é um número 
-      (tamanho variável). 
-      Eventualmente ao número pode se adicionado um indicador da versão ou da via. 
-      PD-EXP-2020/000123, SAA-MEM-2019/1254-A, GOV-PRC-2018-3548-V01
-    # Padrão baseado em ExMobil.setSigla
-    pattern: ^([A-Za-z]+)?-?([A-Za-z]{3})?-?(?:([0-9]{1,8})|(?:(\d{4}?)\/?)([0-9]{1,8})(\.?[0-9]{1,3})??)(?:((?:-?[a-zA-Z]{1})|(?:-[0-9]{1,2}))|(?:-?V([0-9]{1,2})))?$
-    examples: 
-      - PD-EXP-2020/000123
-      - SAA-MEM-2019/1254-A
-      - GOV-PRC-2018-3548-V01
+  siglapai:
+    name: siglapai
+    in: body
+    description: 
+      Sigla do documento pai a ser juntado com a indicação da via ou volume (mobil).
+    examples:
+      - PD-EXP-2020/12345A
+      - SAAMEM201912345B
+      - GOVPRC201912345V01
     type: string
     required: true
   exibirReordenacao:
@@ -256,26 +279,44 @@ paths:
           schema:
             $ref: "#/definitions/Error"
 
-  /mobil/juntar/{sigla}:
+  /documento/{sigladoc}/mobil/{siglamob}/juntar:
     post:
-      summary: Junta o mobil de um documento com outro informado em siglaPai
+      summary: Junta a via de um documento com outro informado em siglapai
       tags: [mobil]
       security:
         - Bearer: []
+      consumes: 
+        - application/json
+      produces: 
+        - application/json
       parameters:
-        - $ref: "#/parameters/sigla"
-        - $ref: "#/parameters/siglaPai"
+        - $ref: "#/parameters/sigladoc"
+        - $ref: "#/parameters/siglamob"
+        - name: body
+          in: body
+          type: string
+          description: Parâmetros para juntada.
+            siglapai = Sigla do documento pai a ser juntado com a indicação da via ou volume (mobil). Ex. GOVPRC201912345V01 
+          required: true
+          schema:
+            properties: 
+              siglapai:
+                type: string
       responses:
         200:
           description: Successful response
           schema:
             type: object
-            properties:
-              siglaPai:
-                type: string
-                description: Sigla do documento pai
+        403:
+          description: Acesso ao documento não permitido
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: Via ou volume não encontrado
+          schema:
+            $ref: "#/definitions/Error"
         500:
-          description: Error ocurred
+          description: Erro na juntada
           schema:
             $ref: "#/definitions/Error"
 

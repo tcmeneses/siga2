@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONObject;
+
 import com.crivano.swaggerservlet.ISwaggerMethod;
 import com.crivano.swaggerservlet.ISwaggerModel;
 import com.crivano.swaggerservlet.ISwaggerRequest;
@@ -119,17 +121,17 @@ public interface IExApiV1 {
 		public void run(StatusChaveGetRequest req, StatusChaveGetResponse resp) throws Exception;
 	}
 
-	public class MobilJuntarSiglaPostRequest implements ISwaggerRequest {
-		public String sigla;
-		public String siglaPai;
+	public class DocumentoSigladocMobilSiglamobJuntarPostRequest implements ISwaggerRequest {
+		public String sigladoc;
+		public String siglamob;
+		public String siglapai;
 	}
 
-	public class MobilJuntarSiglaPostResponse implements ISwaggerResponse {
-		public String siglaPai;
+	public class DocumentoSigladocMobilSiglamobJuntarPostResponse implements ISwaggerResponse {
 	}
 
-	public interface IMobilJuntarSiglaPost extends ISwaggerMethod {
-		public void run(MobilJuntarSiglaPostRequest req, MobilJuntarSiglaPostResponse resp) throws Exception;
+	public interface IDocumentoSigladocMobilSiglamobJuntarPost extends ISwaggerMethod {
+		public void run(DocumentoSigladocMobilSiglamobJuntarPostRequest req, DocumentoSigladocMobilSiglamobJuntarPostResponse resp) throws Exception;
 	}
 
 	public class MobilAssinarSiglaPostRequest implements ISwaggerRequest {

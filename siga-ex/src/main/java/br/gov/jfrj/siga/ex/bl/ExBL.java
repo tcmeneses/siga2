@@ -161,6 +161,7 @@ import br.gov.jfrj.siga.model.Objeto;
 import br.gov.jfrj.siga.model.ObjetoBase;
 import br.gov.jfrj.siga.model.Selecionavel;
 import br.gov.jfrj.siga.parser.SiglaParser;
+import br.gov.jfrj.siga.persistencia.ExMobilDaoFiltro;
 import br.gov.jfrj.siga.sinc.lib.Desconsiderar;
 import br.gov.jfrj.siga.sinc.lib.Item;
 import br.gov.jfrj.siga.sinc.lib.Sincronizador;
@@ -7466,7 +7467,11 @@ public class ExBL extends CpBL {
 		}
 	}
 
-
-
+	public ExMobil buscarMobil (final String sigla) throws Exception {
+		final ExMobilDaoFiltro filter = new ExMobilDaoFiltro();
+		filter.setSigla(sigla);
+		ExMobil mob = (ExMobil) ExDao.getInstance().consultarPorSigla(filter);
+		return mob;
+	}
 }
 
