@@ -32,11 +32,13 @@ parameters:
     name: sigla
     in: path
     description: >
-      Sigla do mobil. O formato da sigla é DDD-UUU-AAAA/NNNN, Onde DDD é a a sigla do Tipo de Documento 
+      Sigla do mobil. 
+
+      O formato da sigla é DDD-UUU-AAAA/NNNN, Onde DDD é a a sigla do Tipo de Documento 
       (tamanho variável), UUU é a sigla da Unidade (tamanho variável), AAAA é o ano (4 dígitos), NNNN é um número 
       (tamanho variável). 
-      Eventualmente ao número pode se adicionado um indicador da versão ou da via. PD-EXP-2020/000123, 
-      SAA-MEM-2019/1254-A, GOV-PRC-2018-3548-V01
+      Eventualmente ao número pode se adicionado um indicador da versão ou da via. 
+      PD-EXP-2020/000123, SAA-MEM-2019/1254-A, GOV-PRC-2018-3548-V01
     # Padrão baseado em ExMobil.setSigla
     pattern: ^([A-Za-z]+)?-?([A-Za-z]{3})?-?(?:([0-9]{1,8})|(?:(\d{4}?)\/?)([0-9]{1,8})(\.?[0-9]{1,3})??)(?:((?:-?[a-zA-Z]{1})|(?:-[0-9]{1,2}))|(?:-?V([0-9]{1,2})))?$
     examples: 
@@ -107,11 +109,13 @@ parameters:
     name: siglaPai
     in: query
     description: >
-      Sigla do documento pai a ser juntado. O formato da sigla é DDD-UUU-AAAA/NNNN, Onde DDD é a a sigla do Tipo de Documento 
+      Sigla do documento pai a ser juntado. 
+      
+      O formato da sigla é DDD-UUU-AAAA/NNNN, Onde DDD é a a sigla do Tipo de Documento 
       (tamanho variável), UUU é a sigla da Unidade (tamanho variável), AAAA é o ano (4 dígitos), NNNN é um número 
       (tamanho variável). 
-      Eventualmente ao número pode se adicionado um indicador da versão ou da via. PD-EXP-2020/000123, 
-      SAA-MEM-2019/1254-A, GOV-PRC-2018-3548-V01
+      Eventualmente ao número pode se adicionado um indicador da versão ou da via. 
+      PD-EXP-2020/000123, SAA-MEM-2019/1254-A, GOV-PRC-2018-3548-V01
     # Padrão baseado em ExMobil.setSigla
     pattern: ^([A-Za-z]+)?-?([A-Za-z]{3})?-?(?:([0-9]{1,8})|(?:(\d{4}?)\/?)([0-9]{1,8})(\.?[0-9]{1,3})??)(?:((?:-?[a-zA-Z]{1})|(?:-[0-9]{1,2}))|(?:-?V([0-9]{1,2})))?$
     examples: 
@@ -120,6 +124,14 @@ parameters:
       - GOV-PRC-2018-3548-V01
     type: string
     required: true
+  exibirReordenacao:
+    name: exibirReordenacao
+    in: query
+    description: Informar true se deseja ????????????
+    required: false
+    default: false
+    type: boolean
+    
 
 
 ################################################################################
@@ -158,6 +170,7 @@ paths:
         - $ref: "#/parameters/estampa"
         - $ref: "#/parameters/completo"
         - $ref: "#/parameters/volumes"
+        - $ref: "#/parameters/exibirReordenacao"
       responses:
         200:
           description: Successful response
