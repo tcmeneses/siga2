@@ -58,30 +58,33 @@ class SwaggerHelper {
 	 * {@link ExMobil#getSigla() sigla} contanto que esse exista e que o usuário
 	 * tenha autorização para acessá-lo.
 	 * 
-	 * @param sigla Sigla do documeto solicitado
-	 * @param so    SigaObjects. Será usado na validação.
-	 * @param req   Requisição do Swagger. Usado no disparo da exceção.
-	 * @param resp  Resposta do Swagger. Usado no disparo da exceção.
+	 * @param sigla              Sigla do documeto solicitado
+	 * @param so                 SigaObjects previamente carregado via
+	 *                           {@link #getSigaObjects()} . Será usado na
+	 *                           validação.
+	 * @param req                Requisição do Swagger. Usado no disparo da exceção.
+	 * @param resp               Resposta do Swagger. Usado no disparo da exceção.
+	 * @param descricaoDocumento Descrição do documento a ser usada em caso de erro.
 	 * @return Mobil relacionado a sigla soliciatada.
 	 * @throws SwaggerException Se não achar um Mobil com a sigla solicitada (
 	 *                          {@link SwaggerException#getStatus() Status} 404) ou
 	 *                          se o usário não tiver autorização para tratá-lo
 	 *                          ({@link SwaggerException#getStatus() Status} 403)
 	 */
-	static ExMobil buscarEValidarMobil(final String sigla, SigaObjects so, ISwaggerRequest req, ISwaggerResponse resp)
-			throws SwaggerException {
+	static ExMobil buscarEValidarMobil(final String sigla, SigaObjects so, ISwaggerRequest req, ISwaggerResponse resp,
+			String descricaoDocumento) throws SwaggerException {
 		final ExMobilDaoFiltro filter = new ExMobilDaoFiltro();
 		filter.setSigla(sigla);
 		ExMobil mob = ExDao.getInstance().consultarPorSigla(filter);
 
 		if (isNull(mob)) {
-			throw new SwaggerException("Número do Documento não existe no SPSP", 404, null, req, resp, null);
+			throw new SwaggerException("Número do " + descricaoDocumento + " não existe no SPSP", 404, null, req, resp,
+					null);
 		}
 		if (!Ex.getInstance().getComp().podeAcessarDocumento(so.getTitular(), so.getLotaTitular(), mob))
-			throw new SwaggerException(
-					"Acesso ao documento " + mob.getSigla() + " permitido somente a usuários autorizados. ("
-							+ so.getTitular().getSigla() + "/" + so.getLotaTitular().getSiglaCompleta() + ")",
-					403, null, req, resp, null);
+			throw new SwaggerException("Acesso ao " + descricaoDocumento + " " + mob.getSigla()
+					+ " permitido somente a usuários autorizados. (" + so.getTitular().getSigla() + "/"
+					+ so.getLotaTitular().getSiglaCompleta() + ")", 403, null, req, resp, null);
 
 		return mob;
 	}
@@ -100,11 +103,11 @@ class SwaggerHelper {
 	 *                          se o usário não tiver autorização para tratá-lo
 	 *                          ({@link SwaggerException#getStatus() Status} 403).
 	 * @see #buscarEValidarMobil(String, SigaObjects, ISwaggerRequest,
-	 *      ISwaggerResponse)
+	 *      ISwaggerResponse, String)
 	 */
 	static ExMobil buscarEValidarMobil(final String sigla, ISwaggerRequest req, ISwaggerResponse resp)
 			throws Exception {
-		return buscarEValidarMobil(sigla, getSigaObjects(), req, resp);
+		return buscarEValidarMobil(sigla, getSigaObjects(), req, resp, "Documento");
 	}
 
 	/**
