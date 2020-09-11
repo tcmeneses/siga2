@@ -2,6 +2,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	buffer="64kb"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://localhost/libstag" prefix="f"%>
 
 <%@ taglib uri="http://localhost/jeetags" prefix="siga"%>
 
@@ -61,13 +62,14 @@
 							</div>
 						</div>
 					</div>
+					<c:set var="ambienteTeste" value="${f:resource('/siga.base.teste')}" />										
 					<div class="row">
 						<div class="col-sm-4">
 							<div class="form-group">
 								<label>Nível de Acesso</label>
 								<select class="form-control" name="nivelAcesso" theme="simple" value="1">
 							      <c:forEach var="item" items="${listaNivelAcesso}">
-							      	<c:if test="${(siga_cliente ne 'GOVSP') || ( (item.idNivelAcesso eq 5) )}">
+							      	<c:if test="${(siga_cliente ne 'GOVSP')  || (siga_cliente eq 'GOVSP' and ambienteTeste) || ( (item.idNivelAcesso eq 5) )}">
 								        <option value="${item.idNivelAcesso}"  <c:if test="${item.idNivelAcesso == nivelAcesso}">selected</c:if> >
 								          <c:out value="${item.nmNivelAcesso}" />
 								        </option>

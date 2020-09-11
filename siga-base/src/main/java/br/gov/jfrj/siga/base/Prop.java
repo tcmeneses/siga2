@@ -78,6 +78,10 @@ public class Prop {
 
 		provider.addPublicProperty("/siga.gsa.url", null);
 		
+		provider.addPublicProperty("/siga.relat.brasao", "brasao.png");
+		provider.addPublicProperty("/siga.relat.titulo", "PODER JUDICIÁRIO");
+		provider.addPublicProperty("/siga.relat.subtitulo", "JUSTIÇA FEDERAL");
+		
 		/* proxy properties */
 		provider.addRestrictedProperty("/http.proxyHost", null);
 		if (get("/http.proxyHost") != null)
@@ -188,7 +192,7 @@ public class Prop {
 		provider.addPublicProperty("/blucservice.url", base + "/blucservice/api/v1");
 		provider.addPublicProperty("/vizservice.url", base + "/vizservice");
     
-    provider.addPublicProperty("/siga.sgp.bnf.url","/siga-beneficios");
+		provider.addPublicProperty("/siga.sgp.bnf.url","/siga-beneficios");
 		provider.addPublicProperty("/siga.sgp.aq.url","/sigarhaq");
 		provider.addPublicProperty("/siga.sgp.cad.url","/sigarh");
 		provider.addPublicProperty("/siga.sgp.bdp.url","/sigarhaq1");
@@ -200,11 +204,9 @@ public class Prop {
 		
 		/* Parâmetros para configuração do armazenamento de documento */
 		provider.addPublicProperty("/siga.armazenamento.arquivo.tipo", "BLOB");
-		if ("HCP".equals(get("/siga.armazenamento.arquivo.tipo"))) {
-			provider.addPublicProperty("/siga.armazenamento.arquivo.usuario");
-			provider.addPublicProperty("/siga.armazenamento.arquivo.senha");
-			provider.addPublicProperty("/siga.armazenamento.arquivo.url");
-		}
+		provider.addPublicProperty("/siga.armazenamento.arquivo.usuario");
+		provider.addPublicProperty("/siga.armazenamento.arquivo.senha");
+		provider.addPublicProperty("/siga.armazenamento.arquivo.url");
 		
 	}
 }
