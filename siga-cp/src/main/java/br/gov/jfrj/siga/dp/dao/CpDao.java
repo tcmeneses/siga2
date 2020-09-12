@@ -746,6 +746,14 @@ public class CpDao extends ModeloDao {
 		query.setHint("org.hibernate.cacheRegion", CACHE_QUERY_CONFIGURACAO);
 		return query.getResultList();
 	}
+	
+	public List<DpLotacao> listarLotacoesPorPai(DpLotacao lotacaoPai) {
+		CriteriaQuery<DpLotacao> q = cb().createQuery(DpLotacao.class);
+		Root<DpLotacao> c = q.from(DpLotacao.class);
+		q.select(c);
+		q.where(cb().equal(c.get("lotacaoPai"), lotacaoPai),cb().isNull(c.get("dataFimLotacao")));
+		return em().createQuery(q).getResultList();
+	}
 
 	public Selecionavel consultarPorSigla(final DpLotacaoDaoFiltro flt) {
 		final DpLotacao o = new DpLotacao();
@@ -1046,7 +1054,7 @@ public class CpDao extends ModeloDao {
 		Root<CpUF> c = q.from(CpUF.class);
 		q.where(cb().equal(c.get("nmUF"), uf));
 		q.select(c);
-		return em().createQuery(q).getSingleResult();
+		return em().createQuery(q).getResultStream().findFirst().orElse(null);		
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1961,7 +1969,8 @@ public class CpDao extends ModeloDao {
 			entidade.setHisIdIni(entidade.getId());
 			gravar(entidade);
 		}
-		descarregar();
+		em().flush();
+//		descarregar();
 		try {
 			invalidarCache(entidade);
 			// Edson: não há necessidade de limpar o cache de configs no próprio
@@ -2134,7 +2143,7 @@ public class CpDao extends ModeloDao {
 	public List<DpLotacao> consultarLotacaoPorOrgao(CpOrgaoUsuario orgaoUsuario){
 		CriteriaQuery<DpLotacao> q = cb().createQuery(DpLotacao.class);
 		Root<DpLotacao> c = q.from(DpLotacao.class);
-		q.where(cb().equal(c.get("orgaoUsuario"), orgaoUsuario));
+		q.where(cb().equal(c.get("orgaoUsuario"), orgaoUsuario),cb().isNull(c.get("dataFimLotacao")));
 		q.select(c);
 		return em().createQuery(q).getResultList();
 	}

@@ -39,10 +39,13 @@ import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Prop;
 import br.gov.jfrj.siga.cp.CpArquivo;
 import br.gov.jfrj.siga.cp.CpArquivoTipoArmazenamentoEnum;
+import br.gov.jfrj.siga.cp.TipoConteudo;
 import br.gov.jfrj.siga.cp.arquivo.ArmazenamentoBCFacade;
 import br.gov.jfrj.siga.cp.arquivo.ArmazenamentoBCInterface;
 import br.gov.jfrj.siga.dp.DpLotacao;
@@ -195,9 +198,11 @@ public abstract class AbstractExPreenchimento extends Objeto implements
 		cacheConteudoBlobPre = preenchimentoBlob;
 		if (CpArquivoTipoArmazenamentoEnum.BLOB.equals(CpArquivoTipoArmazenamentoEnum.valueOf(Prop.get("/siga.armazenamento.arquivo.tipo")))) {
 			this.preenchimentoBlob = preenchimentoBlob;
-		} else {
+		} else if(cacheConteudoBlobPre != null){
 			criarCpArquivo();
 			cpArquivo.setTamanho(cacheConteudoBlobPre.length);
+			cpArquivo.setHashMD5(DigestUtils.md5Hex(cacheConteudoBlobPre));
+
 		}
 	}
 	
@@ -205,7 +210,9 @@ public abstract class AbstractExPreenchimento extends Objeto implements
 		if(cpArquivo == null) {
 			cpArquivo = new CpArquivo();
 			cpArquivo.setTipoArmazenamento(CpArquivoTipoArmazenamentoEnum.valueOf(Prop.get("/siga.armazenamento.arquivo.tipo")));
-			cpArquivo.gerarCaminho(new Date());
+			cpArquivo.setConteudoTpArq(TipoConteudo.TXT.getMimeType());
+			if(CpArquivoTipoArmazenamentoEnum.HCP.equals(cpArquivo.getTipoArmazenamento()))
+				cpArquivo.gerarCaminho(new Date());
 		}
 	}
 }

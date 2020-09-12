@@ -1327,7 +1327,7 @@ public class ExDao extends CpDao {
 		if (l.size() != 1)
 			return null;
 		return l.get(0);
-	}
+	}	
 
 	public int obterProximoNumeroVolume(ExDocumento doc) {
 		return doc.getNumUltimoVolume() + 1;
@@ -1424,8 +1424,11 @@ public class ExDao extends CpDao {
 			whereList.add(cb().equal(joinForma.get("descrFormaDoc"), sForma));
 		}		
 		q.where(whereList.toArray(new Predicate[0]));
-		
-		return em().createQuery(q).getSingleResult();
+		try {
+			return em().createQuery(q).getSingleResult();
+		} catch (NoResultException ne) {
+			return null;
+		}
 	}
 
 	public ExFormaDocumento consultarExFormaPorId(Long idFormaDoc) {
@@ -1435,7 +1438,7 @@ public class ExDao extends CpDao {
 		
 		q.where(cb().equal(c.get("idFormaDoc"), idFormaDoc));
 		return (ExFormaDocumento) em().createQuery(q).getSingleResult();
-	}
+	}	
 	
 	public ExFormaDocumento consultarExForma(String sForma) {
 		CriteriaQuery<ExFormaDocumento> q = cb().createQuery(ExFormaDocumento.class);
@@ -1443,6 +1446,15 @@ public class ExDao extends CpDao {
 		q.select(c);
 		q.where(cb().equal(c.get("descrFormaDoc"), sForma));
 		return em().createQuery(q).getSingleResult();
+	}
+	
+	public boolean isExFormaComDocumentoVinculado(Long idFormaDoc) {	   
+        Query query = em().createQuery("SELECT DISTINCT forma.idFormaDoc FROM ExFormaDocumento forma JOIN ExDocumento doc ON forma.idFormaDoc = doc.exFormaDocumento.idFormaDoc WHERE forma.idFormaDoc = :idFormaDoc")
+        		.setParameter("idFormaDoc", idFormaDoc);
+        
+        Long idFormaDocEncontrado = (Long) query.getResultStream().findFirst().orElse(0L);
+        
+        return idFormaDocEncontrado > 0L;	    
 	}
 
 	public ExTipoDocumento consultarExTipoDocumento(String descricao) {
@@ -1566,7 +1578,7 @@ public class ExDao extends CpDao {
 		q.setParameter("mascara", mascara);
 		q.setParameter("idOrgaoUsuario", orgaoUsu.getIdOrgaoUsu());
 		return q.getResultList();
-	}
+	}	
 
 	public List<ExPapel> listarExPapeis() {
 		return findByCriteria(ExPapel.class);
@@ -1846,11 +1858,15 @@ public class ExDao extends CpDao {
 		}
 	}
 
-	public List listarMobilsPorMarcas(DpPessoa titular,
-			DpLotacao lotaTitular, boolean exibeLotacao, List<Integer> marcasAIgnorar) {
+	public List listarMobilsPorMarcas(DpPessoa titular,	DpLotacao lotaTitular, boolean exibeLotacao, 
+			boolean ordemCrescenteData, List<Integer> marcasAIgnorar) {
 		String queryString;
 		String queryMarcasAIgnorar = "";
 		String queryMarcasAIgnorarWhere = "";
+		String ordem = " DESC ";
+		if (ordemCrescenteData) {
+			ordem = " ASC ";
+		}
 		if (marcasAIgnorar != null && marcasAIgnorar.size() > 0) {
 			queryMarcasAIgnorar += " left join ExMarca marca2 on "
 					+ " marca2.exMobil = marca.exMobil AND (";
@@ -1875,7 +1891,7 @@ public class ExDao extends CpDao {
 					+ (!exibeLotacao && titular != null ? " and (marca.dpPessoaIni.idPessoaIni = :titular)" : "") 
 					+ (exibeLotacao && lotaTitular != null ? " and (marca.dpLotacaoIni.idLotacaoIni = :lotaTitular)" : "")
 					+ queryMarcasAIgnorarWhere
-					+ " order by  doc.dtAltDoc desc, marca ";
+					+ " order by  doc.dtAltDoc " + ordem + ", marca ";
 			
 		Query query = em()
 				.createQuery(queryString);
@@ -2015,6 +2031,24 @@ public class ExDao extends CpDao {
 						ExMovimentacao.class)
 				.setParameter("idMobil", idMobil) //
 				.getResultList();
+	}
+	
+	/**
+	 * Conta o total de movimentações assinadas
+	 * @param idDoc
+	 * @return
+	 */
+	public Long contarMovimentacaoAssinada(Long idDoc) {
+		return em().createQuery(
+				"select count(m) from ExMovimentacao m "
+				+ "left join m.exMobil mb "
+				+ "where mb.exDocumento.idDoc = :idDoc "
+				+ "and m.exMovimentacaoCanceladora is null "
+				+ "and (m.exTipoMovimentacao.idTpMov = :idAssinatura or m.exTipoMovimentacao.idTpMov = :idAssinaturaSenha)", Long.class)
+				.setParameter("idDoc", idDoc)
+				.setParameter("idAssinatura", 11L)
+				.setParameter("idAssinaturaSenha", 58L)
+				.getSingleResult();
 	}
 
 }

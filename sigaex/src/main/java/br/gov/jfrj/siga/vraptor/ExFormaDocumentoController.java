@@ -1,7 +1,9 @@
 package br.gov.jfrj.siga.vraptor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -64,6 +66,7 @@ public class ExFormaDocumentoController extends ExController {
 		assertAcesso(ACESSO_SIGA_DOC_MOD);
 
 		final ExFormaDocumento forma = id != null ? recuperarForma(id) : new ExFormaDocumento();
+		boolean temDocumentoVinculado = false;
 		
 		if (forma.getIdFormaDoc() != null) {
 			descricao = forma.getDescrFormaDoc();
@@ -73,6 +76,8 @@ public class ExFormaDocumentoController extends ExController {
 			if (forma.getExTipoFormaDoc() != null) {
 				idTipoFormaDoc = forma.getExTipoFormaDoc().getIdTipoFormaDoc();
 			}			
+						
+			temDocumentoVinculado = dao().isExFormaComDocumentoVinculado(forma.getId());
 		}
 
 		if (getPostback() == null) {
@@ -109,7 +114,8 @@ public class ExFormaDocumentoController extends ExController {
 		}
 
 		result.include("id", id);
-		result.include("listaTiposFormaDoc", dao().listarExTiposFormaDoc());
+		result.include("listaTiposFormaDoc", dao().listarExTiposFormaDoc());		
+		result.include("temDocumentoVinculado", temDocumentoVinculado);
 	}
 
 	@Get("app/forma/verificar_sigla")
@@ -139,17 +145,22 @@ public class ExFormaDocumentoController extends ExController {
 			final Integer isComposto, final boolean origemExternoCapturado) {
 		assertAcesso(ACESSO_SIGA_DOC_MOD);
 		setPostback(postback);
-
+				
 		final ExFormaDocumento forma = id != null ? recuperarForma(id) : new ExFormaDocumento();
-
+		ExFormaDocumento formaCadastrada = new ExFormaDocumento();
+		
+		if (forma.isEditando()) {
+			formaCadastrada = prepararExFormaDocumentoCadastrada(forma);
+		}
+		
 		forma.setDescrFormaDoc(descricao);
 		forma.setSigla(sigla);
 		forma.setExTipoFormaDoc(dao().consultar(idTipoFormaDoc, ExTipoFormaDoc.class, false));
 
 		if (forma.getExTipoDocumentoSet() == null) {
 			forma.setExTipoDocumentoSet(new HashSet<ExTipoDocumento>());
-		} else {
-			forma.getExTipoDocumentoSet().clear();
+		} else {									
+			forma.getExTipoDocumentoSet().clear();					
 		}
 
 		forma.setIsComposto(isComposto);
@@ -173,7 +184,7 @@ public class ExFormaDocumentoController extends ExController {
 		}
 
 		try {
-			Ex.getInstance().getBL().gravarForma(forma);
+			Ex.getInstance().getBL().gravarForma(forma, formaCadastrada);
 			
 			result.include("id", forma.getIdFormaDoc());
 			result.include("descricao", descricao);
@@ -197,6 +208,25 @@ public class ExFormaDocumentoController extends ExController {
 
 	private ExFormaDocumento recuperarForma(final Long id) {
 		return dao().consultar(id, ExFormaDocumento.class, false);
+	}
+	
+	private ExFormaDocumento prepararExFormaDocumentoCadastrada(ExFormaDocumento forma) {
+		ExFormaDocumento formaCadastrada = new ExFormaDocumento();
+		Set<ExTipoDocumento> origensCadastradas = new HashSet<>();
+		
+		formaCadastrada.setExTipoFormaDoc(new ExTipoFormaDoc());
+		formaCadastrada.getExTipoFormaDoc().setIdTipoFormaDoc(forma.getExTipoFormaDoc().getId());			
+		formaCadastrada.setSigla(forma.getSigla());
+		formaCadastrada.setIsComposto(forma.getIsComposto());
+		
+		if (forma.getExTipoDocumentoSet() != null) {					
+			for (ExTipoDocumento origem : forma.getExTipoDocumentoSet()) {
+				origensCadastradas.add(origem);
+			}																				
+		} 		
+		formaCadastrada.setExTipoDocumentoSet(origensCadastradas);
+		
+		return formaCadastrada;
 	}
 
 }
