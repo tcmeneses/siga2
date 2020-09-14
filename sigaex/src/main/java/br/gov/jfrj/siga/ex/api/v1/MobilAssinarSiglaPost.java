@@ -34,7 +34,6 @@ public class MobilAssinarSiglaPost implements IMobilAssinarSiglaPost {
 			Date dt = ExDao.getInstance().consultarDataEHoraDoServidor(); // Essa data?
 
 			SigaObjects so = SwaggerHelper.getSigaObjects();
-			so.assertAcesso("DOC:Módulo de Documentos;" + "");
 
 			Ex.getInstance().getBL().assinarDocumento(so.getCadastrante(), so.getLotaTitular(), mob.getDoc(), dt, 
 					so.getIdentidadeCadastrante().getDscSenhaIdentidadeCripto().getBytes(), // pkcs7

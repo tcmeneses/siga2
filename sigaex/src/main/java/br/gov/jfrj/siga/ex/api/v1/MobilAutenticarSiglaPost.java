@@ -34,7 +34,6 @@ public class MobilAutenticarSiglaPost implements IMobilAutenticarSiglaPost {
 			Date dt = ExDao.getInstance().consultarDataEHoraDoServidor(); // Essa data?
 
 			SigaObjects so = SwaggerHelper.getSigaObjects();
-			so.assertAcesso("DOC:Módulo de Documentos;" + "");
 
 			Ex.getInstance().getBL().assinarMovimentacao(
 					so.getCadastrante(), so.getLotaTitular(),

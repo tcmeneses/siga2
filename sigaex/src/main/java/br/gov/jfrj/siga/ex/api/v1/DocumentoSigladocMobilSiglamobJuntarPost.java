@@ -24,7 +24,6 @@ public class DocumentoSigladocMobilSiglamobJuntarPost implements IDocumentoSigla
 
 			String siglaFilho = req.sigladoc + req.siglamob;
 			SigaObjects so = SwaggerHelper.getSigaObjects();
-			so.assertAcesso("DOC:Módulo de Documentos;" + "");
 
 			ExMobil mobFilho = SwaggerHelper.buscarEValidarMobil(siglaFilho, so, req, resp, "Documento Secundário");
 			ExMobil mobPai = SwaggerHelper.buscarEValidarMobil(req.siglapai, so, req, resp, "Documento Principal");
