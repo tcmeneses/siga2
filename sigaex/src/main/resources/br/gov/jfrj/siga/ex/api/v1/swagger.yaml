@@ -139,8 +139,9 @@ parameters:
   siglapai:
     name: siglapai
     in: body
-    description: 
-      Sigla do documento pai a ser juntado com a indicação da via ou volume (mobil).
+    description: Sigla do documento pai a ser juntado com a indicação da via ou volume (mobil).
+    # Padrão baseado em ExMobil.setSigla
+    pattern: ^([A-Za-z]+)?-?([A-Za-z]{3})?-?(?:([0-9]{1,8})|(?:(\d{4}?)\/?)([0-9]{1,8})(\.?[0-9]{1,3})??)(?:((?:-?[a-zA-Z]{1})|(?:-[0-9]{1,2}))|(?:-?V([0-9]{1,2})))?$
     examples:
       - PD-EXP-2020/12345A
       - SAAMEM201912345B
@@ -154,7 +155,37 @@ parameters:
     required: false
     default: false
     type: boolean
-    
+  tipoDestinatario:
+    name: tipoDestinatario
+    in: formData
+    description: Tipo do Destinatário. Órgão Integrado e Usuário e Externo
+    required: true
+    type: string
+    enum: 
+      - ORGAO
+      - USUARIO
+      - EXTERNO
+  destinatario:
+    name: destinatario
+    in: formData
+    description: Destinatário. Pode ser Órgão Integrado e Usuário e Externo
+    required: true
+    type: string
+  observacao:
+    name: observacao
+    in: formData
+    description: Somente quando `tipoDestinatario` = `EXTERNO`. Poderá ser preenchido com e-mail do destinatário.
+    required: false
+    type: string            
+  dataDevolucao:
+    name: dataDevolucao
+    in: formData
+    description: Data de Devolução do documento.
+    required: false
+    type: string
+    pattern: ^\d{4}-(0\d|1[012])-([012]\d|3[01])
+#    format: date
+
 
 
 ################################################################################
@@ -292,16 +323,7 @@ paths:
       parameters:
         - $ref: "#/parameters/sigladoc"
         - $ref: "#/parameters/siglamob"
-        - name: body
-          in: body
-          type: string
-          description: Parâmetros para juntada.
-            siglapai = Sigla do documento pai a ser juntado com a indicação da via ou volume (mobil). Ex. GOVPRC201912345V01 
-          required: true
-          schema:
-            properties: 
-              siglapai:
-                type: string
+        - $ref: "#/parameters/siglapai"
       responses:
         200:
           description: Successful response
@@ -379,6 +401,37 @@ paths:
           description: Número dos Documento não existe no SPSP
         500:
           description: Error ocurred
+          schema:
+            $ref: "#/definitions/Error"
+
+  /mobil/tramitar/{sigla}:
+    post:
+      summary: Tramita (transfere) um documento para outra pessoa ou órgão (interno ou externo).
+      tags: [mobil]
+      security:
+        - Bearer: []
+      consumes:
+        - application/x-www-form-urlencoded
+      parameters:
+        - $ref: "#/parameters/sigla"
+        - $ref: '#/parameters/tipoDestinatario'
+        - $ref: '#/parameters/destinatario'
+        - $ref: '#/parameters/observacao'
+        - $ref: '#/parameters/dataDevolucao'
+      responses:
+#Tive que adicionar o 200 porque se tivesse apenas o 201 swaggerservlet soltaria uma exceção
+        200:
+          description: Ok
+        403:
+          description: Acesso ao documento não permitido
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: Via ou volume não encontrado
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Erro na Tramitação
           schema:
             $ref: "#/definitions/Error"
 

@@ -4,8 +4,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONObject;
-
 import com.crivano.swaggerservlet.ISwaggerMethod;
 import com.crivano.swaggerservlet.ISwaggerModel;
 import com.crivano.swaggerservlet.ISwaggerRequest;
@@ -154,6 +152,21 @@ public interface IExApiV1 {
 
 	public interface IMobilAutenticarSiglaPost extends ISwaggerMethod {
 		public void run(MobilAutenticarSiglaPostRequest req, MobilAutenticarSiglaPostResponse resp) throws Exception;
+	}
+
+	public class MobilTramitarSiglaPostRequest implements ISwaggerRequest {
+		public String sigla;
+		public String tipoDestinatario;
+		public String destinatario;
+		public String observacao;
+		public String dataDevolucao;
+	}
+
+	public class MobilTramitarSiglaPostResponse implements ISwaggerResponse {
+	}
+
+	public interface IMobilTramitarSiglaPost extends ISwaggerMethod {
+		public void run(MobilTramitarSiglaPostRequest req, MobilTramitarSiglaPostResponse resp) throws Exception;
 	}
 
 }
