@@ -1,9 +1,15 @@
 package br.gov.jfrj.siga.ex.api.v1;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.apache.commons.lang3.tuple.Pair;
+
+import com.crivano.swaggerservlet.SwaggerException;
 
 import br.gov.jfrj.siga.ex.ExMobil;
 import br.gov.jfrj.siga.ex.api.v1.IExApiV1.IMobilTramitarSiglaPost;
@@ -19,10 +25,45 @@ public class MobilTramitarSiglaPost implements IMobilTramitarSiglaPost {
 		return "Tramitar Documento";
 	}
 
+	private Pair<TramitacaoTipoDestinoEnum, LocalDate> validarRequestEExtrairTipoDestinoEDataDevolucao(MobilTramitarSiglaPostRequest req,
+			MobilTramitarSiglaPostResponse resp) throws SwaggerException {
+		try {
+			TramitacaoTipoDestinoEnum tipoTramitacao = TramitacaoTipoDestinoEnum.valueOf(req.tipoDestinatario);
+
+			if (StringUtils.isEmpty(req.destinatario)) {
+				throw new SwaggerException(tipoTramitacao.descricao + " não Fornecido", 400, null, req, resp, null);
+			}
+			if (!req.destinatario.matches(tipoTramitacao.pattern)) {
+				throw new SwaggerException(tipoTramitacao.descricao + " (" + req.destinatario + ") Inválido. "
+						+ tipoTramitacao.msgErroPattern, 400, null, req, resp, null);
+			}
+
+			LocalDate dataDevolucao = null;
+			if (StringUtils.isNotEmpty(req.dataDevolucao)) {
+				dataDevolucao = LocalDate.parse(req.dataDevolucao);
+				if (dataDevolucao.isBefore(LocalDate.now())) {
+					throw new SwaggerException(
+							"Data de devolução não pode ser anterior à data de hoje: " + req.dataDevolucao, 400, null,
+							req, resp, null);
+				}
+			}
+
+			return Pair.of(tipoTramitacao, dataDevolucao);
+		} catch (IllegalArgumentException e) {
+			throw new SwaggerException("Tipo de Tramitação inválido: " + req.tipoDestinatario, 400, null, req, resp,
+					null);
+		} catch (DateTimeParseException e) {
+			throw new SwaggerException("Data de Devolução inválida: " + req.dataDevolucao, 400, null, req, resp, null);
+		}
+	}
+
 	@Override
 	public void run(MobilTramitarSiglaPostRequest req, MobilTramitarSiglaPostResponse resp) throws Exception {
 		req.sigla = SwaggerHelper.decodePathParam(req.sigla);
-		System.out.println("MobilTramitarSiglaPost.run(): " + ToStringBuilder.reflectionToString(req, ToStringStyle.SHORT_PREFIX_STYLE));
+		Pair<TramitacaoTipoDestinoEnum, LocalDate> tipoDestinoDataDevolucao = validarRequestEExtrairTipoDestinoEDataDevolucao(req, resp);
+		System.out.println(
+				"MobilTramitarSiglaPost: " + ToStringBuilder.reflectionToString(req, ToStringStyle.SHORT_PREFIX_STYLE)
+						+ ", " + tipoDestinoDataDevolucao);
 
 		ApiContext apiContext = new ApiContext(true);
 		try {
@@ -32,7 +73,7 @@ public class MobilTramitarSiglaPost implements IMobilTramitarSiglaPost {
 
 			ExMobil mob = SwaggerHelper.buscarEValidarMobil(req.sigla, req, resp);
 			System.out.println("MobilTramitarSiglaPost.run(): " + mob);
-			
+
 			Date dt = ExDao.getInstance().consultarDataEHoraDoServidor();
 
 			apiContext.close();
