@@ -5,12 +5,12 @@ import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.observer.upload.UploadSizeLimit;
 import br.com.caelum.vraptor.observer.upload.UploadedFile;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.cp.bl.Cp;
@@ -38,6 +38,7 @@ public class SincController extends SigaController {
 
 	@Transacional
 	@Post("public/app/admin/sinc")
+	@UploadSizeLimit(sizeLimit=10 * 1024 * 1024, fileSizeLimit=10 * 1024 * 1024)
 	public void sinc(String sigla, int maxSinc, boolean modoLog, UploadedFile file) throws Exception {
 		try {
 			String pwd = Cp.getInstance().getProp().sincPassword();
