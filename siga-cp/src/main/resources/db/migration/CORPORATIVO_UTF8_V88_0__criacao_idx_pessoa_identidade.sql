@@ -1,3 +1,6 @@
+Força erro para interromper a execução da GMUD
+
+
 ALTER SESSION SET CURRENT_SCHEMA=corporativo;
 
 --------------------------------------------------------
