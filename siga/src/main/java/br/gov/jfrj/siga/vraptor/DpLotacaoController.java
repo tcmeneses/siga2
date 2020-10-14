@@ -8,6 +8,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -25,9 +27,9 @@ import br.com.caelum.vraptor.observer.download.InputStreamDownload;
 import br.com.caelum.vraptor.observer.upload.UploadedFile;
 import br.com.caelum.vraptor.view.Results;
 import br.gov.jfrj.siga.base.AplicacaoException;
-import br.gov.jfrj.siga.base.SigaModal;
 import br.gov.jfrj.siga.base.Prop;
 import br.gov.jfrj.siga.base.SigaMessages;
+import br.gov.jfrj.siga.base.SigaModal;
 import br.gov.jfrj.siga.base.Texto;
 import br.gov.jfrj.siga.cp.bl.Cp;
 import br.gov.jfrj.siga.cp.bl.CpBL;
@@ -35,10 +37,10 @@ import br.gov.jfrj.siga.dp.CpLocalidade;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
 import br.gov.jfrj.siga.dp.CpUF;
 import br.gov.jfrj.siga.dp.DpLotacao;
+import br.gov.jfrj.siga.dp.DpMarcadorLotacao;
 import br.gov.jfrj.siga.dp.DpPessoa;
 import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.dp.dao.DpLotacaoDaoFiltro;
-import br.gov.jfrj.siga.dp.dao.DpPessoaDaoFiltro;
 import br.gov.jfrj.siga.model.GenericoSelecao;
 import br.gov.jfrj.siga.model.Selecionavel;
 
@@ -621,4 +623,87 @@ public class DpLotacaoController extends SigaSelecionavelControllerSupport<DpLot
 		return (List<DpLotacao>)CpDao.getInstance().consultarLotacaoPorOrgao(u);
 	}
 
+	///////////////////////////////////////////////
+	// MARCADORES DE LOTAÇÃO - INÍCIO
+	///////////////////////////////////////////////
+
+	private static final int LIMITE_MARCADORES_ATIVOS = 5;
+
+	private void validarLimiteMarcadoresAtivos() throws AplicacaoException {
+		List<DpMarcadorLotacao> marcadores = CpDao.getInstance()
+				.consultarMarcadoresPorLotacao(getTitular().getIdLotacao());
+
+		// Não dá para usar lambda por causa dos manipuladores de bytes usados pelo VRaptor!
+		long quantMarcadoresAtivos = marcadores.stream().filter(new Predicate<DpMarcadorLotacao>() {
+			@Override
+			public boolean test(DpMarcadorLotacao m) {
+				return Objects.isNull(m.getDataFimMarcadorLotacao());
+			}
+		}).count();
+
+		if (quantMarcadoresAtivos >= LIMITE_MARCADORES_ATIVOS) {
+			throw new AplicacaoException("Limite máximo de Marcadores ativos é " + LIMITE_MARCADORES_ATIVOS);
+		}
+	}
+
+	@Get("/app/lotacao/marcador")
+	public void marcadores() {
+		System.out.println("DpLotacaoController.marcadores()");
+
+		List<DpMarcadorLotacao> marcadores = CpDao.getInstance()
+				.consultarMarcadoresPorLotacao(getTitular().getIdLotacao());
+
+		result.include("lotacao", getTitular().getLotacao());
+		result.include("itens", marcadores);
+		// Criar um método específico para contar o total? Ver lista() acima
+		result.include("tamanho", marcadores.size());
+	}
+
+	@Get("/app/lotacao/marcador/editar")
+	public void editaMarcador(final Long id) {
+		System.out.println("DpLotacaoController.editaMarcador(): " + id);
+		if (Objects.nonNull(id)) {
+			DpMarcadorLotacao marcador = CpDao.getInstance().consultarMarcadorLotacaoPorId(id);
+			result.include("id", id);
+			result.include("nome", marcador.getDescrMarcador());
+			result.include("cor", marcador.getCor());
+		}
+		result.include("request", getRequest());
+	}
+
+	@Post("/app/lotacao/marcador/gravar")
+	public void editaGravarMarcador(final Long id, String nome, String cor) {
+		if(Objects.isNull(id)) {
+			validarLimiteMarcadoresAtivos();
+		}
+
+		DpLotacao lotacao = new DpLotacao();
+		lotacao.setIdLotacao(getLotaCadastrante().getId());
+		DpMarcadorLotacao marcador = new DpMarcadorLotacao(id, nome, lotacao, cor, null);
+		CpDao.getInstance().gravarMarcadorLotacao(marcador);
+
+		this.result.redirectTo(this).marcadores();
+	}
+
+	@Get("/app/lotacao/marcador/ativarInativar")
+	public void ativarInativarMarcador(final Long id) throws Exception {
+		DpMarcadorLotacao marcador = CpDao.getInstance().consultarMarcadorLotacaoPorId(id);
+
+		// TODO: emular ativarInativar(final Long id) acima.
+		// ativar
+		if (Objects.nonNull(marcador.getDataFimMarcadorLotacao())) {
+			validarLimiteMarcadoresAtivos();
+			marcador.setDataFimMarcadorLotacao(null);
+		} else {
+			marcador.setDataFimMarcadorLotacao(new Date());
+		}
+		CpDao.getInstance().gravarMarcadorLotacao(marcador);
+
+		this.result.redirectTo(this).marcadores();
+	}
+
+	///////////////////////////////////////////////
+	// MARCADORES DE LOTAÇÃO - FINAL
+	///////////////////////////////////////////////
+	
 }

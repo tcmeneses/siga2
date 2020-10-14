@@ -207,6 +207,15 @@
 				</c:if>
 				
 				<%--
+				TODO: Adicionar condição via podeUtilizarServicoPorConfiguracao
+				(!f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA;ADM;DEMAIL:Definir Email do Usuário') || titular.orgaoUsuario.sigla == 'ZZ')
+				 --%>
+				<c:if test="${true}">
+					<li><a class="dropdown-item"
+							href="/siga/app/lotacao/marcadores">Marcadores da Unidade</a></li>
+				</c:if>
+				
+				<%--
 					<li><a href="/siga/substituicao/substituir.action">Entrar
 							como substituto</a>
 					</li>
