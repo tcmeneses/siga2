@@ -41,7 +41,7 @@
 								<c:url var="urlEditar" value="/app/lotacao/marcador/editar">
 									<c:param name="id" value="${marcador.id}" />
 								</c:url> 
-								<c:urlvar="urlAtivarInativar" value="/app/lotacao/marcador/ativarInativar">
+								<c:url var="urlAtivarInativar" value="/app/lotacao/marcador/ativarInativar">
 									<c:param name="id" value="${marcador.id}"></c:param>
 								</c:url>
 
