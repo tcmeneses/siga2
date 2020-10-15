@@ -16,22 +16,13 @@
 	<div class="container-fluid">
 		<form name="frm" action="listar" id="listar" class="form100"
 			method="GET">
-			<div class="card bg-light mb-3">
-				<div class="card-header">
-					<h5>
-						Marcadores da
-						<fmt:message key="usuario.lotacao" />
-						${lotacao.nomeLotacao}
-					</h5>
-				</div>
-			</div>
-
 			<h3 class="gt-table-head">Marcadores cadastrados</h3>
 			<table border="0" class="table table-sm table-striped">
 				<thead class="${thead_color}">
 					<tr>
 						<th align="left">Nome</th>
 						<th align="left">Cor</th>
+						<th align="left">Tem Data Limite?</th>
 						<th colspan="2" align="center">Op&ccedil;&otilde;es</th>
 					</tr>
 				</thead>
@@ -44,21 +35,22 @@
 							<td align="left"><span class="cor-marcador"
 								style="background-color: ${marcador.cor}"
 								title="${marcador.cor}">&nbsp;</span></td>
+							<td align="left">${marcador.dataLimiteAssociada? "Sim": "Não"}</td>
 
-							<td align="left"><c:url var="urlEditar"
-									value="/app/lotacao/marcador/editar">
+							<td align="left">
+								<c:url var="urlEditar" value="/app/lotacao/marcador/editar">
+									<c:param name="id" value="${marcador.id}" />
+								</c:url> 
+								<c:urlvar="urlAtivarInativar" value="/app/lotacao/marcador/ativarInativar">
 									<c:param name="id" value="${marcador.id}"></c:param>
-								</c:url> <%-- ********************************** --%> <c:url
-									var="urlAtivarInativar"
-									value="/app/lotacao/marcador/ativarInativar">
-									<c:param name="id" value="${marcador.id}"></c:param>
-								</c:url> <%-- ********************************** --%> <a
-								href="${urlEditar}" role="button" aria-pressed="true"
-								class="btn btn-primary">Alterar</a> <%-- ********************************** --%>
+								</c:url>
+
+								<a href="${urlEditar}" role="button" aria-pressed="true"
+								class="btn btn-primary">Alterar</a> 
 
 								<a href="${urlAtivarInativar}" role="button" aria-pressed="true"
-								class="btn btn-primary"> ${empty marcador.dataFimMarcadorLotacao? 'Inativar': 'Ativar'}
-							</a> <%-- ********************************** --%></td>
+								class="btn btn-primary"> ${empty marcador.dataFimMarcadorLotacao? 'Inativar': 'Ativar'}</a> 
+							</td>
 						</tr>
 					</siga:paginador>
 				</tbody>

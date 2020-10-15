@@ -627,14 +627,14 @@ public class DpLotacaoController extends SigaSelecionavelControllerSupport<DpLot
 	// MARCADORES DE LOTAÇÃO - INÍCIO
 	///////////////////////////////////////////////
 
-	private static final int LIMITE_MARCADORES_ATIVOS = 5;
+	private static final int LIMITE_MARCADORES_ATIVOS = 10;
 
 	private void validarLimiteMarcadoresAtivos() throws AplicacaoException {
 		List<DpMarcadorLotacao> marcadores = CpDao.getInstance()
 				.consultarMarcadoresPorLotacao(getTitular().getIdLotacao());
 
-		// Não dá para usar lambda por causa dos manipuladores de bytes usados pelo VRaptor!
 		long quantMarcadoresAtivos = marcadores.stream().filter(new Predicate<DpMarcadorLotacao>() {
+			// Não dá para usar lambda por causa dos manipuladores de bytes usados pelo VRaptor!
 			@Override
 			public boolean test(DpMarcadorLotacao m) {
 				return Objects.isNull(m.getDataFimMarcadorLotacao());
@@ -667,19 +667,20 @@ public class DpLotacaoController extends SigaSelecionavelControllerSupport<DpLot
 			result.include("id", id);
 			result.include("nome", marcador.getDescrMarcador());
 			result.include("cor", marcador.getCor());
+			result.include("dataLimite", marcador.isDataLimiteAssociada());
 		}
 		result.include("request", getRequest());
 	}
 
 	@Post("/app/lotacao/marcador/gravar")
-	public void editaGravarMarcador(final Long id, String nome, String cor) {
+	public void editaGravarMarcador(final Long id, String nome, String cor, boolean dataLimite) {
 		if(Objects.isNull(id)) {
 			validarLimiteMarcadoresAtivos();
 		}
 
 		DpLotacao lotacao = new DpLotacao();
 		lotacao.setIdLotacao(getLotaCadastrante().getId());
-		DpMarcadorLotacao marcador = new DpMarcadorLotacao(id, nome, lotacao, cor, null);
+		DpMarcadorLotacao marcador = new DpMarcadorLotacao(id, nome, lotacao, cor, dataLimite, null);
 		CpDao.getInstance().gravarMarcadorLotacao(marcador);
 
 		this.result.redirectTo(this).marcadores();

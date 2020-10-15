@@ -2646,6 +2646,13 @@ public class CpDao extends ModeloDao {
 		}
 	}
 
+	///////////////////////////////////////////////
+	// MARCADORES DE LOTAÇÃO - INÍCIO
+	///////////////////////////////////////////////
+
+	/**
+	 * "Repositorio" fake enquanto não se define a tabela e o mapeamento.
+	 */
 	private static List<DpMarcadorLotacao> _POOL = new ArrayList<DpMarcadorLotacao>();
 
 	public List<DpMarcadorLotacao> consultarMarcadoresPorLotacao(Long idLotacao) {
@@ -2661,7 +2668,7 @@ public class CpDao extends ModeloDao {
 						"Marca " + i, //
 						lotacao, //
 						String.format("#%06d", r.nextInt(1000000)), //
-						(i % 2 == 0) ? new Date() : null)
+						false, (i % 2 == 0) ? new Date() : null)
 			).collect(Collectors.toList());
 
 			_POOL.addAll(result);
@@ -2688,9 +2695,14 @@ public class CpDao extends ModeloDao {
 			DpMarcadorLotacao marcadorPersistido = this.consultarMarcadorLotacaoPorId(marcadorLotacao.getId());
 			marcadorPersistido.setCor(marcadorLotacao.getCor());
 			marcadorPersistido.setDescrMarcador(marcadorLotacao.getDescrMarcador());
+			marcadorPersistido.setDataLimiteAssociada(marcadorLotacao.isDataLimiteAssociada());
 		}
 
 		return this.consultarMarcadorLotacaoPorId(marcadorLotacao.getId());
 	}
+
+	///////////////////////////////////////////////
+	// MARCADORES DE LOTAÇÃO - FINAL
+	///////////////////////////////////////////////
 
 }

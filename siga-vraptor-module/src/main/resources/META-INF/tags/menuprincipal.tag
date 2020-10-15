@@ -212,7 +212,7 @@
 				 --%>
 				<c:if test="${true}">
 					<li><a class="dropdown-item"
-							href="/siga/app/lotacao/marcadores">Marcadores da Unidade</a></li>
+							href="/siga/app/lotacao/marcador">Marcadores da Unidade</a></li>
 				</c:if>
 				
 				<%--

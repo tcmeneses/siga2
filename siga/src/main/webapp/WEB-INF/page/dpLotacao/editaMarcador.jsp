@@ -9,11 +9,11 @@
 		sigaSpinner.mostrar();
 		document.getElementById("btnOk").disabled = true;
 
-		if(!document.getElementById('nome').value) {
+		if (!document.getElementById('nome').value) {
 			habilitarBotaoOk();
 			sigaModal.alerta("Preencha o nome da Marcação");
 			document.getElementById('nome').focus();
-		} else if(!document.getElementById('cor').value) {
+		} else if (!document.getElementById('cor').value) {
 			habilitarBotaoOk();
 			sigaModal.alerta("Preencha a cor da Marcação");
 			document.getElementById('cor').focus();
@@ -47,7 +47,8 @@
 					<div class="row">
 						<div class="col-sm-4">
 							<div class="form-group">
-								<label for="nome">Nome</label> <input type="text" id="nome"
+								<label for="nome">Nome</label> 
+								<input type="text" id="nome"
 									name="nome" value="${nome}" maxlength="40" class="form-control" />
 							</div>
 						</div>
@@ -56,8 +57,20 @@
 						<div class="col-sm-4">
 							<div class="form-group">
 								<label for="cor">Cor</label> 
-								<input type="color" id="cor" title="Clique para alterar a cor"
-									name="cor" value="${cor}" class="form-control" style="height: 40px;"/>
+								<input type="color" id="cor"
+									title="Clique para alterar a cor" name="cor" value="${cor}"
+									class="form-control" style="height: 40px;" />
+							</div>
+						</div>
+					</div>
+					<div class="row mb-2">
+						<div class="col-sm-4">
+							<div class="form-check form-check-inline">
+								<label for="dataLimite" class="form-check-label pr-2">Tem
+									Data Limite?</label> 
+									<input type="checkbox" id="dataLimite"
+									name="dataLimite" value="1" ${dataLimite? 'checked': ''}
+									class="form-check-input" />
 							</div>
 						</div>
 					</div>

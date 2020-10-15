@@ -20,6 +20,8 @@ public class DpMarcadorLotacao extends CpMarcador implements HistoricoAuditavel 
 
 	private String cor;
 
+	private boolean dataLimiteAssociada;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "HIS_IDC_INI")
 	private CpIdentidade hisIdcIni;
@@ -53,15 +55,17 @@ public class DpMarcadorLotacao extends CpMarcador implements HistoricoAuditavel 
 	 * @param nome
 	 * @param lotacao
 	 * @param cor
+	 * @param dataLimiteAssociada TODO
 	 * @param dtFim
 	 */
 	@Deprecated
-	public DpMarcadorLotacao(Long id, String nome, DpLotacao lotacao, String cor, Date dtFim) {
+	public DpMarcadorLotacao(Long id, String nome, DpLotacao lotacao, String cor, boolean dataLimiteAssociada, Date dtFim) {
 		super.setDescrMarcador(nome);
 		super.setIdMarcador(id);
 		this.lotacao = lotacao;
 		this.cor = cor;
 		this.setHisDtFim(dtFim);
+		this.dataLimiteAssociada = dataLimiteAssociada;
 	}
 
 	// CONSTRUTORES - FINAL
@@ -175,6 +179,14 @@ public class DpMarcadorLotacao extends CpMarcador implements HistoricoAuditavel 
 		this.cor = cor;
 	}
 
+	public boolean isDataLimiteAssociada() {
+		return dataLimiteAssociada;
+	}
+
+	public void setDataLimiteAssociada(boolean dataLimiteAssociada) {
+		this.dataLimiteAssociada = dataLimiteAssociada;
+	}
+
 	// GETTERS & SETTERS - FINAL
 
 	@Override
@@ -189,6 +201,4 @@ public class DpMarcadorLotacao extends CpMarcador implements HistoricoAuditavel 
 		return SincronizavelSuporte.semelhante(this, obj, profundidade);
 	}
 
-	
-	
 }
