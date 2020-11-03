@@ -2,7 +2,7 @@ declare
     cursor c1( 
       p_rows_to_process in number) is 
       select * 
-      from   ex_modelo 
+      from   siga.ex_modelo 
       where  id_arq is null 
          and conteudo_blob_mod is not null; 
     l_moretodo       boolean := true; 
@@ -21,7 +21,7 @@ begin
                         (id_arq,id_orgao_usu,conteudo_tp_arq) 
             values      (corporativo.cp_arquivo_seq.currval,null,r1.conteudo_tp_blob);
 
-            update ex_modelo 
+            update siga.ex_modelo 
             set    id_arq = corporativo.cp_arquivo_seq.currval 
             where  id_mod = r1.id_mod; 
 
