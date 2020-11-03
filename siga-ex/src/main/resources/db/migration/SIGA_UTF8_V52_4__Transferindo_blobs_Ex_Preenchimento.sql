@@ -2,7 +2,7 @@ declare
     cursor c1( 
       p_rows_to_process in number) is 
       select * 
-      from   ex_preenchimento 
+      from   siga.ex_preenchimento 
       where  id_arq is null 
          and preenchimento_blob is not null; 
     l_moretodo       boolean := true; 
@@ -21,7 +21,7 @@ begin
                         (id_arq,id_orgao_usu,conteudo_tp_arq) 
             values      (corporativo.cp_arquivo_seq.currval,null,'application/x-www-form-urlencoded');
 
-            update ex_preenchimento
+            update siga.ex_preenchimento
             set    id_arq = corporativo.cp_arquivo_seq.currval 
             where  id_preenchimento = r1.id_preenchimento; 
 
