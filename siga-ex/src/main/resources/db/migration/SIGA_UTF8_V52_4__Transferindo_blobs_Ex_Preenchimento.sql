@@ -18,8 +18,8 @@ begin
             values      (corporativo.cp_arquivo_seq.nextval,r1.preenchimento_blob);
 
             insert into corporativo.cp_arquivo
-                        (id_arq,id_orgao_usu,conteudo_tp_arq) 
-            values      (corporativo.cp_arquivo_seq.currval,null,'application/x-www-form-urlencoded');
+                        (id_arq,id_orgao_usu,conteudo_tp_arq, tamanho_arq, tp_armazenamento) 
+            values      (corporativo.cp_arquivo_seq.currval,null,'application/x-www-form-urlencoded',  dbms_lob.getlength(r1.preenchimento_blob), 'TABELA' );
 
             update siga.ex_preenchimento
             set    id_arq = corporativo.cp_arquivo_seq.currval 
