@@ -18,8 +18,8 @@ begin
             values      (corporativo.cp_arquivo_seq.nextval,r1.conteudo_blob_mov);
 
             insert into corporativo.cp_arquivo
-                        (id_arq,id_orgao_usu,conteudo_tp_arq) 
-            values      (corporativo.cp_arquivo_seq.currval,null,r1.conteudo_tp_mov);
+                        (id_arq,id_orgao_usu,conteudo_tp_arq, tamanho_arq, tp_armazenamento)
+            values      (corporativo.cp_arquivo_seq.currval,null,r1.conteudo_tp_mov, dbms_lob.getlength(r1.conteudo_blob_mov), 'TABELA' );
 
             update siga.ex_movimentacao
             set    id_arq = corporativo.cp_arquivo_seq.currval 
