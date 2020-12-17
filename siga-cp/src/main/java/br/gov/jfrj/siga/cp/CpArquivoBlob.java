@@ -37,7 +37,7 @@ import org.hibernate.annotations.Immutable;
  */
 @Entity
 @Immutable
-@Table(name = "CP_ARQUIVO_BLOB", schema = "CORPORATIVO")
+@Table(name = "corporativo.cp_arquivo_blob")
 public class CpArquivoBlob implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -48,7 +48,7 @@ public class CpArquivoBlob implements Serializable {
 
 	@MapsId
 	@OneToOne(mappedBy = "arquivoBlob")
-	@JoinColumn(name = "ID_ARQ_BLOB") // same name as id @Column
+	@JoinColumn(name = "ID_ARQ_BLOB", referencedColumnName = "ID_ARQ") // same name as id @Column
 	private CpArquivo arquivo;
 
 	@Lob
