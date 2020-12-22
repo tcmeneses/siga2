@@ -1711,8 +1711,8 @@ public class ExDao extends CpDao {
 		String q = "select marca, marcador, mobil from ExMarca marca"
 				+ " inner join marca.cpMarcador marcador"
 				+ " inner join marca.exMobil mobil"
-				+ " where (marca.dtIniMarca is null or marca.dtIniMarca < CURRENT_TIMESTAMP)"
-				+ " and (marca.dtFimMarca is null or marca.dtFimMarca > CURRENT_TIMESTAMP)"
+				+ " where (marca.dtIniMarca is null or marca.dtIniMarca < sysdate)"
+				+ " and (marca.dtFimMarca is null or marca.dtFimMarca > sysdate)"
 				+ " and (marca.dpPessoaIni.idPessoa = :titular or "
 				+ " (marca.dpPessoaIni.idPessoa = null and marca.dpLotacaoIni.idLotacao = :lotaTitular))";
 		if(Prop.isGovSP()) {
@@ -1775,8 +1775,8 @@ public class ExDao extends CpDao {
 						"select marca, marcador, mobil from ExMarca marca"
 								+ " inner join marca.cpMarcador marcador"
 								+ " inner join marca.exMobil mobil"
-								+ " where (marca.dtIniMarca is null or marca.dtIniMarca < CURRENT_TIMESTAMP)"
-								+ " and (marca.dtFimMarca is null or marca.dtFimMarca > CURRENT_TIMESTAMP)"
+								+ " where (marca.dtIniMarca is null or marca.dtIniMarca < sysdate)"
+								+ " and (marca.dtFimMarca is null or marca.dtFimMarca > sysdate)"
 								+ " and (marca.cpMarcador.idMarcador = 14L)"
 								+ (titular != null ? " and (marca.dpPessoaIni.idPessoaIni = :titular)"
 										: " and (marca.dpLotacaoIni.idLotacaoIni = :lotaTitular)"));
@@ -1838,8 +1838,8 @@ public class ExDao extends CpDao {
 						 + " INNER JOIN corporativo.cp_marcador marcador ON marca.id_marcador = marcador.id_marcador"
 						 + " LEFT OUTER JOIN corporativo.cp_marca marca2 ON "
 						  + " marca2.id_ref = marca.id_ref "
-						  + " AND (marca2.dt_ini_marca IS NULL OR marca2.dt_ini_marca < CURRENT_TIMESTAMP)"
-						  + " AND (marca2.dt_fim_marca IS NULL OR marca2.dt_fim_marca > CURRENT_TIMESTAMP)"
+						  + " AND (marca2.dt_ini_marca IS NULL OR marca2.dt_ini_marca < sysdate)"
+						  + " AND (marca2.dt_fim_marca IS NULL OR marca2.dt_fim_marca > sysdate)"
 						  + " AND ((marcador.GRUPO_MARCADOR <> " + String.valueOf(Mesa2.GrupoDeMarcadorEnum.EM_ELABORACAO.getId()) 
 						  	+ " AND MARCA2.ID_MARCADOR = " + String.valueOf(CpMarcador.MARCADOR_EM_ELABORACAO) + ") "
 						  	+ ( "".equals(queryMarcasAIgnorarFinal) ? ")" : 
@@ -1848,8 +1848,8 @@ public class ExDao extends CpDao {
 						  		+ " AND marca2.id_marcador in (" + queryMarcasAIgnorarFinal + ")))" )
 //  						  + (!grupoItem.grupoNome.equals(Mesa2.GrupoDeMarcadorEnum.EM_ELABORACAO.getNome())?
 //  								  " OR marca2.id_marcador = " + String.valueOf(CpMarcador.MARCADOR_EM_ELABORACAO) + ")" : ")")
-						 + " WHERE (marca.dt_ini_marca IS NULL OR marca.dt_ini_marca < CURRENT_TIMESTAMP)"
-						  + " AND (marca.dt_fim_marca IS NULL OR marca.dt_fim_marca > CURRENT_TIMESTAMP)"
+						 + " WHERE (marca.dt_ini_marca IS NULL OR marca.dt_ini_marca < sysdate)"
+						  + " AND (marca.dt_fim_marca IS NULL OR marca.dt_fim_marca > sysdate)"
 						  + " AND ((marca.id_pessoa_ini = :idPessoaIni) OR (marca.id_lotacao_ini = :idLotacaoIni))"
 						  + " AND marca.id_tp_marca = 1"
 						  + " AND marcador.grupo_marcador = " + grupoItem.grupoOrdem 
@@ -1909,8 +1909,8 @@ public class ExDao extends CpDao {
 					+ " inner join marca.cpMarcador marcador"
 					+ " inner join mobil.exDocumento doc"
 					+ queryMarcasAIgnorar
-					+ " where (marca.dtIniMarca is null or marca.dtIniMarca < CURRENT_TIMESTAMP)"
-					+ " and (marca.dtFimMarca is null or marca.dtFimMarca > CURRENT_TIMESTAMP)"
+					+ " where (marca.dtIniMarca is null or marca.dtIniMarca < sysdate)"
+					+ " and (marca.dtFimMarca is null or marca.dtFimMarca > sysdate)"
 					+ (!exibeLotacao && titular != null ? " and (marca.dpPessoaIni.idPessoaIni = :titular)" : "") 
 					+ (exibeLotacao && lotaTitular != null ? " and (marca.dpLotacaoIni.idLotacaoIni = :lotaTitular)" : "")
 					+ queryMarcasAIgnorarWhere

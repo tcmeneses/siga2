@@ -2486,8 +2486,8 @@ public class CpDao extends ModeloDao {
 		try {
 			String consultarQuantidadeDocumentosPorDpLotacao = "SELECT count(1) FROM DpLotacao lotacao"
 					+ " left join CpMarca marca on lotacao.idLotacao = marca.dpLotacaoIni"
-					+ " WHERE(marca.dtIniMarca IS NULL OR marca.dtIniMarca < CURRENT_TIMESTAMP)"
-					+ " AND(marca.dtFimMarca IS NULL OR marca.dtFimMarca > CURRENT_TIMESTAMP)"
+					+ " WHERE(marca.dtIniMarca IS NULL OR marca.dtIniMarca < sysdate)"
+					+ " AND(marca.dtFimMarca IS NULL OR marca.dtFimMarca > sysdate)"
 					+ " AND marca.cpMarcador.idMarcador not in (1,10,32)"
 					+ " AND lotacao.idLotacaoIni = :idLotacao"
 					+ " AND marca.cpTipoMarca.idTpMarca = :idTipoMarca ";
@@ -2533,8 +2533,8 @@ public class CpDao extends ModeloDao {
 					+ queryLotacao
 					+ queryUsuario
 					+ "and marcador.idMarcador = :idMarcador " 
-					+ "and (dt_ini_marca is null or dt_ini_marca < CURRENT_TIMESTAMP) " 
-					+ "and (dt_fim_marca is null or dt_fim_marca > CURRENT_TIMESTAMP) " 
+					+ "and (dt_ini_marca is null or dt_ini_marca < sysdate) " 
+					+ "and (dt_fim_marca is null or dt_fim_marca > sysdate) " 
 				;
 
 		Query query = em().createQuery(queryTemp);
