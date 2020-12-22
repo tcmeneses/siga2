@@ -3813,6 +3813,7 @@ public class ExMovimentacaoController extends ExController {
 			throw new AplicacaoException("Não é possível desapensar");
 
 		if (doc.isEletronico()) {
+			SigaTransacionalInterceptor.upgradeParaTransacional();
 			aDesapensarGravar(1, sigla, dtMovString, Boolean.FALSE, null, null);
 			return;
 		}
