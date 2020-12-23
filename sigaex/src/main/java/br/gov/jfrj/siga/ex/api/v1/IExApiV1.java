@@ -475,4 +475,17 @@ public interface IExApiV1 {
 		public void run(DocumentosPostRequest req, DocumentosPostResponse resp) throws Exception;
 	}
 
+	
+	public interface ITesteApiGet extends ISwaggerMethod {
+		public void run(TesteApiGetRequest req, TesteApiGetResponse resp) throws Exception;
+	}
+	
+	public class TesteApiGetRequest implements ISwaggerRequest {
+
+	}
+	public class TesteApiGetResponse implements ISwaggerResponse {
+		public String mensagem;
+
+	}
+
 }

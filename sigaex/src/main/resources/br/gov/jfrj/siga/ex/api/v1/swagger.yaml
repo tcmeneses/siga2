@@ -29,7 +29,10 @@ securityDefinitions:
     type: apiKey
     name: Authorization
     in: header
-
+    
+security: 
+  - Bearer: []
+  
 ################################################################################
 #                                   Parameters                                 #
 ################################################################################
@@ -808,7 +811,26 @@ paths:
         500:
           description: Error ocurred
           schema:
-            $ref: "#/definitions/Error"
+            $ref: "#/definitions/Error"            
+
+  /testeApi:
+    get:
+      tags: 
+        summary: Teste
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: object
+            properties:
+              mensagem:
+                type: string
+                description: Mensagem
+
+        500:
+          description: Error ocurred
+          schema:
+            $ref: "#/definitions/Error"                           
 
 ################################################################################
 #                                     Definitions                              #

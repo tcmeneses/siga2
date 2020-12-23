@@ -7,6 +7,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -22,9 +27,26 @@ import com.crivano.swaggerservlet.SwaggerContext;
 import com.crivano.swaggerservlet.SwaggerServlet;
 import com.crivano.swaggerservlet.SwaggerUtils;
 import com.crivano.swaggerservlet.dependency.TestableDependency;
+import com.nimbusds.jose.JOSEObjectType;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.jwk.source.RemoteJWKSet;
+import com.nimbusds.jose.proc.DefaultJOSEObjectTypeVerifier;
+import com.nimbusds.jose.proc.JWSKeySelector;
+import com.nimbusds.jose.proc.JWSVerificationKeySelector;
+import com.nimbusds.jose.proc.SecurityContext;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
+import com.nimbusds.jwt.proc.DefaultJWTClaimsVerifier;
+import com.nimbusds.jwt.proc.DefaultJWTProcessor;
+import com.nimbusds.jwt.proc.JWTClaimsSetVerifier;
 
+import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Prop;
 import br.gov.jfrj.siga.base.Prop.IPropertyProvider;
+import br.gov.jfrj.siga.dp.DpPessoa;
+import br.gov.jfrj.siga.dp.dao.DpPessoaDaoFiltro;
 import br.gov.jfrj.siga.hibernate.ExDao;
 import br.gov.jfrj.siga.idp.jwt.AuthJwtFormFilter;
 import br.gov.jfrj.siga.model.ContextoPersistencia;
@@ -232,6 +254,8 @@ public class ExApiV1Servlet extends SwaggerServlet implements IPropertyProvider 
 		//Siga-Le
 		addPublicProperty("smtp.sugestao.destinatario", getProp("/siga.smtp.usuario.remetente"));
 		addPublicProperty("smtp.sugestao.assunto", "Siga-Le: Sugestão");
+		
+		addPublicProperty("api.security.authorization.type", "OAUTH2"); //BASIC_AUTH, OAUTH2
 	}
 
 	@Override
@@ -251,7 +275,77 @@ public class ExApiV1Servlet extends SwaggerServlet implements IPropertyProvider 
 	@Override
 	public void invoke(SwaggerContext context) throws Exception {
 		try {
-			if (!context.getAction().getClass().isAnnotationPresent(AcessoPublico.class)) {
+			
+			if (context.getAction().getClass().isAnnotationPresent(AcessoPrivadoOAuth.class)) {
+				try {
+					//Extract Access Token
+					String accessToken = AuthJwtFormFilter.extrairAuthorization(context.getRequest());	
+					
+					//Extract SIGA Profile for disambiguation CPF to SIGA Matricula 
+					String sigaProfileBase64 = context.getRequest().getHeader("SIGAProfile");
+					String sigaProfile = null;
+					if (sigaProfileBase64 != null) {
+						sigaProfile = new String(Base64.getDecoder().decode(sigaProfileBase64));
+					}
+					
+	
+					// Create a JWT processor for the access tokens
+					ConfigurableJWTProcessor<SecurityContext> jwtProcessor =  new DefaultJWTProcessor<>();
+					
+					jwtProcessor.setJWSTypeVerifier( new DefaultJOSEObjectTypeVerifier<>(new JOSEObjectType("JWT")));
+					
+					//JWS
+					JWKSource<SecurityContext> keySource =
+						    new RemoteJWKSet<>(new URL("https://homolog.login.sp.gov.br/sts/.well-known/openid-configuration/jwks"));
+					
+					JWSAlgorithm expectedJWSAlg = JWSAlgorithm.RS256;
+					JWSKeySelector<SecurityContext> keySelector = new JWSVerificationKeySelector<>(expectedJWSAlg, keySource);	
+					jwtProcessor.setJWSKeySelector(keySelector);
+					
+					//Verify claims
+					jwtProcessor.setJWTClaimsSetVerifier(new DefaultJWTClaimsVerifier(
+						    new JWTClaimsSet.Builder().issuer("https://homolog.login.sp.gov.br/sts").build(),
+						    new HashSet<>(Arrays.asList("exp","sub","client_id","scope"))));
+	
+					//Extract JWT claims
+					JWTClaimsSet claimsSet = jwtProcessor.process(accessToken, null);
+					Long cpf = Long.parseLong(claimsSet.getClaim("sub").toString());
+
+					DpPessoa flt = new DpPessoa();
+					List<DpPessoa> p = new ArrayList<DpPessoa>();
+					if (sigaProfile != null) {
+						flt.setSigla(sigaProfile);
+						flt = ExDao.getInstance().consultarPorSigla(flt);
+						if (flt != null)
+							p.add(flt);
+					} else {
+						p =  ExDao.getInstance().listarPorCpf(cpf);
+					}
+
+					
+					if (p.isEmpty()) {
+						throw new AplicacaoException(
+								"SIGAProfile não encontrado.");
+					}
+					
+					if (p.size() > 1) {
+						throw new AplicacaoException(
+								"SIGAProfile não informado. Há mais de um SIGAProfile para esse escopo.");
+					}
+					
+					if (cpf != p.get(0).getCpfPessoa().longValue()) {
+						throw new AplicacaoException(
+								"SIGAProfile não autorizado dentro desse escopo.");
+					}
+					ContextoPersistencia.setUserPrincipal(claimsSet.getClaim("sub").toString());
+					System.out.println(claimsSet.toJSONObject());
+					
+				} catch (Exception e) {
+					throw e;
+				}		
+				
+			
+			} else if (!context.getAction().getClass().isAnnotationPresent(AcessoPublico.class)) {
 				try {
 					String token = AuthJwtFormFilter.extrairAuthorization(context.getRequest());
 					Map<String, Object> decodedToken = AuthJwtFormFilter.validarToken(token);

@@ -4,12 +4,18 @@ import static java.util.Objects.isNull;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
 
+import org.jboss.security.auth.spi.AnonLoginModule;
+
+import com.auth0.jwt.internal.com.fasterxml.jackson.databind.util.Annotations;
 import com.crivano.swaggerservlet.SwaggerAuthorizationException;
 import com.crivano.swaggerservlet.SwaggerServlet;
 
@@ -33,15 +39,35 @@ public class ApiContext implements Closeable {
 	boolean transacional;
 	long inicio = System.currentTimeMillis();
 	private static final String DOC_MÓDULO_DE_DOCUMENTOS = "DOC:Módulo de Documentos;";
+	
+	public ApiContext(boolean transacional, boolean validaUser, Annotation[] annotations) throws SwaggerAuthorizationException {
+
+		try {
+			if (!validaAcesso(annotations)) {
+				throw new SwaggerAuthorizationException();
+			}
+			
+		} catch (Exception e) {
+			throw new SwaggerAuthorizationException();
+		}
+
+
+
+		
+
+		    
+
+	}
 
 	public ApiContext(boolean transacional, boolean validaUser) throws SwaggerAuthorizationException {
-		if (validaUser) {
-			buscarEValidarUsuarioLogado();
-		}
-		
+
 		this.transacional = transacional;
 		em = ExStarter.emf.createEntityManager();
 		ContextoPersistencia.setEntityManager(em);
+		
+		if (validaUser) {
+			buscarEValidarUsuarioLogado();
+		}
 
 		ModeloDao.freeInstance();
 		ExDao.getInstance();
@@ -149,6 +175,21 @@ public class ApiContext implements Closeable {
 						+ titular.getSigla() + "/" + lotaTitular.getSiglaCompleta() + "." + s);
 			}
 		}
+	}
+	
+	private boolean validaAcesso(Annotation[] annotations) throws Exception {
+		boolean canAccess = false;
+		for (Annotation checkSecurity : annotations) {
+			if (checkSecurity.annotationType().isAnnotationPresent(PreAuthorize.class)) {
+				PreAuthorize preAuth = checkSecurity.annotationType().getAnnotation(PreAuthorize.class);
+
+		    	Class<?> ClassAnotado = Class.forName(preAuth.securityClass());
+		    	Method method = ClassAnotado.getMethod(preAuth.method());
+		    	canAccess = (boolean) method.invoke(ClassAnotado.newInstance());
+		    	break;
+			}
+		}
+		return canAccess;
 	}
 	
 }

@@ -54,7 +54,7 @@
 		</div>
 	</c:if>
 
-	<c:if test="${not empty tramitarAtivo}">
+	<c:if test="${not empty tramitarAtivo}"> 
 		<div class="form-check form-check-inline mr-2 ">
 			<input class="form-check-input" type="checkbox" name="ad_tramitar_0"
 				id="ad_tramitar_0" <c:if test="${tramitarAtivo}">checked</c:if>

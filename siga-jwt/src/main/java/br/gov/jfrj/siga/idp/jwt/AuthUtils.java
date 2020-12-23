@@ -2,7 +2,7 @@ package br.gov.jfrj.siga.idp.jwt;
 
 import java.util.List;
 
-import br.gov.jfrj.siga.base.Prop;
+import br.gov.jfrj.siga.base.Prop; 
 
 public class AuthUtils {
 

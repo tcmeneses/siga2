@@ -1404,7 +1404,7 @@ CKEDITOR.replace( '${var}',
 								    }
 								]);
 								CKEDITOR.config.toolbar = 'SigaToolbar';
-								
+								 
 								CKEDITOR.config.toolbar_SigaToolbar = [{
 								        name: 'styles',
 								        items: ['Styles']
