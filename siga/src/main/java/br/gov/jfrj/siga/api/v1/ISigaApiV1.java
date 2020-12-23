@@ -24,6 +24,56 @@ public interface ISigaApiV1 {
 		public String errormsg;
 	}
 
+	public class Pessoa implements ISwaggerModel {
+		public String idPessoa;
+		public String idPessoaIni;
+		public String sigla;
+		public String nome;
+		public String siglaLotacao;
+		public Boolean isExternaPessoa;
+		public Lotacao lotacao;
+		public Cargo cargo;
+		public FuncaoConfianca funcaoConfianca;
+	}
+
+	public class Orgao implements ISwaggerModel {
+		public String idOrgao;
+		public String sigla;
+		public String nome;
+	}
+
+	public class Lotacao implements ISwaggerModel {
+		public String idLotacao;
+		public String idLotacaoIni;
+		public String sigla;
+		public String siglaLotacao;
+		public String nome;
+		public Orgao orgao;
+	}
+
+	public class LotacaoAtual implements ISwaggerModel {
+		public String idLotacao;
+		public String idLotacaoIni;
+		public String sigla;
+		public String nome;
+		public String orgao;
+	}
+
+	public class Cargo implements ISwaggerModel {
+		public String idCargo;
+		public String idExterna;
+		public String sigla;
+		public String nome;
+	}
+
+	public class FuncaoConfianca implements ISwaggerModel {
+		public String idFuncaoConfianca;
+		public String idExterna;
+		public String sigla;
+		public String nome;
+		public String idpai;
+	}
+
 	public class AutenticarPostRequest implements ISwaggerRequest {
 	}
 
@@ -125,6 +175,20 @@ public interface ISigaApiV1 {
 
 	public interface IStatusChaveGet extends ISwaggerMethod {
 		public void run(StatusChaveGetRequest req, StatusChaveGetResponse resp) throws Exception;
+	}
+
+	public class PessoasGetRequest implements ISwaggerRequest {
+		public String idPessoaIni;
+		public String texto;
+		public String cpf;
+	}
+
+	public class PessoasGetResponse implements ISwaggerResponse {
+		public List<Pessoa> list;
+	}
+
+	public interface IPessoasGet extends ISwaggerMethod {
+		public void run(PessoasGetRequest req, PessoasGetResponse resp) throws Exception;
 	}
 
 }
