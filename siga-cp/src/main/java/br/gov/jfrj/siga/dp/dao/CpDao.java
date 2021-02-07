@@ -2023,8 +2023,7 @@ public class CpDao extends ModeloDao {
 	public DpPessoa getPessoaFromSigla(String sigla) {
 		DpPessoa p = new DpPessoa();
 		p.setSigla(sigla);
-		DpPessoa ator = consultarPorSigla(p);
-		return ator;
+		return  consultarPorSigla(p);
 	}
 
 	public DpLotacao getLotacaoFromSigla(String sigla) {
