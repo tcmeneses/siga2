@@ -116,7 +116,9 @@ public class Mesa2 {
 		//
 		QUALQUER(13, "Qualquer", "fas fa-inbox", false, true, true),
 		//
-		NENHUM(14, "Nenhum", "fas fa-inbox", false, true, true);
+		NENHUM(14, "Nenhum", "fas fa-inbox", false, true, true),
+
+		RECEBIDOS_PEN(15, "Recebidos PEN", "fas fa-inbox", true, true, false);
 
 		private final Integer id;
 		private final String nome;
@@ -410,7 +412,10 @@ public class Mesa2 {
                 GrupoDeMarcadorEnum.ALERTA),
 		//
 		DEMANDA_JUDICIAL_ALTA(1010, "Demanda Judicial Prioridade Alta", "fas fa-tag", "",
-                GrupoDeMarcadorEnum.ALERTA);
+                GrupoDeMarcadorEnum.ALERTA),
+
+		RECEBIDO_PEN(2000, "Recebido PEN", "fas fa-tag", "",
+				GrupoDeMarcadorEnum.RECEBIDOS_PEN);
 
 		private MarcadorEnum(int id, String nome, String icone,
 				String descricao, GrupoDeMarcadorEnum grupo) {
@@ -690,6 +695,8 @@ public class Mesa2 {
 
 		Map<ExMobil, DocDados> map = new HashMap<>();
 		// Cria hashmap para pesquisa do mobil nos grupos
+
+		//TODO BUG. TEM ALGUNS MARCADORES QUE NAO POSSUEM GRUPO NO BANCO DE DADOS
 		Map<Long, List<Long>> hashMobGrp = l.stream()
 		        .collect(Collectors.groupingBy(k -> (Long.valueOf(((ExMobil) k[2]).getIdMobil())), 
 		                Collectors.mapping(v -> (Long.valueOf(((CpMarcador) v[1]).getGrupoMarcador())), 

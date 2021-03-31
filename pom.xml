@@ -39,8 +39,9 @@
 		<!-- <module>siga-relarmaz</module> -->
 		<module>siga-oidc</module>
 		<module>siga-le</module>
-		
-		
+		<module>siga-pen</module>
+
+
 	</modules>
 
 
