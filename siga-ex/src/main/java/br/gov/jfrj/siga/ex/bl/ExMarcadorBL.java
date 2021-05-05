@@ -166,6 +166,10 @@ public class ExMarcadorBL {
 				acrescentarMarca(CpMarcador.MARCADOR_MOVIMENTACAO_CONFERIDA_COM_SENHA, dt, mov.getSubscritor(), null);
 			}
 
+			if(t == ExTipoMovimentacao.TIPO_MOVIMENTACAO_TRAMITE_RECEBIMENTO_PEN) {
+				acrescentarMarca(CpMarcador.MARCADOR_RECEBIDO_PEN, dt, mov.getSubscritor(), null);
+			}
+
 			if (m != mAnterior) {
 				dt = mov.getDtIniMov();
 				mAnterior = m;
@@ -344,6 +348,17 @@ public class ExMarcadorBL {
 		acrescentarMarcadoresAssinaturaComSenha();
 		acrescentarMarcadorPublicacaoPortalTransparencia();
 		acrescentarMarcadoresManuais();
+		acrescentarMarcadoresPEN();
+	}
+
+
+	protected boolean acrescentarMarcadoresPEN() {
+		for (ExMovimentacao mov : movs(ExTipoMovimentacao.TIPO_MOVIMENTACAO_TRAMITE_RECEBIMENTO_PEN)) {
+			acrescentarMarca(CpMarcador.MARCADOR_RECEBIDO_PEN, mov.getDtIniMov(), mov.getCadastrante(),
+					mov.getLotaCadastrante());
+			return true;
+		}
+		return false;
 	}
 
 	protected boolean acrescentarMarcadoresSemEfeito() {

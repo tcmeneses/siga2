@@ -208,6 +208,8 @@ public class CpMarcador extends AbstractCpMarcador {
 
 	final static public long MARCADOR_DEMANDA_JUDICIAL_ALTA = 1010;
 
+	final static public long MARCADOR_RECEBIDO_PEN = 2000;
+
 	public static ActiveRecord<CpMarcador> AR = new ActiveRecord<>(CpMarcador.class);
 
 	public static final List<Long> MARCADORES_DEMANDA_JUDICIAL = Arrays.asList(MARCADOR_DEMANDA_JUDICIAL_BAIXA,
