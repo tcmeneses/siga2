@@ -7604,7 +7604,7 @@ public class ExBL extends CpBL {
 	}
 
 	public void receberPEN(final DpPessoa cadastrante, final DpLotacao lotaCadastrante, final ExMobil mob,
-						final Date dtMov) throws AplicacaoException {
+						final Date dtMov, String descMov) throws AplicacaoException {
 
 		SortedSet<ExMobil> set = mob.getMobilEApensosExcetoVolumeApensadoAoProximo();
 
@@ -7630,6 +7630,7 @@ public class ExBL extends CpBL {
 				final ExMovimentacao mov = criarNovaMovimentacao(ExTipoMovimentacao.TIPO_MOVIMENTACAO_TRAMITE_RECEBIMENTO_PEN,
 						cadastrante, lotaCadastrante, m, dtMov, cadastrante, null, null, null, null);
 
+				mov.setDescrMov(descMov);
 
 				if (movAnterior != null) {
 					mov.setExMovimentacaoRef(movAnterior);
@@ -7702,6 +7703,30 @@ public class ExBL extends CpBL {
 		} catch (final Exception e) {
 			cancelarAlteracao();
 			throw new RuntimeException("Erro ao receber documento.", e);
+		}
+	}
+
+
+	public void criarMovimentaoPEN(final DpPessoa cadastrante, final DpLotacao lotaCadastrante, final ExMobil mob, final String descrMov, Long tipoMovimentacao) throws AplicacaoException {
+		if (descrMov == null) {
+					throw new RegraNegocioException("Descrição da movimentação obrigatório");
+		}
+		try {
+			iniciarAlteracao();
+
+			Date dtMov = ExDao.getInstance().consultarDataEHoraDoServidor();
+
+			final ExMovimentacao mov = criarNovaMovimentacao(tipoMovimentacao, cadastrante,
+					lotaCadastrante, mob, dtMov, null, null, null, null, dtMov);
+
+			mov.setDescrMov(descrMov);
+
+			gravarMovimentacao(mov);
+
+			concluirAlteracao(mov);
+		} catch (final Exception e) {
+			cancelarAlteracao();
+			throw new RuntimeException("Erro ao fazer anotação.", e);
 		}
 	}
 
