@@ -4096,7 +4096,9 @@ public class ExCompetenciaBL extends CpCompetenciaBL {
 			return false;
 		if (ultMov.getExTipoMovimentacao().getIdTpMov() == ExTipoMovimentacao.TIPO_MOVIMENTACAO_TRANSFERENCIA_EXTERNA
 				|| ultMov.getExTipoMovimentacao().getIdTpMov() == ExTipoMovimentacao.TIPO_MOVIMENTACAO_DESPACHO_TRANSFERENCIA_EXTERNA
-				|| ultMov.getExTipoMovimentacao().getIdTpMov() == ExTipoMovimentacao.TIPO_MOVIMENTACAO_RECEBIMENTO )
+				|| ultMov.getExTipoMovimentacao().getIdTpMov() == ExTipoMovimentacao.TIPO_MOVIMENTACAO_RECEBIMENTO
+				|| ultMov.getExTipoMovimentacao().getIdTpMov() == ExTipoMovimentacao.TIPO_MOVIMENTACAO_RECIBO_ENVIO_PEN
+				|| ultMov.getExTipoMovimentacao().getIdTpMov() == ExTipoMovimentacao.TIPO_MOVIMENTACAO_RECIBO_TRAMITE_PEN )
 			return false;
 		// Verifica se o despacho já está assinado
 		for (CpMarca marca : mob.getExMarcaSet()) {
@@ -4448,7 +4450,7 @@ public class ExCompetenciaBL extends CpCompetenciaBL {
 
 		return podeMovimentar(titular, lotaTitular, mob)
 				&& getConf().podePorConfiguracao(titular, lotaTitular,
-				ExTipoMovimentacao.TIPO_MOVIMENTACAO_TRANSFERENCIA,
+				ExTipoMovimentacao.TIPO_MOVIMENTACAO_TRANSFERENCIA_EXTERNA,
 				CpTipoConfiguracao.TIPO_CONFIG_MOVIMENTAR);
 	}
 
